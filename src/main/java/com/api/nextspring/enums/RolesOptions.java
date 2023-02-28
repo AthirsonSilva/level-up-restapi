@@ -1,6 +1,6 @@
 package com.api.nextspring.enums;
 
-public enum Roles {
+public enum RolesOptions {
 	ADMIN,
 	USER
 }

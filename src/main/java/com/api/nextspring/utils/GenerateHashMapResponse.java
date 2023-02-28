@@ -15,7 +15,7 @@ public class GenerateHashMapResponse<K, V> {
 	 * @param data The data to be returned
 	 * @return The response with the message and data passed as parameters
 	 */
-	public Response<K, V> generate(K message, V data) {
+	public Response<K, V> generateHashMapResponse(K message, V data) {
 		return new Response<>(message, data);
 	}
 }

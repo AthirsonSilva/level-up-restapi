@@ -1,19 +1,17 @@
 package com.api.nextspring.entity;
 
-import com.api.nextspring.enums.Roles;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -35,8 +33,13 @@ public class UserEntity {
 	@Column(nullable = false, length = 60)
 	private String password;
 
-	@Column(nullable = false, length = 60)
-	private Roles roles;
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(
+			name = "user_roles",
+			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+	)
+	private Set<RoleEntity> roles;
 
 	@CreationTimestamp
 	private LocalDateTime createdAt;
