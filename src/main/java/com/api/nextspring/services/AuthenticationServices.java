@@ -11,6 +11,7 @@ import com.api.nextspring.repositories.RoleRepository;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,6 +32,7 @@ public class AuthenticationServices {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RoleRepository roleRepository;
+	private final ModelMapper modelMapper;
 
 	public String login(LoginDto request) {
 		Authentication authentication = authenticationManager.authenticate(
@@ -71,11 +73,6 @@ public class AuthenticationServices {
 
 		userRepository.save(user);
 
-		return UserDto
-				.builder()
-				.name(user.getName())
-				.email(user.getEmail())
-				.cpf(user.getCpf())
-				.build();
+		return modelMapper.map(user, UserDto.class);
 	}
 }

@@ -1,28 +1,20 @@
 package com.api.nextspring;
 
 import com.api.nextspring.entity.RoleEntity;
-import com.api.nextspring.repositories.RoleRepository;
 import com.api.nextspring.enums.RolesOptions;
+import com.api.nextspring.repositories.RoleRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.util.List;
-
 @SpringBootApplication
 public class NextSpringApplication implements CommandLineRunner {
+	private final RoleRepository roleRepository;
 
-	@Autowired
-	private RoleRepository roleRepository;
 	public NextSpringApplication(RoleRepository roleRepository) {
 		this.roleRepository = roleRepository;
-	}
-
-	public ModelMapper getModelMapper() {
-		return new ModelMapper();
 	}
 
 	public static void main(String[] args) {
@@ -36,27 +28,39 @@ public class NextSpringApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
-		if (!checkIfRoleAlreadyExists()) createApplicationRoles();
+		createApplicationRoles();
 	}
 
 	private void createApplicationRoles() {
-		RoleEntity admin = RoleEntity
-			.builder()
-			.name(RolesOptions.ADMIN)
-			.build();
+		if (!checkIfAdminRoleAlreadyExists()) createAdminRole();
+		if (!checkIfUserRoleAlreadyExists()) createUserRole();
 
-		RoleEntity user = RoleEntity
-			.builder()
-			.name(RolesOptions.USER)
-			.build();
-
-		roleRepository.saveAll(List.of(admin, user));
+		System.out.println("\n------------ Application roles created! ------------\n");
 	}
 
-	private boolean checkIfRoleAlreadyExists() {
+	private void createUserRole() {
+		roleRepository.save(RoleEntity
+				.builder()
+				.name(RolesOptions.USER)
+				.build());
+	}
+
+	private void createAdminRole() {
+		roleRepository.save(RoleEntity
+				.builder()
+				.name(RolesOptions.ADMIN)
+				.build());
+	}
+
+	private boolean checkIfAdminRoleAlreadyExists() {
 		RoleEntity admin = roleRepository.findByName(RolesOptions.ADMIN).orElse(null);
+
+		return admin != null;
+	}
+
+	private boolean checkIfUserRoleAlreadyExists() {
 		RoleEntity user = roleRepository.findByName(RolesOptions.USER).orElse(null);
 
-		return admin != null && user != null;
+		return user != null;
 	}
 }

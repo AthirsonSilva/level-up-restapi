@@ -18,6 +18,6 @@ public class RoleEntity {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
-	@Column(nullable = false, length = 60)
+	@Column(nullable = false, unique = true)
 	private RolesOptions name;
 }
