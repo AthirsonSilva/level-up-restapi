@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "app.jwt-secret",
+      "type": "java.lang.String",
+      "description": "Description for app.jwt-secret."
+    },
+    {
+      "name": "app.jwt-expiration-milliseconds",
+      "type": "java.lang.String",
+      "description": "Description for app.jwt-expiration-milliseconds."
+    }
+  ] }

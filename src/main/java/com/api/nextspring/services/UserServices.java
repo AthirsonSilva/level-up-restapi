@@ -1,5 +1,6 @@
 package com.api.nextspring.services;
 
+import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
 import com.api.nextspring.payload.OptionalUserDto;
 import com.api.nextspring.payload.UserDto;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +54,15 @@ public class UserServices {
 		UserEntity currentUser = getUserEntityFromToken(token);
 
 		userRepository.delete(currentUser);
+	}
+
+	public Set<RoleEntity> getUserRole(String token) {
+		String authentication = jwtTokenProvider.getUsernameFromJwtToken(token);
+
+		UserEntity currentUser = userRepository.findByEmail(authentication)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+
+		return currentUser.getRoles();
 	}
 
 	private UserEntity getUserEntityFromToken(String token) {

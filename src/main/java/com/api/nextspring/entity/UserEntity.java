@@ -42,8 +42,12 @@ public class UserEntity {
 	private Set<RoleEntity> roles;
 
 	@CreationTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
 	@UpdateTimestamp
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 }

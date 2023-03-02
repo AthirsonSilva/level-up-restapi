@@ -1,27 +1,27 @@
 package com.api.nextspring.controllers;
 
+import com.api.nextspring.entity.RoleEntity;
+import com.api.nextspring.enums.RolesOptions;
 import com.api.nextspring.payload.OptionalUserDto;
 import com.api.nextspring.payload.Response;
 import com.api.nextspring.payload.UserDto;
 import com.api.nextspring.services.UserServices;
 import com.api.nextspring.utils.GenerateHashMapResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
 public class UserController {
 	private final UserServices userServices;
 	private final GenerateHashMapResponse<String, Object> generator;
-
-	public UserController(UserServices userServices, GenerateHashMapResponse<String, Object> generator) {
-		this.userServices = userServices;
-		this.generator = generator;
-	}
 
 	@GetMapping
 	public ResponseEntity<Response<String, Object>> getCurrentUser(@RequestHeader Map<String, String> headers) {
@@ -54,6 +54,23 @@ public class UserController {
 		HashMap<String, String> response = new HashMap<>();
 
 		response.put("message", "Current user deleted successfully!");
+
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/admin")
+	public ResponseEntity<HashMap<String, String>> helloAdmin(@RequestHeader Map<String, String> headers) {
+		HashMap<String, String> response = new HashMap<>();
+		String token = getJwtFromRequest(headers);
+
+		Set<RoleEntity> userRoles = userServices.getUserRole(token);
+
+		RoleEntity role = userRoles.stream().findFirst().orElseThrow(
+				() -> new RuntimeException("User not found")
+		);
+
+		response.put("message", "Hello Admin!");
+		response.put("role", role.getName());
 
 		return ResponseEntity.ok(response);
 	}

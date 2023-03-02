@@ -3,9 +3,9 @@ package com.api.nextspring.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -14,8 +14,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "roles")
-public class RoleEntity {
+@Table(name = "genres")
+public class GenreEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
@@ -23,12 +23,22 @@ public class RoleEntity {
 	@Column(nullable = false, unique = true)
 	private String name;
 
+	@Column(nullable = false)
+	private String description;
+
+	@OneToMany(
+			mappedBy = "genre",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true
+	)
+	private List<GameEntity> games;
+
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
-	@UpdateTimestamp
+	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;

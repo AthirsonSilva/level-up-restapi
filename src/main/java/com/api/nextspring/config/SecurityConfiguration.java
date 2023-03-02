@@ -2,6 +2,7 @@ package com.api.nextspring.config;
 
 import com.api.nextspring.security.JwtAuthenticationEntryPoint;
 import com.api.nextspring.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,27 +18,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.api.nextspring.enums.RolesOptions.ADMIN;
+
 /**
  * security config
  */
 @Configuration
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
-
-	private final UserDetailsService userDetailsService;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-	@Autowired
-	public SecurityConfiguration(
-		UserDetailsService userDetailsService,
-		JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-		JwtAuthenticationFilter jwtAuthenticationFilter
-	) {
-		this.userDetailsService = userDetailsService;
-		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-	}
 
 	@Bean
 	public static PasswordEncoder passwordEncoder() {
@@ -69,18 +60,24 @@ public class SecurityConfiguration {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		// http basic authentication
 		http
-			.csrf().disable() // disable csrf
-			.authorizeHttpRequests((authorize) ->
-				authorize.requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll() // permit all get requests
-					.requestMatchers("/api/v1/auth/**").permitAll() // permit all auth requests
-					.anyRequest().authenticated() // all other requests must be authenticated
-			)
-			.exceptionHandling(
-				exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-			) // handles exception when user is not authenticated
-			.sessionManagement(
-				session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			); // disable session creation
+				.csrf().disable() // disable csrf
+				.authorizeHttpRequests((authorize) ->
+								authorize.requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll() // permit all get requests
+										.requestMatchers("/api/v1/auth/**").permitAll()  // permit all auth requests
+										.requestMatchers("/api/v1/users/admin/**").hasRole(
+												ADMIN.name()
+										) // permit all admin requests
+//								.requestMatchers("/api/v1/games/**").hasRole(
+//										USER.name()
+//								)
+										.anyRequest().authenticated() // all other requests must be authenticated
+				)
+				.exceptionHandling(
+						exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+				) // handles exception when user is not authenticated
+				.sessionManagement(
+						session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				); // disable session creation
 
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

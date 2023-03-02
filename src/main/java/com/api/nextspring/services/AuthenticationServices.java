@@ -34,7 +34,7 @@ public class AuthenticationServices {
 	private final RoleRepository roleRepository;
 	private final ModelMapper modelMapper;
 
-	public String login(LoginDto request) {
+	public String userLogin(LoginDto request) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
 						request.getEmail(), request.getPassword()
@@ -46,12 +46,12 @@ public class AuthenticationServices {
 		return jwtTokenProvider.generateJwtToken(authentication);
 	}
 
-	public UserDto register(RegisterDto request) {
+	public UserDto userRegister(RegisterDto request) {
 		if (userRepository.existsByEmail(request.getEmail()))
-			throw new BadCredentialsException("Email already exists");
+			throw new BadCredentialsException("A user with given email already exists");
 
 		if (userRepository.existsByCpf(request.getCpf()))
-			throw new BadCredentialsException("CPF already exists");
+			throw new BadCredentialsException("A user with given CPF already exists");
 
 		request.setCpf(request.getCpf().replace("\\p{Punct}", ""));
 
@@ -74,5 +74,9 @@ public class AuthenticationServices {
 		userRepository.save(user);
 
 		return modelMapper.map(user, UserDto.class);
+	}
+
+	public void userLogout() {
+		SecurityContextHolder.clearContext();
 	}
 }

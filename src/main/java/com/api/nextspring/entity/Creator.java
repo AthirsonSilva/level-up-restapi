@@ -8,20 +8,23 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
 @Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "roles")
-public class RoleEntity {
+@Table(name = "creator")
+public class Creator {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
 	@Column(nullable = false, unique = true)
 	private String name;
+
+	@Column(nullable = false)
+	private LocalDateTime founded;
 
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
