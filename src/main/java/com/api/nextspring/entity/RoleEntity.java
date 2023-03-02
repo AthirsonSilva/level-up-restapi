@@ -1,6 +1,5 @@
 package com.api.nextspring.entity;
 
-import com.api.nextspring.enums.RolesOptions;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,5 +18,5 @@ public class RoleEntity {
 	private UUID id;
 
 	@Column(nullable = false, unique = true)
-	private RolesOptions name;
+	private String name;
 }

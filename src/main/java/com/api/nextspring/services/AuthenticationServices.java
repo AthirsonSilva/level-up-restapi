@@ -57,7 +57,7 @@ public class AuthenticationServices {
 
 		Set<RoleEntity> roles = new HashSet<>();
 
-		RoleEntity role = roleRepository.findByName(RolesOptions.USER)
+		RoleEntity role = roleRepository.findByName(RolesOptions.USER.name())
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Role not found"));
 
 		roles.add(role);
