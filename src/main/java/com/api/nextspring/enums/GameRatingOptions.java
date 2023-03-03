@@ -1,5 +1,5 @@
 package com.api.nextspring.enums;
 
-public enum GradesOptions {
+public enum GameRatingOptions {
 	AAA, AA, A, B, C
 }

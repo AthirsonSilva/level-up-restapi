@@ -1,31 +1,37 @@
 package com.api.nextspring.security;
 
+import com.api.nextspring.exceptions.RestApiException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserDetailsService userDetailsService;
-
-	public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
-		this.jwtTokenProvider = jwtTokenProvider;
-		this.userDetailsService = userDetailsService;
-	}
 
 	/**
 	 * do filter internal
@@ -50,21 +56,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			// get username from jwt token
 			String username = jwtTokenProvider.getUsernameFromJwtToken(jwtToken);
 
-			// get user details from username
-			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+			try {
+				// parse jwt token and get claims
+				Jws<Claims> jwtClaims = Jwts.parserBuilder()
+						.setSigningKey(jwtTokenProvider.key())
+						.build()
+						.parseClaimsJws(jwtToken);
 
-			// create authentication token
-			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-					userDetails,
-					null,
-					userDetails.getAuthorities()
-			);
+				// get claims from jwt token
+				Claims claims = jwtClaims.getBody();
 
-			// set authentication details from request to authentication token
-			authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				// get username from claims
+				String usernameFromClaims = claims.getSubject();
 
-			// set authentication in security context
-			SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+				// get user details from username
+				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+				// get authorities from claims
+				List<Map<String, String>> authorities = (List<Map<String, String>>) claims.get("authorities");
+
+				// create list of authorities from user details
+				List<SimpleGrantedAuthority> simpleGrantedAuthorities = authorities
+						.stream()
+						.map(
+								authority -> new SimpleGrantedAuthority(authority.get("authority"))
+						)
+						.toList();
+
+				// create authentication token
+				Authentication authentication = new UsernamePasswordAuthenticationToken(
+						userDetails,
+						null,
+						simpleGrantedAuthorities
+				);
+
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			} catch (JwtException e) {
+				throw new RestApiException(HttpStatus.BAD_REQUEST, "Invalid JWT token" + jwtToken + " \n" + e.getMessage());
+			}
 		}
 
 		// continue filter chain

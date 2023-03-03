@@ -1,6 +1,6 @@
 package com.api.nextspring.payload;
 
-import com.api.nextspring.enums.GradesOptions;
+import com.api.nextspring.enums.GameRatingOptions;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -19,7 +19,7 @@ public class GameDto {
 	@NotNull(message = "Year is required")
 	private int year;
 	@NotNull(message = "Grade is required")
-	private GradesOptions grade;
+	private GameRatingOptions grade;
 	@NotNull(message = "Genre is required")
 	@org.hibernate.validator.constraints.UUID(message = "Genre must be a valid UUID")
 	private UUID genreId;

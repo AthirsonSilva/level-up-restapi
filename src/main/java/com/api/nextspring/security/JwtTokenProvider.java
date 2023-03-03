@@ -39,8 +39,9 @@ public class JwtTokenProvider {
 
 		// generate and return jwt token with username, current date, expiry date and decoded secret key
 		return Jwts.builder()
-			.setSubject(username)
-			.setIssuedAt(currentDate)
+				.setSubject(username)
+				.setIssuedAt(currentDate)
+				.claim("authorities", authentication.getAuthorities())
 			.setExpiration(expiryDate)
 			.signWith(key())
 			.compact();
@@ -52,7 +53,7 @@ public class JwtTokenProvider {
 	 * @return {@link Key}
 	 * @see Key
 	 */
-	private Key key() {
+	protected Key key() {
 		// decode secret key and return it
 		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
 	}

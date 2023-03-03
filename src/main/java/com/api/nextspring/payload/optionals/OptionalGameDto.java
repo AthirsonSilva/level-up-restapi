@@ -1,6 +1,6 @@
 package com.api.nextspring.payload.optionals;
 
-import com.api.nextspring.enums.GradesOptions;
+import com.api.nextspring.enums.GameRatingOptions;
 import lombok.Data;
 
 import java.util.UUID;
@@ -9,7 +9,7 @@ import java.util.UUID;
 public class OptionalGameDto {
 	private String name;
 	private String description;
-	private GradesOptions grade;
+	private GameRatingOptions grade;
 	private UUID genreId;
 	private UUID developerId;
 }

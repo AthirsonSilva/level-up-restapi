@@ -2,6 +2,8 @@ package com.api.nextspring.config;
 
 import com.api.nextspring.security.JwtAuthenticationEntryPoint;
 import com.api.nextspring.security.JwtAuthenticationFilter;
+import com.api.nextspring.security.JwtTokenProvider;
+import com.api.nextspring.security.JwtUsernameAndPasswordFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +27,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final JwtTokenProvider jwtTokenProvider;
 
 	@Bean
 	public static PasswordEncoder passwordEncoder() {
@@ -60,15 +63,6 @@ public class SecurityConfiguration {
 				.authorizeHttpRequests((authorize) ->
 						authorize.requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll() // permit all get requests
 								.requestMatchers("/api/v1/auth/**").permitAll()  // permit all auth requests
-								/*.requestMatchers("/api/v1/users/admin/**").hasRole(
-										ADMIN.name()
-								)
-								.requestMatchers("/api/v1/games/**").hasRole(
-										USER.name()
-								)
-								.requestMatchers("/api/v1/developers/**").hasRole(
-										USER.name()
-								)*/
 								.anyRequest().authenticated() // all other requests must be authenticated
 				)
 				.exceptionHandling(
@@ -79,6 +73,7 @@ public class SecurityConfiguration {
 				); // disable session creation
 
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilter(new JwtUsernameAndPasswordFilter(jwtTokenProvider));
 
 		return http.build();
 	}
