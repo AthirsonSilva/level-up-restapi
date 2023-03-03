@@ -2,14 +2,16 @@ package com.api.nextspring.security;
 
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
+import com.api.nextspring.enums.ApplicationUserRoles;
 import com.api.nextspring.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -17,13 +19,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 	private final UserRepository userRepository;
-
-	@Autowired
-	public CustomUserDetailsService(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
+	private final PasswordEncoder passwordEncoder;
 
 	/**
 	 * load user by username
@@ -41,8 +40,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 						new UsernameNotFoundException("User not found with username or email:" + email));
 
 		// return a new user with the username, password, and authorities
-		return new User(user.getEmail(),
-				user.getPassword(), mapRolesToAuthorities(user.getRoles()));
+		return User
+				.withUsername(user.getEmail())
+				.password(user.getPassword())
+				.roles(user.getRoles().stream().map(RoleEntity::getName).toArray(String[]::new))
+				.authorities(ApplicationUserRoles.USER.getGrantedAuthorities())
+				.build();
 	}
 
 	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<RoleEntity> roles) {
