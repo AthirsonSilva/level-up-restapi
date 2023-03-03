@@ -3,7 +3,6 @@ package com.api.nextspring.config;
 import com.api.nextspring.security.JwtAuthenticationEntryPoint;
 import com.api.nextspring.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,13 +11,10 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import static com.api.nextspring.enums.RolesOptions.ADMIN;
 
 /**
  * security config
@@ -62,15 +58,18 @@ public class SecurityConfiguration {
 		http
 				.csrf().disable() // disable csrf
 				.authorizeHttpRequests((authorize) ->
-								authorize.requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll() // permit all get requests
-										.requestMatchers("/api/v1/auth/**").permitAll()  // permit all auth requests
-										.requestMatchers("/api/v1/users/admin/**").hasRole(
-												ADMIN.name()
-										) // permit all admin requests
-//								.requestMatchers("/api/v1/games/**").hasRole(
-//										USER.name()
-//								)
-										.anyRequest().authenticated() // all other requests must be authenticated
+						authorize.requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll() // permit all get requests
+								.requestMatchers("/api/v1/auth/**").permitAll()  // permit all auth requests
+								/*.requestMatchers("/api/v1/users/admin/**").hasRole(
+										ADMIN.name()
+								)
+								.requestMatchers("/api/v1/games/**").hasRole(
+										USER.name()
+								)
+								.requestMatchers("/api/v1/developers/**").hasRole(
+										USER.name()
+								)*/
+								.anyRequest().authenticated() // all other requests must be authenticated
 				)
 				.exceptionHandling(
 						exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)

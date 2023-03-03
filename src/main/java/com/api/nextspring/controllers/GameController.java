@@ -2,6 +2,7 @@ package com.api.nextspring.controllers;
 
 import com.api.nextspring.payload.GameDto;
 import com.api.nextspring.payload.Response;
+import com.api.nextspring.payload.optionals.OptionalGameDto;
 import com.api.nextspring.services.GameServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -61,7 +62,7 @@ public class GameController {
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<Response<String, GameDto>> updateGame(@PathVariable("id") UUID id, @RequestBody GameDto request) {
+	public ResponseEntity<Response<String, GameDto>> updateGame(@PathVariable("id") UUID id, @RequestBody OptionalGameDto request) {
 		GameDto gameDto = gameServices.updateGame(id, request);
 
 		Response<String, GameDto> response = new Response<>("Game updated successfully!", gameDto);

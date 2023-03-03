@@ -1,4 +1,4 @@
-package com.api.nextspring.payload;
+package com.api.nextspring.payload.optionals;
 
 import lombok.Data;
 

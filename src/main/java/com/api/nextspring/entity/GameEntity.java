@@ -32,4 +32,8 @@ public class GameEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "genre_id", nullable = false)
 	private GenreEntity genre;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "developer_id", nullable = false)
+	private DeveloperEntity developer;
 }

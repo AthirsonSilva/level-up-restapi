@@ -1,10 +1,9 @@
 package com.api.nextspring.controllers;
 
 import com.api.nextspring.entity.RoleEntity;
-import com.api.nextspring.enums.RolesOptions;
-import com.api.nextspring.payload.OptionalUserDto;
 import com.api.nextspring.payload.Response;
 import com.api.nextspring.payload.UserDto;
+import com.api.nextspring.payload.optionals.OptionalUserDto;
 import com.api.nextspring.services.UserServices;
 import com.api.nextspring.utils.GenerateHashMapResponse;
 import lombok.RequiredArgsConstructor;

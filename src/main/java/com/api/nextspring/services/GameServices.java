@@ -1,9 +1,12 @@
 package com.api.nextspring.services;
 
+import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.entity.GameEntity;
 import com.api.nextspring.entity.GenreEntity;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.payload.GameDto;
+import com.api.nextspring.payload.optionals.OptionalGameDto;
+import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.repositories.GameRepository;
 import com.api.nextspring.repositories.GenreRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ import java.util.UUID;
 public class GameServices {
 	private final GameRepository gameRepository;
 	private final GenreRepository genreRepository;
+	private final DeveloperRepository developerRepository;
 	private final ModelMapper modelMapper;
 
 	public GameDto createGame(GameDto gameDto) {
@@ -76,7 +80,7 @@ public class GameServices {
 		throw new RestApiException(HttpStatus.NOT_FOUND, "Game with given id was not found!");
 	}
 
-	public GameDto updateGame(UUID id, GameDto request) {
+	public GameDto updateGame(UUID id, OptionalGameDto request) {
 		GameEntity gameEntity = gameRepository.findById(id).orElseThrow(
 				() -> new RestApiException(HttpStatus.NOT_FOUND, "Game with given id was not found!")
 		);
@@ -87,14 +91,14 @@ public class GameServices {
 		if (request.getDescription() != null)
 			gameEntity.setDescription(request.getDescription());
 
-		if (request.getYear() != 0)
-			gameEntity.setYear(request.getYear());
-
 		if (request.getGrade() != null)
 			gameEntity.setGrade(request.getGrade().name());
 
 		if (request.getGenreId() != null)
 			gameEntity.setGenre(genreRepository.findById(request.getGenreId()).orElse(getNoGenreEntity()));
+
+		if (request.getDeveloperId() != null)
+			gameEntity.setDeveloper(developerRepository.findById(request.getDeveloperId()).orElse(getNoDeveloperEntity()));
 
 		return modelMapper.map(gameRepository.save(gameEntity), GameDto.class);
 	}
@@ -105,6 +109,16 @@ public class GameServices {
 						.builder()
 						.name("No Genre")
 						.description("No Genre")
+						.build()
+		);
+	}
+
+	private DeveloperEntity getNoDeveloperEntity() {
+		return developerRepository.findByName("No Developer").orElse(
+				DeveloperEntity
+						.builder()
+						.name("No Developer")
+						.description("No Developer")
 						.build()
 		);
 	}

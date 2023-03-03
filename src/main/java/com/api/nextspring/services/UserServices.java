@@ -2,8 +2,8 @@ package com.api.nextspring.services;
 
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
-import com.api.nextspring.payload.OptionalUserDto;
 import com.api.nextspring.payload.UserDto;
+import com.api.nextspring.payload.optionals.OptionalUserDto;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
