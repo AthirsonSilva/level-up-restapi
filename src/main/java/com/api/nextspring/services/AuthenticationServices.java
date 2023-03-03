@@ -2,7 +2,7 @@ package com.api.nextspring.services;
 
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
-import com.api.nextspring.enums.RolesOptions;
+import com.api.nextspring.enums.ApplicationUserRoles;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.payload.LoginDto;
 import com.api.nextspring.payload.RegisterDto;
@@ -57,7 +57,7 @@ public class AuthenticationServices {
 
 		Set<RoleEntity> roles = new HashSet<>();
 
-		RoleEntity role = roleRepository.findByName(RolesOptions.USER.name())
+		RoleEntity role = roleRepository.findByName(ApplicationUserRoles.USER.name())
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Role not found"));
 
 		roles.add(role);

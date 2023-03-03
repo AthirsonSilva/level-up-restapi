@@ -3,7 +3,7 @@ package com.api.nextspring.utils;
 import com.api.nextspring.entity.GenreEntity;
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
-import com.api.nextspring.enums.RolesOptions;
+import com.api.nextspring.enums.ApplicationUserRoles;
 import com.api.nextspring.repositories.GenreRepository;
 import com.api.nextspring.repositories.RoleRepository;
 import com.api.nextspring.repositories.UserRepository;
@@ -43,7 +43,7 @@ public class BootstrapData implements CommandLineRunner {
 				.email("user@user.com")
 				.password(passwordEncoder.encode("user"))
 				.roles(Set.of(
-						roleRepository.findByName(RolesOptions.USER.name()).orElseThrow(
+						roleRepository.findByName(ApplicationUserRoles.USER.name()).orElseThrow(
 								() -> new RuntimeException("User role not found!"))
 				))
 				.build());
@@ -59,7 +59,7 @@ public class BootstrapData implements CommandLineRunner {
 				.email("admin@admin.com")
 				.password(passwordEncoder.encode("admin"))
 				.roles(Set.of(
-						roleRepository.findByName(RolesOptions.ADMIN.name()).orElseThrow(
+						roleRepository.findByName(ApplicationUserRoles.ADMIN.name()).orElseThrow(
 								() -> new RuntimeException("Admin role not found!"))
 				))
 				.build());
@@ -90,7 +90,7 @@ public class BootstrapData implements CommandLineRunner {
 	private void createUserRole() {
 		roleRepository.save(RoleEntity
 				.builder()
-				.name(RolesOptions.USER.name())
+				.name(ApplicationUserRoles.USER.name())
 				.build());
 
 		System.out.println("\n------------ User role created!!! ------------\n");
@@ -99,20 +99,20 @@ public class BootstrapData implements CommandLineRunner {
 	private void createAdminRole() {
 		roleRepository.save(RoleEntity
 				.builder()
-				.name(RolesOptions.ADMIN.name())
+				.name(ApplicationUserRoles.ADMIN.name())
 				.build());
 
 		System.out.println("\n------------ Admin role created!!! ------------\n");
 	}
 
 	private boolean checkIfAdminRoleAlreadyExists() {
-		RoleEntity admin = roleRepository.findByName(RolesOptions.ADMIN.name()).orElse(null);
+		RoleEntity admin = roleRepository.findByName(ApplicationUserRoles.ADMIN.name()).orElse(null);
 
 		return admin != null;
 	}
 
 	private boolean checkIfUserRoleAlreadyExists() {
-		RoleEntity user = roleRepository.findByName(RolesOptions.USER.name()).orElse(null);
+		RoleEntity user = roleRepository.findByName(ApplicationUserRoles.USER.name()).orElse(null);
 
 		return user != null;
 	}
