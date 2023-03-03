@@ -24,4 +24,5 @@ public class RegisterDto {
 	@NotEmpty(message = "Password is required")
 	@Length(min = 6, max = 60, message = "Password must be between 6 and 60 characters")
 	private String password;
+	private boolean isAdmin;
 }

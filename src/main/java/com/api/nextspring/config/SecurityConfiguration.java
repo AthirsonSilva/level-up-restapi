@@ -18,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.api.nextspring.enums.ApplicationUserRoles.ADMIN;
+
 /**
  * security config
  */
@@ -61,8 +63,10 @@ public class SecurityConfiguration {
 		http
 				.csrf().disable() // disable csrf
 				.authorizeHttpRequests((authorize) ->
-						authorize.requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll() // permit all get requests
-								.requestMatchers("/api/v1/auth/**").permitAll()  // permit all auth requests
+						authorize
+								.requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll() // allow all GET requests
+								.requestMatchers("/api/v1/admin/**").hasRole(ADMIN.name())
+								.requestMatchers("/api/v1/auth/**").permitAll()
 								.anyRequest().authenticated() // all other requests must be authenticated
 				)
 				.exceptionHandling(

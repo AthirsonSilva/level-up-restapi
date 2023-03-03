@@ -57,8 +57,15 @@ public class AuthenticationServices {
 
 		Set<RoleEntity> roles = new HashSet<>();
 
-		RoleEntity role = roleRepository.findByName(ApplicationUserRoles.USER.name())
-				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Role not found"));
+		RoleEntity role;
+
+		if (request.isAdmin()) {
+			role = roleRepository.findByName(ApplicationUserRoles.ADMIN.name())
+					.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Role not found"));
+		} else {
+			role = roleRepository.findByName(ApplicationUserRoles.USER.name())
+					.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Role not found"));
+		}
 
 		roles.add(role);
 

@@ -42,9 +42,9 @@ public class JwtTokenProvider {
 				.setSubject(username)
 				.setIssuedAt(currentDate)
 				.claim("authorities", authentication.getAuthorities())
-			.setExpiration(expiryDate)
-			.signWith(key())
-			.compact();
+				.setExpiration(expiryDate)
+				.signWith(key())
+				.compact();
 	}
 
 	/**
@@ -68,11 +68,11 @@ public class JwtTokenProvider {
 	public String getUsernameFromJwtToken(String token) {
 		// parse jwt token and return username
 		return Jwts.parserBuilder()
-			.setSigningKey(key())
-			.build()
-			.parseClaimsJws(token)
-			.getBody()
-			.getSubject();
+				.setSigningKey(key())
+				.build()
+				.parseClaimsJws(token)
+				.getBody()
+				.getSubject();
 	}
 
 	/**
@@ -86,9 +86,9 @@ public class JwtTokenProvider {
 		// parse jwt token and return true if it is valid
 		try {
 			Jwts.parserBuilder()
-				.setSigningKey(key())
-				.build()
-				.parseClaimsJws(authToken);
+					.setSigningKey(key())
+					.build()
+					.parseClaimsJws(authToken);
 
 			return true;
 		} catch (MalformedJwtException e) {

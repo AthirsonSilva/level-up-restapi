@@ -5,25 +5,19 @@ import com.api.nextspring.entity.UserEntity;
 import com.api.nextspring.enums.ApplicationUserRoles;
 import com.api.nextspring.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 	private final UserRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
-
 	/**
 	 * load user by username
 	 *
@@ -39,19 +33,24 @@ public class CustomUserDetailsService implements UserDetailsService {
 				.orElseThrow(() ->
 						new UsernameNotFoundException("User not found with username or email:" + email));
 
+		// get the user permissions based on the user roles
+		Set<SimpleGrantedAuthority> grantedAuthorities = ApplicationUserRoles.valueOf(
+						user.getRoles()
+								.stream()
+								.map(RoleEntity::getName)
+								.findFirst()
+								.orElse(null))
+				.getGrantedAuthorities();
+
+		// convert the user roles to a string array
+		String[] userRoles = user.getRoles().stream().map(RoleEntity::getName).toArray(String[]::new);
+
 		// return a new user with the username, password, and authorities
 		return User
 				.withUsername(user.getEmail())
 				.password(user.getPassword())
-				.roles(user.getRoles().stream().map(RoleEntity::getName).toArray(String[]::new))
-				.authorities(ApplicationUserRoles.USER.getGrantedAuthorities())
+				.roles(userRoles)
+				.authorities(grantedAuthorities)
 				.build();
-	}
-
-	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<RoleEntity> roles) {
-		// convert the roles to a list of authorities
-		return roles.stream().map(
-				role -> new SimpleGrantedAuthority(role.getName())
-		).collect(Collectors.toList());
 	}
 }
