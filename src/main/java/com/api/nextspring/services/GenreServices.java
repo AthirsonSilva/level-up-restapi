@@ -37,6 +37,9 @@ public class GenreServices {
 	}
 
 	public GenreDto createGenre(GenreDto request) {
+		if (genreRepository.existsByName(request.getName()))
+			throw new RestApiException(HttpStatus.BAD_REQUEST, "Genre already exists!");
+
 		GenreEntity genreEntity = GenreEntity
 				.builder()
 				.name(request.getName())
