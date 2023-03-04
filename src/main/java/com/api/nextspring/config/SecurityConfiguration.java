@@ -1,5 +1,6 @@
 package com.api.nextspring.config;
 
+import com.api.nextspring.enums.ApplicationUserPermissions;
 import com.api.nextspring.security.JwtAuthenticationEntryPoint;
 import com.api.nextspring.security.JwtAuthenticationFilter;
 import com.api.nextspring.security.JwtTokenProvider;
@@ -65,7 +66,13 @@ public class SecurityConfiguration {
 				.authorizeHttpRequests((authorize) ->
 						authorize
 								.requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll() // allow all GET requests
-								.requestMatchers("/api/v1/admin/**").hasRole(ADMIN.name())
+								.requestMatchers("/api/v1/admin/**").hasRole(
+										ADMIN.name()
+								)
+								.requestMatchers("/api/v1/admin/**").hasAnyAuthority(
+										ApplicationUserPermissions.USER_READ.getPermission(),
+										ADMIN.name()
+								)
 								.requestMatchers("/api/v1/auth/**").permitAll()
 								.anyRequest().authenticated() // all other requests must be authenticated
 				)

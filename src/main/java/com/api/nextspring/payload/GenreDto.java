@@ -10,6 +10,6 @@ public class GenreDto {
 	@Length(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
 	private String name;
 	@NotEmpty(message = "Description is required")
-	@Length(min = 3, max = 50, message = "Description must be between 3 and 50 characters")
+	@Length(min = 3, message = "Description must be at least 3 characters")
 	private String description;
 }
