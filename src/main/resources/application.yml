@@ -1,0 +1,25 @@
+app:
+    jwt-expiration-milliseconds: 604800000
+    jwt-secret: ca0fe639f25b3f3baadf23bd0948ed8bf55741aa10982e3204a6842e81a579ce
+logging:
+    level:
+        org:
+            hibernate:
+                SQL: DEBUG
+                type: TRACE
+            springframework:
+                web: DEBUG
+spring:
+    datasource:
+        driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+        password: '@Potter77'
+        url: jdbc:sqlserver://localhost:1433;databaseName=next_spring;encrypt=true;trustServerCertificate=true
+        username: sa
+    jpa:
+        hibernate:
+            ddl-auto: create-drop
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.SQLServerDialect
+                format_sql: true
+        show-sql: true
