@@ -23,3 +23,14 @@ spring:
                 dialect: org.hibernate.dialect.SQLServerDialect
                 format_sql: true
         show-sql: true
+
+springdoc:
+    api-docs:
+        groups:
+            enabled: true
+        enabled: true
+        path: /api-docs
+    show-actuator: true
+    swagger-ui:
+        enabled: true
+        path: /swagger-ui.html
