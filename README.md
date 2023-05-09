@@ -3,7 +3,7 @@ Game rental service API done with Spring Boot to test my knowledge of this frame
 
 ## Requirements
 
-- [Java 8](https://adoptium.net/)
+- [Java 17](https://adoptium.net/)
 - [Maven](https://maven.apache.org/)
 - [Gradle](https://gradle.org/)
 
