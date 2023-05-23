@@ -11,16 +11,16 @@ logging:
                 web: DEBUG
 spring:
     datasource:
-        driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+        driver-class-name: org.postgresql.Driver
         password: '@Potter77'
-        url: jdbc:sqlserver://localhost:1433;databaseName=next_spring;encrypt=true;trustServerCertificate=true
-        username: sa
+        url: jdbc:postgresql://localhost:5432/next-spring
+        username: postgres
     jpa:
         hibernate:
-            ddl-auto: create-drop
+            ddl-auto: update
         properties:
             hibernate:
-                dialect: org.hibernate.dialect.SQLServerDialect
+                dialect: org.hibernate.dialect.PostgreSQLDialect
                 format_sql: true
         show-sql: true
 
@@ -29,8 +29,11 @@ springdoc:
         groups:
             enabled: true
         enabled: true
-        path: /api-docs
+        path: /v3/api-docs
     show-actuator: true
     swagger-ui:
         enabled: true
-        path: /swagger-ui.html
+        path: /
+
+server:
+    port: 8000

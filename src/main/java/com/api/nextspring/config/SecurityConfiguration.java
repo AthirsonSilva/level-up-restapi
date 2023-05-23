@@ -65,7 +65,7 @@ public class SecurityConfiguration {
 				.csrf().disable() // disable csrf
 				.authorizeHttpRequests((authorize) ->
 						authorize
-								.requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll() // allow all GET requests
+								.requestMatchers(HttpMethod.GET).permitAll() // allow all GET requests
 								.requestMatchers("/api/v1/admin/**").hasRole(
 										ADMIN.name()
 								)

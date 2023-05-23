@@ -6,6 +6,8 @@ import com.api.nextspring.payload.optionals.OptionalUserDto;
 import com.api.nextspring.services.UserServices;
 import com.api.nextspring.utils.GenerateHashMapResponse;
 import com.api.nextspring.utils.GetJwtTokenFromHeaders;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +18,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@Tag(name = "User", description = "User endpoint for getting and updating the current logged in user")
 public class UserController {
 	private final UserServices userServices;
 	private final GenerateHashMapResponse<String, Object> generator;
 	private final GetJwtTokenFromHeaders getJwtFromRequest;
 
 	@GetMapping
+	@Operation(summary = "Get the current logged in user")
 	public ResponseEntity<Response<String, Object>> getCurrentUser(@RequestHeader Map<String, String> headers) {
 		String token = getJwtFromRequest.execute(headers);
 
@@ -33,6 +37,7 @@ public class UserController {
 	}
 
 	@PatchMapping
+	@Operation(summary = "Update the current logged in user")
 	public ResponseEntity<Response<String, Object>> updateCurrentUser(@RequestHeader Map<String, String> headers, @RequestBody OptionalUserDto request) {
 		String token = getJwtFromRequest.execute(headers);
 
@@ -44,7 +49,8 @@ public class UserController {
 	}
 
 	@DeleteMapping
-	public ResponseEntity<HashMap<String, String>> helloDelete(@RequestHeader Map<String, String> headers) {
+	@Operation(summary = "Delete the current logged in user")
+	public ResponseEntity<HashMap<String, String>> deleteUser(@RequestHeader Map<String, String> headers) {
 		String token = getJwtFromRequest.execute(headers);
 
 		userServices.deleteCurrentUser(token);

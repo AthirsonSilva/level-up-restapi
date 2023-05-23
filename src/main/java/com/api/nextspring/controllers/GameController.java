@@ -4,6 +4,8 @@ import com.api.nextspring.payload.GameDto;
 import com.api.nextspring.payload.Response;
 import com.api.nextspring.payload.optionals.OptionalGameDto;
 import com.api.nextspring.services.GameServices;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +18,13 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/games")
 @RequiredArgsConstructor
+@Tag(name = "Game", description = "Game endpoint for creating, getting, updating and deleting games")
 public class GameController {
 	private final GameServices gameServices;
 
 	@PostMapping
-	public ResponseEntity<Response<String, GameDto>> createRestaurant(@RequestBody GameDto request) {
+	@Operation(summary = "Create a new game endpoint")
+	public ResponseEntity<Response<String, GameDto>> createGame(@RequestBody GameDto request) {
 		GameDto gameDto = gameServices.createGame(request);
 
 		Response<String, GameDto> response = new Response<>("Restaurant created successfully!", gameDto);
@@ -29,6 +33,7 @@ public class GameController {
 	}
 
 	@GetMapping("/search")
+	@Operation(summary = "Search a game by name endpoint")
 	public ResponseEntity<Response<String, List<GameDto>>> getGames(@RequestParam("query") String query) {
 		List<GameDto> gameList = gameServices.searchGames(query);
 
@@ -44,6 +49,7 @@ public class GameController {
 	}
 
 	@GetMapping
+	@Operation(summary = "Get all games endpoint")
 	public ResponseEntity<Response<String, List<GameDto>>> getAllGames() {
 		List<GameDto> gameList = gameServices.getAllGames();
 
@@ -53,6 +59,7 @@ public class GameController {
 	}
 
 	@GetMapping("/{id}")
+	@Operation(summary = "Get a game by id endpoint")
 	public ResponseEntity<Response<String, GameDto>> getGameById(@PathVariable("id") UUID id) {
 		GameDto gameDto = gameServices.getGameById(id);
 
@@ -62,6 +69,7 @@ public class GameController {
 	}
 
 	@PatchMapping("/{id}")
+	@Operation(summary = "Update a game by id endpoint")
 	public ResponseEntity<Response<String, GameDto>> updateGame(@PathVariable("id") UUID id, @RequestBody OptionalGameDto request) {
 		GameDto gameDto = gameServices.updateGame(id, request);
 
@@ -71,6 +79,7 @@ public class GameController {
 	}
 
 	@DeleteMapping("/{id}")
+	@Operation(summary = "Delete a game by id endpoint")
 	public ResponseEntity<HashMap<String, String>> deleteGame(@PathVariable("id") UUID id) {
 		gameServices.deleteGameById(id);
 

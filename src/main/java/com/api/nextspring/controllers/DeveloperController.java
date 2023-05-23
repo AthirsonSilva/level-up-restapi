@@ -4,6 +4,8 @@ import com.api.nextspring.payload.DeveloperDto;
 import com.api.nextspring.payload.Response;
 import com.api.nextspring.payload.optionals.OptionalDeveloperDto;
 import com.api.nextspring.services.DeveloperServices;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +19,13 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/developers")
 @RequiredArgsConstructor
+@Tag(name = "Developer", description = "Developer endpoints for creating, getting, updating and deleting developers")
 public class DeveloperController {
+
 	private final DeveloperServices developerServices;
 
 	@PostMapping
+	@Operation(summary = "Create a new developer endpoint")
 	public ResponseEntity<Response<String, Object>> create(@Validated @RequestBody DeveloperDto request) {
 		DeveloperDto creator = developerServices.create(request);
 
@@ -30,6 +35,7 @@ public class DeveloperController {
 	}
 
 	@GetMapping
+	@Operation(summary = "Get all developers endpoint")
 	public ResponseEntity<Response<String, Object>> getAll() {
 		List<DeveloperDto> creator = developerServices.getAll();
 
@@ -39,6 +45,7 @@ public class DeveloperController {
 	}
 
 	@GetMapping("/{id}")
+	@Operation(summary = "Get a developer by id endpoint")
 	public ResponseEntity<Response<String, Object>> get(@PathVariable UUID id) {
 		DeveloperDto creator = developerServices.getDeveloperByUUID(id);
 
@@ -48,6 +55,7 @@ public class DeveloperController {
 	}
 
 	@PatchMapping("/{id}")
+	@Operation(summary = "Update a developer by id endpoint")
 	public ResponseEntity<Response<String, Object>> update(@PathVariable UUID id, @Validated @RequestBody OptionalDeveloperDto request) {
 		DeveloperDto creator = developerServices.updateDeveloper(id, request);
 
@@ -57,6 +65,7 @@ public class DeveloperController {
 	}
 
 	@DeleteMapping("/{id}")
+	@Operation(summary = "Delete a developer by id endpoint")
 	public ResponseEntity<HashMap<String, Object>> delete(@PathVariable UUID id) {
 		developerServices.delete(id);
 
