@@ -1,11 +1,8 @@
 package com.api.nextspring.config;
 
-import com.api.nextspring.enums.ApplicationUserPermissions;
-import com.api.nextspring.security.JwtAuthenticationEntryPoint;
-import com.api.nextspring.security.JwtAuthenticationFilter;
-import com.api.nextspring.security.JwtTokenProvider;
-import com.api.nextspring.security.JwtUsernameAndPasswordFilter;
-import lombok.RequiredArgsConstructor;
+import static com.api.nextspring.enums.ApplicationUserRoles.ADMIN;
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,13 +10,18 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.api.nextspring.enums.ApplicationUserRoles.ADMIN;
+import com.api.nextspring.enums.ApplicationUserPermissions;
+import com.api.nextspring.security.JwtAuthenticationEntryPoint;
+import com.api.nextspring.security.JwtAuthenticationFilter;
+import com.api.nextspring.security.JwtTokenProvider;
+import com.api.nextspring.security.JwtUsernameAndPasswordFilter;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * security config
@@ -60,29 +62,14 @@ public class SecurityConfiguration {
 	 */
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		// http basic authentication
-		http
-				.csrf().disable() // disable csrf
-				.authorizeHttpRequests((authorize) ->
-						authorize
-								.requestMatchers(HttpMethod.GET).permitAll() // allow all GET requests
-								.requestMatchers("/api/v1/admin/**").hasRole(
-										ADMIN.name()
-								)
-								.requestMatchers("/api/v1/admin/**").hasAnyAuthority(
-										ApplicationUserPermissions.USER_READ.getPermission(),
-										ADMIN.name()
-								)
-								.requestMatchers("/api/v1/auth/**").permitAll()
-								.anyRequest().authenticated() // all other requests must be authenticated
-				)
-				.exceptionHandling(
-						exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-				) // handles exception when user is not authenticated
-				.sessionManagement(
-						session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-				); // disable session creation
-
+		http.csrf().disable();
+		http.authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/").permitAll();
+		http.authorizeHttpRequests().requestMatchers("/api/v1/auth/**").permitAll();
+		http.authorizeHttpRequests().requestMatchers("/api/v1/admin/**").hasRole(ADMIN.name());
+		http.authorizeHttpRequests().requestMatchers("/api/v1/admin/**").hasAnyAuthority(
+				ApplicationUserPermissions.USER_READ.getPermission(),
+				ADMIN.name());
+		http.authorizeHttpRequests().anyRequest().authenticated();
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 		http.addFilter(new JwtUsernameAndPasswordFilter(jwtTokenProvider));
 
