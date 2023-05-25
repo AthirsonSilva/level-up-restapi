@@ -2,6 +2,8 @@ FROM eclipse-temurin:20-jdk
 
 WORKDIR /app
 
+COPY . /app
+
 RUN ./mvnw clean package -DskipTests
 
 COPY target/*.jar /app/app.jar
