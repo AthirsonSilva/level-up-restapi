@@ -1,17 +1,16 @@
 package com.api.nextspring;
 
-import com.api.nextspring.repositories.GameRepository;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import com.api.nextspring.repositories.GenreRepository;
 import com.api.nextspring.repositories.RoleRepository;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.utils.BootstrapData;
+
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 @RequiredArgsConstructor

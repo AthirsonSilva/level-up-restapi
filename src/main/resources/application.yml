@@ -40,6 +40,7 @@ server:
   ssl:
     enabled: true
     key-store: classpath:keystore/next-spring.p12
-    key-store-password: ${KEY_STORE_PASSWORD:@Potter44}
+    key-store-password: ${KEY_STORE_PASSWORD:rootroot}
     key-store-type: PKCS12
-    key-alias: athirson
+    key-alias: next-spring
+    key-password: ${KEY_PASSWORD:rootroot}
