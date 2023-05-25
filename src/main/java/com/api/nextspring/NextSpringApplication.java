@@ -25,16 +25,10 @@ public class NextSpringApplication implements CommandLineRunner {
 		SpringApplication.run(NextSpringApplication.class, args);
 	}
 
-	@Bean
-	public ModelMapper modelMapper() {
-		return new ModelMapper();
-	}
-
 	@Override
 	public void run(String... args) throws Exception {
 		BootstrapData bootstrapData = new BootstrapData(
-				roleRepository, userRepository, genreRepository, passwordEncoder
-		);
+				roleRepository, userRepository, genreRepository, passwordEncoder);
 
 		bootstrapData.run();
 	}
