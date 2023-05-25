@@ -37,3 +37,9 @@ springdoc:
 
 server:
   port: ${PORT:8080}
+  ssl:
+    enabled: true
+    key-store: classpath:keystore/next-spring.p12
+    key-store-password: ${KEY_STORE_PASSWORD:@Potter44}
+    key-store-type: PKCS12
+    key-alias: athirson

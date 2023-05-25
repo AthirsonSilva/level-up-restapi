@@ -1,9 +1,10 @@
 package com.api.nextspring.config;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Description;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -15,10 +16,15 @@ import io.swagger.v3.oas.models.servers.Server;
 public class OpenApiConfiguration {
 
 	@Bean
+	@Description("This bean configures the OpenAPI specification version 3.0.3")
 	OpenAPI customOpenAPI() {
-		return new OpenAPI().servers(
-				List.of(new Server().url("https://next-spring.up.railway.app"), new Server().url("http://localhost:8080")))
+		ArrayList<Server> servers = new ArrayList<Server>();
+
+		servers.add(new Server().url("https://next-spring.up.railway.app"));
+		servers.add(new Server().url("https://localhost:8080"));
+
+		return new OpenAPI().servers(servers)
 				.components(new Components()
-						.addSecuritySchemes("xpto", new SecurityScheme().type(Type.HTTP).scheme("bearer").bearerFormat("JWT")));
+						.addSecuritySchemes("JWT", new SecurityScheme().type(Type.HTTP).scheme("bearer").bearerFormat("JWT")));
 	}
 }
