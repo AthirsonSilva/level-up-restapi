@@ -36,4 +36,4 @@ springdoc:
     path: /
 
 server:
-  port: 8000
+  port: ${PORT:8000}
