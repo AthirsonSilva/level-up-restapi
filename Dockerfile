@@ -6,7 +6,7 @@ COPY . /app
 
 RUN ./mvnw clean package -DskipTests
 
-COPY target/*.jar /app/app.jar
+COPY target/next-spring-1.jar /app/app.jar
 
 ENV DATABASE_URL=jdbc:postgresql://next-spring-db.cnfncmvuylgz.sa-east-1.rds.amazonaws.com:5432/next-spring
 ENV DATABASE_USERNAME=postgres
