@@ -1,39 +1,39 @@
 app:
-    jwt-expiration-milliseconds: 604800000
-    jwt-secret: ca0fe639f25b3f3baadf23bd0948ed8bf55741aa10982e3204a6842e81a579ce
+  jwt-expiration-milliseconds: 604800000
+  jwt-secret: ca0fe639f25b3f3baadf23bd0948ed8bf55741aa10982e3204a6842e81a579ce
 logging:
-    level:
-        org:
-            hibernate:
-                SQL: DEBUG
-                type: TRACE
-            springframework:
-                web: DEBUG
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type: TRACE
+      springframework:
+        web: DEBUG
 spring:
-    datasource:
-        driver-class-name: org.postgresql.Driver
-        password: '@Potter77'
-        url: jdbc:postgresql://localhost:5432/next-spring
-        username: postgres
-    jpa:
-        hibernate:
-            ddl-auto: update
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.PostgreSQLDialect
-                format_sql: true
-        show-sql: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/next-spring}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:@Potter77}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
 
 springdoc:
-    api-docs:
-        groups:
-            enabled: true
-        enabled: true
-        path: /v3/api-docs
-    show-actuator: true
-    swagger-ui:
-        enabled: true
-        path: /
+  api-docs:
+    groups:
+      enabled: true
+    enabled: true
+    path: /v3/api-docs
+  show-actuator: true
+  swagger-ui:
+    enabled: true
+    path: /
 
 server:
-    port: 8000
+  port: 8000
