@@ -1,7 +1,6 @@
 package com.api.nextspring.config;
 
 import static com.api.nextspring.enums.ApplicationUserRoles.ADMIN;
-import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,7 +62,7 @@ public class SecurityConfiguration {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable();
-		http.authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/").permitAll();
+		http.authorizeHttpRequests().requestMatchers(HttpMethod.GET).permitAll();
 		http.authorizeHttpRequests().requestMatchers("/api/v1/auth/**").permitAll();
 		http.authorizeHttpRequests().requestMatchers("/api/v1/admin/**").hasRole(ADMIN.name());
 		http.authorizeHttpRequests().requestMatchers("/api/v1/admin/**").hasAnyAuthority(
