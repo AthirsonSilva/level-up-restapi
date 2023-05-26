@@ -13,8 +13,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/next-spring}
-    username: ${DATABASE_USERNAME:postgres}
-    password: ${DATABASE_PASSWORD:@Potter77}
+    username: ${PGUSER:postgres}
+    password: ${PGPASSWORD:@Potter77}
   jpa:
     hibernate:
       ddl-auto: update
