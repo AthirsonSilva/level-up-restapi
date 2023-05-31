@@ -1,16 +1,17 @@
 package com.api.nextspring.config;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 
+import com.github.javafaker.Faker;
+
 @Configuration
-public class ModelMapperConfiguration {
+public class FakerConfiguration {
 
 	@Bean
-	@Description("This bean configures the ModelMapper")
-	ModelMapper modelMapper() {
-		return new ModelMapper();
+	@Description("This bean configures Faker dependency")
+	Faker faker() {
+		return new Faker();
 	}
 }

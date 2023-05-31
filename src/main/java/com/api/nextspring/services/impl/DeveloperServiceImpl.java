@@ -1,22 +1,25 @@
-package com.api.nextspring.services;
+package com.api.nextspring.services.impl;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.payload.DeveloperDto;
 import com.api.nextspring.payload.optionals.OptionalDeveloperDto;
 import com.api.nextspring.repositories.DeveloperRepository;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
+import com.api.nextspring.services.DeveloperService;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class DeveloperServices {
+public class DeveloperServiceImpl implements DeveloperService {
 	private final DeveloperRepository developerRepository;
 	private final ModelMapper modelMapper;
 
@@ -34,22 +37,21 @@ public class DeveloperServices {
 		return modelMapper.map(developerRepository.save(developerEntity), DeveloperDto.class);
 	}
 
-	public List<DeveloperDto> getAll() {
+	public List<DeveloperDto> findAll() {
 		List<DeveloperEntity> developerEntities = developerRepository.findAll();
 
 		return developerEntities.stream().map(
-				developerEntity -> modelMapper.map(developerEntity, DeveloperDto.class)
-		).collect(Collectors.toList());
+				developerEntity -> modelMapper.map(developerEntity, DeveloperDto.class)).collect(Collectors.toList());
 	}
 
-	public DeveloperDto getDeveloperByUUID(UUID id) {
+	public DeveloperDto findByID(UUID id) {
 		DeveloperEntity developerEntity = developerRepository.findById(id)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given name not found"));
 
 		return modelMapper.map(developerEntity, DeveloperDto.class);
 	}
 
-	public DeveloperDto updateDeveloper(UUID id, OptionalDeveloperDto request) {
+	public DeveloperDto updateByID(UUID id, OptionalDeveloperDto request) {
 		DeveloperEntity developerEntity = developerRepository.findById(id)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given id not found"));
 
@@ -62,7 +64,7 @@ public class DeveloperServices {
 		return modelMapper.map(developerRepository.save(developerEntity), DeveloperDto.class);
 	}
 
-	public void delete(UUID id) {
+	public void deleteByID(UUID id) {
 		DeveloperEntity developerEntity = developerRepository.findById(id)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given name not found"));
 

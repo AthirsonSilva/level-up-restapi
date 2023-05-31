@@ -1,4 +1,17 @@
-package com.api.nextspring.services;
+package com.api.nextspring.services.impl;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
@@ -10,23 +23,13 @@ import com.api.nextspring.payload.UserDto;
 import com.api.nextspring.repositories.RoleRepository;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import com.api.nextspring.services.AuthenticationService;
 
-import java.util.HashSet;
-import java.util.Set;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationServices {
+public class AuthenticationServiceImpl implements AuthenticationService {
 	private final AuthenticationManager authenticationManager;
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -34,19 +37,17 @@ public class AuthenticationServices {
 	private final RoleRepository roleRepository;
 	private final ModelMapper modelMapper;
 
-	public String userLogin(LoginDto request) {
+	public String login(LoginDto request) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
-						request.getEmail(), request.getPassword()
-				)
-		);
+						request.getEmail(), request.getPassword()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		return jwtTokenProvider.generateJwtToken(authentication);
 	}
 
-	public UserDto userRegister(RegisterDto request) {
+	public UserDto register(RegisterDto request) {
 		if (userRepository.existsByEmail(request.getEmail()))
 			throw new BadCredentialsException("A user with given email already exists");
 
@@ -83,7 +84,7 @@ public class AuthenticationServices {
 		return modelMapper.map(user, UserDto.class);
 	}
 
-	public void userLogout() {
+	public void logout() {
 		SecurityContextHolder.clearContext();
 	}
 }

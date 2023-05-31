@@ -1,4 +1,11 @@
-package com.api.nextspring.services;
+package com.api.nextspring.services.impl;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.entity.GameEntity;
@@ -9,28 +16,29 @@ import com.api.nextspring.payload.optionals.OptionalGameDto;
 import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.repositories.GameRepository;
 import com.api.nextspring.repositories.GenreRepository;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
+import com.api.nextspring.services.GameService;
 
-import java.util.List;
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class GameServices {
+public class GameServiceImpl implements GameService {
 	private final GameRepository gameRepository;
 	private final GenreRepository genreRepository;
 	private final DeveloperRepository developerRepository;
 	private final ModelMapper modelMapper;
 
-	public GameDto createGame(GameDto gameDto) {
+	@Override
+	public GameDto create(GameDto gameDto) {
 		if (gameDto.getGenreId() == null || !genreRepository.existsById(gameDto.getGenreId())) {
 			gameDto.setGenreId(getNoGenreEntity().getId());
+		} else if (gameDto.getDeveloperId() == null || !developerRepository.existsById(gameDto.getDeveloperId())) {
+			gameDto.setDeveloperId(getNoDeveloperEntity().getId());
 		}
 
 		GenreEntity genreEntity = genreRepository.findById(gameDto.getGenreId()).orElse(getNoGenreEntity());
+		DeveloperEntity developerEntity = developerRepository.findById(gameDto.getDeveloperId())
+				.orElse(getNoDeveloperEntity());
 
 		genreRepository.save(genreEntity);
 
@@ -40,39 +48,43 @@ public class GameServices {
 				.year(gameDto.getYear())
 				.grade(gameDto.getGrade().name())
 				.genre(genreEntity)
+				.developer(developerEntity)
 				.build();
 
 		if (gameRepository.existsByName(gameDto.getName()))
 			throw new RestApiException(HttpStatus.BAD_REQUEST, "Game with given name already exists!");
+
 		else
 			gameEntity.setName(gameDto.getName());
 
 		return modelMapper.map(gameRepository.save(gameEntity), GameDto.class);
 	}
 
-	public List<GameDto> searchGames(String query) {
+	@Override
+	public List<GameDto> searchByKeyword(String query) {
 		List<GameEntity> gameEntityList = gameRepository.searchGameEntities(query).orElseThrow(
-				() -> new RestApiException(HttpStatus.NOT_FOUND, "Game with given information was not found!")
-		);
+				() -> new RestApiException(HttpStatus.NOT_FOUND, "Game with given information was not found!"));
 
 		return gameEntityList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
 	}
 
-	public List<GameDto> getAllGames() {
+	@Override
+	public List<GameDto> findAll() {
 		List<GameEntity> gameEntityList = gameRepository.findAll();
 
 		return gameEntityList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
 	}
 
-	public GameDto getGameById(UUID id) {
+	@Override
+	public GameDto findByID(UUID id) {
 		GameEntity gameEntity = gameRepository.findById(id).orElseThrow(
-				() -> new RestApiException(HttpStatus.NOT_FOUND, "Game with given id was not found!")
-		);
+				() -> new RestApiException(HttpStatus.NOT_FOUND, "Game with given id was not found!"));
 
 		return modelMapper.map(gameEntity, GameDto.class);
 	}
 
-	public void deleteGameById(UUID id) {
+	@Override
+	public void deleteById(UUID id) {
 		if (gameRepository.existsById(id)) {
 			gameRepository.deleteById(id);
 		}
@@ -80,10 +92,10 @@ public class GameServices {
 		throw new RestApiException(HttpStatus.NOT_FOUND, "Game with given id was not found!");
 	}
 
-	public GameDto updateGame(UUID id, OptionalGameDto request) {
+	@Override
+	public GameDto updateById(UUID id, OptionalGameDto request) {
 		GameEntity gameEntity = gameRepository.findById(id).orElseThrow(
-				() -> new RestApiException(HttpStatus.NOT_FOUND, "Game with given id was not found!")
-		);
+				() -> new RestApiException(HttpStatus.NOT_FOUND, "Game with given id was not found!"));
 
 		if (request.getName() != null)
 			gameEntity.setName(request.getName());
@@ -109,8 +121,7 @@ public class GameServices {
 						.builder()
 						.name("No Genre")
 						.description("No Genre")
-						.build()
-		);
+						.build());
 	}
 
 	private DeveloperEntity getNoDeveloperEntity() {
@@ -119,7 +130,6 @@ public class GameServices {
 						.builder()
 						.name("No Developer")
 						.description("No Developer")
-						.build()
-		);
+						.build());
 	}
 }

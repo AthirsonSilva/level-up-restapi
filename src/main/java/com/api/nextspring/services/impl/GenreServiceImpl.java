@@ -1,42 +1,43 @@
-package com.api.nextspring.services;
+package com.api.nextspring.services.impl;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import com.api.nextspring.entity.GenreEntity;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.payload.GenreDto;
 import com.api.nextspring.payload.optionals.OptionalGenreDto;
 import com.api.nextspring.repositories.GenreRepository;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
+import com.api.nextspring.services.GenreService;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class GenreServices {
+public class GenreServiceImpl implements GenreService {
 	private final GenreRepository genreRepository;
 	private final ModelMapper modelMapper;
 
-	public List<GenreDto> getAllGenres() {
+	public List<GenreDto> findAll() {
 		List<GenreEntity> genreEntities = genreRepository.findAll();
 
 		return genreEntities.stream().map(
-				genreEntity -> modelMapper.map(genreEntity, GenreDto.class)
-		).toList();
+				genreEntity -> modelMapper.map(genreEntity, GenreDto.class)).toList();
 	}
 
-	public GenreDto getGenreById(UUID id) {
+	public GenreDto findByID(UUID id) {
 		GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(
-				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!")
-		);
+				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!"));
 
 		return modelMapper.map(genreEntity, GenreDto.class);
 	}
 
-	public GenreDto createGenre(GenreDto request) {
+	public GenreDto create(GenreDto request) {
 		if (genreRepository.existsByName(request.getName()))
 			throw new RestApiException(HttpStatus.BAD_REQUEST, "Genre already exists!");
 
@@ -49,18 +50,16 @@ public class GenreServices {
 		return modelMapper.map(genreRepository.save(genreEntity), GenreDto.class);
 	}
 
-	public void deleteGenre(UUID id) {
+	public void deleteByID(UUID id) {
 		GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(
-				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!")
-		);
+				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!"));
 
 		genreRepository.delete(genreEntity);
 	}
 
-	public GenreDto updateGenre(UUID id, OptionalGenreDto request) {
+	public GenreDto updateByID(UUID id, OptionalGenreDto request) {
 		GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(
-				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!")
-		);
+				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!"));
 
 		if (request.getName() != null)
 			genreEntity.setName(request.getName());
@@ -71,15 +70,13 @@ public class GenreServices {
 		return modelMapper.map(genreRepository.save(genreEntity), GenreDto.class);
 	}
 
-	public List<GenreDto> searchGenre(String query) {
+	public List<GenreDto> searchByKeyword(String query) {
 		Optional<List<GenreEntity>> genreEntities = genreRepository.searchGenreEntities(query);
 
 		return genreEntities.map(
 				genreEntityList -> genreEntityList.stream().map(
-						genreEntity -> modelMapper.map(genreEntity, GenreDto.class)
-				).toList()
-		).orElseThrow(
-				() -> new RestApiException(HttpStatus.BAD_REQUEST, "No genres were found with given information!")
-		);
+						genreEntity -> modelMapper.map(genreEntity, GenreDto.class)).toList())
+				.orElseThrow(
+						() -> new RestApiException(HttpStatus.BAD_REQUEST, "No genres were found with given information!"));
 	}
 }

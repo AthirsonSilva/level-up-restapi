@@ -1,4 +1,10 @@
-package com.api.nextspring.services;
+package com.api.nextspring.services.impl;
+
+import java.util.Set;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
@@ -6,16 +12,13 @@ import com.api.nextspring.payload.UserDto;
 import com.api.nextspring.payload.optionals.OptionalUserDto;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import com.api.nextspring.services.UserService;
 
-import java.util.Set;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserServices {
+public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final ModelMapper modelMapper;

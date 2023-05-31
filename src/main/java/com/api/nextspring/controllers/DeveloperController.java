@@ -1,20 +1,31 @@
 package com.api.nextspring.controllers;
 
-import com.api.nextspring.payload.DeveloperDto;
-import com.api.nextspring.payload.Response;
-import com.api.nextspring.payload.optionals.OptionalDeveloperDto;
-import com.api.nextspring.services.DeveloperServices;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.api.nextspring.payload.DeveloperDto;
+import com.api.nextspring.payload.Response;
+import com.api.nextspring.payload.optionals.OptionalDeveloperDto;
+import com.api.nextspring.services.impl.DeveloperServiceImpl;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/developers")
@@ -22,10 +33,12 @@ import java.util.UUID;
 @Tag(name = "Developer", description = "Developer endpoints for creating, getting, updating and deleting developers")
 public class DeveloperController {
 
-	private final DeveloperServices developerServices;
+	private final DeveloperServiceImpl developerServices;
 
 	@PostMapping
 	@Operation(summary = "Create a new developer endpoint")
+	@ResponseStatus(HttpStatus.CREATED)
+	@SecurityRequirement(name = "JWT Authentication")
 	public ResponseEntity<Response<String, Object>> create(@Validated @RequestBody DeveloperDto request) {
 		DeveloperDto creator = developerServices.create(request);
 
@@ -36,8 +49,10 @@ public class DeveloperController {
 
 	@GetMapping
 	@Operation(summary = "Get all developers endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	@SecurityRequirement(name = "JWT Authentication")
 	public ResponseEntity<Response<String, Object>> getAll() {
-		List<DeveloperDto> creator = developerServices.getAll();
+		List<DeveloperDto> creator = developerServices.findAll();
 
 		Response<String, Object> response = new Response<>("All developers fetched successfully", creator);
 
@@ -46,8 +61,10 @@ public class DeveloperController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Get a developer by id endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	@SecurityRequirement(name = "JWT Authentication")
 	public ResponseEntity<Response<String, Object>> get(@PathVariable UUID id) {
-		DeveloperDto creator = developerServices.getDeveloperByUUID(id);
+		DeveloperDto creator = developerServices.findByID(id);
 
 		Response<String, Object> response = new Response<>("Developer fetched successfully", creator);
 
@@ -56,8 +73,11 @@ public class DeveloperController {
 
 	@PatchMapping("/{id}")
 	@Operation(summary = "Update a developer by id endpoint")
-	public ResponseEntity<Response<String, Object>> update(@PathVariable UUID id, @Validated @RequestBody OptionalDeveloperDto request) {
-		DeveloperDto creator = developerServices.updateDeveloper(id, request);
+	@ResponseStatus(HttpStatus.OK)
+	@SecurityRequirement(name = "JWT Authentication")
+	public ResponseEntity<Response<String, Object>> update(@PathVariable UUID id,
+			@Validated @RequestBody OptionalDeveloperDto request) {
+		DeveloperDto creator = developerServices.updateByID(id, request);
 
 		Response<String, Object> response = new Response<>("Developer updated successfully", creator);
 
@@ -66,8 +86,10 @@ public class DeveloperController {
 
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete a developer by id endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	@SecurityRequirement(name = "JWT Authentication")
 	public ResponseEntity<HashMap<String, Object>> delete(@PathVariable UUID id) {
-		developerServices.delete(id);
+		developerServices.deleteByID(id);
 
 		HashMap<String, Object> response = new HashMap<>();
 

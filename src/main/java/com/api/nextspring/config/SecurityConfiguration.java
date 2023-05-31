@@ -22,8 +22,6 @@ import com.api.nextspring.security.JwtAuthenticationFilter;
 import com.api.nextspring.security.JwtTokenProvider;
 import com.api.nextspring.security.JwtUsernameAndPasswordFilter;
 
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -32,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
-@SecurityScheme(name = "Bearer Authentication", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
 public class SecurityConfiguration {
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
