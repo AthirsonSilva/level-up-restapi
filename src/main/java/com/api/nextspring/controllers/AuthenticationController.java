@@ -18,6 +18,9 @@ import com.api.nextspring.services.impl.AuthenticationServiceImpl;
 import com.api.nextspring.utils.GenerateHashMapResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +36,10 @@ public class AuthenticationController {
 	@PostMapping("/login")
 	@Operation(summary = "User login endpoint")
 	@ResponseStatus(HttpStatus.OK)
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, Object>> userLogin(@Validated @RequestBody LoginDto request) {
 		String authenticationToken = authenticationServices.login(request);
 
@@ -45,6 +52,10 @@ public class AuthenticationController {
 	@PostMapping("/register")
 	@Operation(summary = "User register endpoint")
 	@ResponseStatus(HttpStatus.CREATED)
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, Object>> userRegister(@Validated @RequestBody RegisterDto request) {
 		UserDto authenticationUserObject = authenticationServices.register(request);
 
@@ -57,6 +68,10 @@ public class AuthenticationController {
 	@GetMapping("/logout")
 	@Operation(summary = "User logout endpoint")
 	@ResponseStatus(HttpStatus.OK)
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, Object>> userLogout() {
 		authenticationServices.logout();
 

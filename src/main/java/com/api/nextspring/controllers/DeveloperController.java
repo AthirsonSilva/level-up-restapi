@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +24,9 @@ import com.api.nextspring.payload.optionals.OptionalDeveloperDto;
 import com.api.nextspring.services.impl.DeveloperServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +43,10 @@ public class DeveloperController {
 	@Operation(summary = "Create a new developer endpoint")
 	@ResponseStatus(HttpStatus.CREATED)
 	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, Object>> create(@Validated @RequestBody DeveloperDto request) {
 		DeveloperDto creator = developerServices.create(request);
 
@@ -51,6 +59,10 @@ public class DeveloperController {
 	@Operation(summary = "Get all developers endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, Object>> getAll() {
 		List<DeveloperDto> creator = developerServices.findAll();
 
@@ -62,7 +74,12 @@ public class DeveloperController {
 	@GetMapping("/{id}")
 	@Operation(summary = "Get a developer by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
 	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, Object>> get(@PathVariable UUID id) {
 		DeveloperDto creator = developerServices.findByID(id);
 
@@ -75,6 +92,10 @@ public class DeveloperController {
 	@Operation(summary = "Update a developer by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, Object>> update(@PathVariable UUID id,
 			@Validated @RequestBody OptionalDeveloperDto request) {
 		DeveloperDto creator = developerServices.updateByID(id, request);
@@ -86,8 +107,12 @@ public class DeveloperController {
 
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete a developer by id endpoint")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<HashMap<String, Object>> delete(@PathVariable UUID id) {
 		developerServices.deleteByID(id);
 
@@ -95,6 +120,6 @@ public class DeveloperController {
 
 		response.put("message", "Developer deleted successfully");
 
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
 	}
 }

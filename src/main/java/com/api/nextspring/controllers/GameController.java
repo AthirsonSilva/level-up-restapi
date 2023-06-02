@@ -23,6 +23,9 @@ import com.api.nextspring.payload.optionals.OptionalGameDto;
 import com.api.nextspring.services.GameService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +41,10 @@ public class GameController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "Create a new game endpoint")
 	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, GameDto>> createGame(@RequestBody GameDto request) {
 		GameDto gameDto = gameServices.create(request);
 
@@ -50,6 +57,10 @@ public class GameController {
 	@Operation(summary = "Search a game by name endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, List<GameDto>>> getGames(@RequestParam("query") String query) {
 		List<GameDto> gameList = gameServices.searchByKeyword(query);
 
@@ -67,6 +78,10 @@ public class GameController {
 	@GetMapping
 	@Operation(summary = "Get all games endpoint")
 	@ResponseStatus(HttpStatus.OK)
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, List<GameDto>>> getAllGames() {
 		List<GameDto> gameList = gameServices.findAll();
 
@@ -78,6 +93,10 @@ public class GameController {
 	@GetMapping("/{id}")
 	@Operation(summary = "Get a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, GameDto>> getGameById(@PathVariable("id") UUID id) {
 		GameDto gameDto = gameServices.findByID(id);
 
@@ -90,6 +109,10 @@ public class GameController {
 	@Operation(summary = "Update a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, GameDto>> updateGame(@PathVariable("id") UUID id,
 			@RequestBody OptionalGameDto request) {
 		GameDto gameDto = gameServices.updateById(id, request);
@@ -103,6 +126,10 @@ public class GameController {
 	@Operation(summary = "Delete a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<HashMap<String, String>> deleteGame(@PathVariable("id") UUID id) {
 		gameServices.deleteById(id);
 

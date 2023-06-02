@@ -22,6 +22,9 @@ import com.api.nextspring.utils.GenerateHashMapResponse;
 import com.api.nextspring.utils.GetJwtTokenFromHeaders;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +42,10 @@ public class UserController {
 	@Operation(summary = "Get the current logged in user")
 	@ResponseStatus(HttpStatus.OK)
 	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, Object>> getCurrentUser(@RequestHeader Map<String, String> headers) {
 		String token = getJwtFromRequest.execute(headers);
 
@@ -53,6 +60,10 @@ public class UserController {
 	@Operation(summary = "Update the current logged in user")
 	@ResponseStatus(HttpStatus.OK)
 	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<Response<String, Object>> updateCurrentUser(@RequestHeader Map<String, String> headers,
 			@RequestBody OptionalUserDto request) {
 		String token = getJwtFromRequest.execute(headers);
@@ -69,6 +80,10 @@ public class UserController {
 	@Operation(summary = "Delete the current logged in user")
 	@ResponseStatus(HttpStatus.OK)
 	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
 	public ResponseEntity<HashMap<String, String>> deleteUser(@RequestHeader Map<String, String> headers) {
 		String token = getJwtFromRequest.execute(headers);
 

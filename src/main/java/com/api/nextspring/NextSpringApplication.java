@@ -3,11 +3,8 @@ package com.api.nextspring;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Description;
 
 import com.api.nextspring.utils.BootstrapData;
-import com.github.javafaker.Faker;
 
 import lombok.RequiredArgsConstructor;
 

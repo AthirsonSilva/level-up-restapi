@@ -9,10 +9,11 @@ logging:
         type: TRACE
       springframework:
         web: DEBUG
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/next-spring}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/next_spring}
     username: ${PGUSER:postgres}
     password: ${PGPASSWORD:@Potter77}
   jpa:
@@ -34,6 +35,23 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    info:
+      enabled: true
+  health:
+    mail:
+      enabled: false
+  info:
+    git:
+      mode: full
 
 server:
   port: ${PORT:8000}

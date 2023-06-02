@@ -9,12 +9,8 @@ import com.api.nextspring.enums.GameRatingOptions;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
-@Getter
-@Setter
 public class GameDto {
 	@NotEmpty(message = "Name is required")
 	@Length(min = 3, max = 50, message = "Name must be between 3 and 50 characters")

@@ -2,11 +2,9 @@ package com.api.nextspring.payload;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class LoginDto {
 	@NotEmpty(message = "Email is required")
 	@Email(message = "Email must be valid")
