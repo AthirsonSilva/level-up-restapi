@@ -16,6 +16,8 @@ spring:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/next_spring}
     username: ${PGUSER:postgres}
     password: ${PGPASSWORD:@Potter77}
+  cache:
+    type: redis
   jpa:
     hibernate:
       ddl-auto: update
