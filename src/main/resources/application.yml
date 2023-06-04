@@ -1,6 +1,7 @@
 app:
   jwt-expiration-milliseconds: 604800000
   jwt-secret: ca0fe639f25b3f3baadf23bd0948ed8bf55741aa10982e3204a6842e81a579ce
+  
 logging:
   level:
     org:
@@ -16,14 +17,35 @@ spring:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/next_spring}
     username: ${PGUSER:postgres}
     password: ${PGPASSWORD:@Potter77}
+
   cache:
     type: redis
+
+  mail:
+    host: smtp.gmail.com
+    username: ${EMAIL_ADDRESS:athirsonarceus@gmail.com}
+    password: ${EMAIL_PASSWORD:eyyvwyheilecpabw}
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+    protocol: smtp
+    default-encoding: utf-8
+    test-connection: true
+    jndi-name: mail/Session
+
   flyway:
     enabled: true
     locations: classpath:db/migration
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/next_spring}
     user: ${PGUSER:postgres}
     password: ${PGPASSWORD:@Potter77}
+    baseline-on-migrate: true
+
   jpa:
     hibernate:
       ddl-auto: update

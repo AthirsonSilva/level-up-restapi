@@ -4,7 +4,7 @@
 
 -- DROP TABLE public.developers;
 
-CREATE TABLE public.developers (
+CREATE TABLE developers (
 	id uuid NOT NULL,
 	created_at timestamp(6) NULL,
 	description varchar(255) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE public.developers (
 
 -- DROP TABLE public.genres;
 
-CREATE TABLE public.genres (
+CREATE TABLE genres (
 	id uuid NOT NULL,
 	created_at timestamp(6) NULL,
 	description varchar(255) NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE public.genres (
 
 -- DROP TABLE public.roles;
 
-CREATE TABLE public.roles (
+CREATE TABLE roles (
 	id uuid NOT NULL,
 	created_at timestamp(6) NULL,
 	"name" varchar(255) NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE public.roles (
 
 -- DROP TABLE public.users;
 
-CREATE TABLE public.users (
+CREATE TABLE users (
 	id uuid NOT NULL,
 	cpf varchar(11) NOT NULL,
 	created_at timestamp(6) NULL,
@@ -74,7 +74,7 @@ CREATE TABLE public.users (
 
 -- DROP TABLE public.games;
 
-CREATE TABLE public.games (
+CREATE TABLE games (
 	id uuid NOT NULL,
 	description varchar(255) NOT NULL,
 	grade varchar(255) NOT NULL,
@@ -95,7 +95,7 @@ CREATE TABLE public.games (
 
 -- DROP TABLE public.user_roles;
 
-CREATE TABLE public.user_roles (
+CREATE TABLE user_roles (
 	user_id uuid NOT NULL,
 	role_id uuid NOT NULL,
 	CONSTRAINT user_roles_pkey PRIMARY KEY (user_id, role_id),

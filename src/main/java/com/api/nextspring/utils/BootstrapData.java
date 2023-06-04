@@ -69,7 +69,7 @@ public class BootstrapData implements CommandLineRunner {
 				.name("user")
 				.cpf("00000000000")
 				.email("user@user.com")
-				.password(passwordEncoder.encode("user"))
+				.password(passwordEncoder.encode("password"))
 				.roles(Set.of(
 						roleRepository.findByName(ApplicationUserRoles.USER.name()).orElseThrow(
 								() -> new RuntimeException("User role not found!"))))
@@ -97,7 +97,7 @@ public class BootstrapData implements CommandLineRunner {
 				.name("admin")
 				.cpf("11111111111")
 				.email("admin@admin.com")
-				.password(passwordEncoder.encode("admin"))
+				.password(passwordEncoder.encode("password"))
 				.roles(Set.of(
 						roleRepository.findByName(ApplicationUserRoles.ADMIN.name()).orElseThrow(
 								() -> new RuntimeException("Admin role not found!"))))
