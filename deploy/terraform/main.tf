@@ -86,4 +86,17 @@ resource "aws_instance" "next_api_ec2_inst" {
   tags = {
     "Name" = "next_api_ec2_inst"
   }
+
+  /* 
+    The provisioner block will execute the script to create the SSH config file
+    in the EC2 instance created above.
+  */
+  provisioner "local-exec" {
+    command = templatefile("./ssh-config.tpl", {
+      hostname     = self.public_ip,
+      user         = "ubuntu",
+      identityfile = "~/.ssh/next_api_key"
+    })
+    interpreter = ["bash", "-c"]
+  }
 }
