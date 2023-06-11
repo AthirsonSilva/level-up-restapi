@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Terraform ###
+.terraform/
+
 ### STS ###
 .apt_generated
 .classpath
