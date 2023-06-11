@@ -15,22 +15,25 @@ sudo usermod -aG docker ubuntu
 sudo systemctl enable docker.service
 sudo systemctl enable containerd.service
 
-#install docker compose
+# install docker compose
 sudo apt install docker-compose -y
 
-#access user root
+#	access user root to run docker commands
 sudo su
 
-#create project folder
-mkdir ~/project
-cd ~/project
+# go to home directory to clone your project
+cd /home/ubuntu
 
-#clone your project from git repository
+# clone your project from git repository
 git clone https://github.com/athirsonsilva/next-spring
 cd next-spring
+
+# checkout to main branch and pull the latest changes
 git checkout main
 git pull
+
+# go to docker directory
 cd deploy/docker
 
-#run your docker compose file
+# run your docker compose file
 docker-compose -f docker-compose.yml up -d

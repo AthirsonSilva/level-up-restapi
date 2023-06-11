@@ -14,7 +14,7 @@ services:
       - REDIS_URL=redis://redis:6379
       - PORT=8000
     ports:
-      - "8000:8000"
+      - "80:8000"
     restart: on-failure
     deploy:
       resources:
