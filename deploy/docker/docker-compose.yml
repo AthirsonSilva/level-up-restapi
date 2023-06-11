@@ -7,8 +7,6 @@ services:
     build:
       context: ../../
       dockerfile: Dockerfile
-      tags:
-        - latest
     environment:
       - DATABASE_URL=jdbc:postgresql://next-db:5432/postgres
       - PGUSER=postgres
