@@ -16,6 +16,6 @@ FROM eclipse-temurin:20-jdk
 
 COPY --from=build /home/app/target/*.jar /usr/local/lib/app.jar
 
-EXPOSE 8000
+EXPOSE 80
 
 ENTRYPOINT ["java","-jar","/usr/local/lib/app.jar"]

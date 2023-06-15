@@ -1,7 +1,7 @@
 app:
   jwt-expiration-milliseconds: 604800000
   jwt-secret: ca0fe639f25b3f3baadf23bd0948ed8bf55741aa10982e3204a6842e81a579ce
-  
+
 logging:
   level:
     org:
@@ -84,4 +84,4 @@ management:
       mode: full
 
 server:
-  port: ${PORT:8080}
+  port: ${PORT:80}

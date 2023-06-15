@@ -5,7 +5,7 @@
 resource "aws_security_group" "next_api_sg" {
   name        = "next_api_sg"             // This is the name of the security group.
   description = "next_api security group" // This is the description of the security group.
-  vpc_id      = aws_vpc.next_api_vpc_1.id // This is the ID of the VPC.
+  vpc_id      = aws_vpc.next_api_vpc.id   // This is the ID of the VPC.
 
   tags = {
     "Name" = "next_api_sg"
@@ -66,10 +66,3 @@ resource "aws_security_group_rule" "public_in_https" {
   security_group_id = aws_security_group.next_api_sg.id // This is the ID of the security group.
 }
 
-/* 
-  This key pair is used to allow SSH access to the EC2 instance.  
-*/
-resource "aws_key_pair" "next_api_key" {
-  key_name   = "next_api_key"                  // This is the name of the key pair.
-  public_key = file("~/.ssh/next_api_key.pub") // This is the public key of the key pair.
-}
