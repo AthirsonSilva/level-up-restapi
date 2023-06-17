@@ -84,4 +84,4 @@ management:
       mode: full
 
 server:
-  port: ${PORT:80}
+  port: ${PORT:8080}

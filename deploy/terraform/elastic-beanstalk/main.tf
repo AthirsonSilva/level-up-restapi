@@ -1,43 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-    }
-  }
-}
-
-provider "aws" {
-  region                   = "us-east-1"
-  shared_credentials_files = ["~/.aws/credentials"]
-  profile                  = "default"
-}
-
-/* 
-  Create an S3 bucket access control list (ACL)
-*/
-resource "aws_s3_bucket_acl" "s3_bucket_acl_myapp" {
-  bucket = "myapp-prod"
-  acl    = "private"
-}
-
-/* 
-  Create an S3 bucket to store the application version
-*/
-resource "aws_s3_bucket" "s3_bucket_myapp" {
-  bucket = "myapp-prod"
-  acl    = aws_s3_bucket_acl.s3_bucket_acl_myapp.id
-}
-
-/* 
-  Upload the application version to the S3 bucket
-  
-  The source attribute is the path to the application version
-*/
-resource "aws_s3_object" "s3_bucket_object_myapp" {
-  bucket = aws_s3_bucket.s3_bucket_myapp.id
-  key    = "beanstalk/myapp"
-  source = "../../../target/myapp-1.0.0.jar"
-}
 
 /* 
   Create an Elastic Beanstalk application
@@ -77,7 +37,7 @@ resource "aws_elastic_beanstalk_environment" "beanstalk_myapp_env" {
   setting {
     name      = "SERVER_PORT"
     namespace = "aws:elasticbeanstalk:application:environment"
-    value     = "8000"
+    value     = "8080"
   }
 
   setting {
