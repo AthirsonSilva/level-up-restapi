@@ -3,7 +3,7 @@
   Create an Elastic Beanstalk application
 */
 resource "aws_elastic_beanstalk_application" "beanstalk_myapp" {
-  name        = "myapp"
+  name        = "javito-beanstalk"
   description = "Java application deployed with Terraform"
 }
 

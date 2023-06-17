@@ -21,6 +21,6 @@ resource "aws_s3_bucket" "s3_bucket_myapp" {
 */
 resource "aws_s3_object" "s3_bucket_object_myapp" {
   bucket = aws_s3_bucket.s3_bucket_myapp.id
-  key    = "beanstalk/myapp"
-  source = "../../../target/myapp-1.0.0.jar"
+  key    = "beanstalk/next-spring-2.0.0.jar"
+  source = "../../../target/next-spring-2.0.0.jar"
 }
