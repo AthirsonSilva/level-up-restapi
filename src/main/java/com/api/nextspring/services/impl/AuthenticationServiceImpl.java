@@ -51,11 +51,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		if (userRepository.existsByEmail(request.getEmail()))
 			throw new BadCredentialsException("A user with given email already exists");
 
-		if (userRepository.existsByCpf(request.getCpf()))
-			throw new BadCredentialsException("A user with given CPF already exists");
-
-		request.setCpf(request.getCpf().replace("\\p{Punct}", ""));
-
 		Set<RoleEntity> roles = new HashSet<>();
 
 		RoleEntity role;
@@ -74,7 +69,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				.builder()
 				.name(request.getName())
 				.email(request.getEmail())
-				.cpf(request.getCpf())
 				.password(passwordEncoder.encode(request.getPassword()))
 				.roles(roles)
 				.build();

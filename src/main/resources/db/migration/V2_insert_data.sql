@@ -31,10 +31,10 @@ INSERT INTO public.user_roles (user_id,role_id) VALUES
 	 ('1f79b203-0ed6-43ca-b847-b3087d5c0270','c736414b-427a-4565-aaaa-59dbb492eb19'),
 	 ('9dda6e25-ee0d-458a-a598-5934042fd263','c736414b-427a-4565-aaaa-59dbb492eb19');
 
-INSERT INTO public.users (id,cpf,created_at,email,name,"password",updated_at) VALUES
-	 ('bb9e488b-0a7b-4d0b-8185-cd12b4949361','11111111111','2023-06-03 19:25:19.798271','admin@admin.com','admin','$2a$10$K9no9asHKVIAJBvdxQ20Q.oIWJku9dGGR.9yxPq0UWug.V7UEM26.','2023-06-03 19:25:19.798344'),
-	 ('672d8ad6-7769-425e-ad89-b50a4b46b557','00000000000','2023-06-03 19:25:19.915509','user@user.com','user','$2a$10$w1/iW3ms5IR1Os44Gw/i6u73s1ty5yeIzhTk5UVH9XxVdu7qZ3M/.','2023-06-03 19:25:19.915539'),
-	 ('84c76505-7d07-468d-9f6a-3b506385ed28','76405479867','2023-06-03 19:25:20.096407','lois.osinski@gmail.com','Mr. Merle Feeney','$2a$10$b/5IfEGhabLhHOaSp5IF2OXq1U41TucayT0EUmy34/4w18pdcdIUa','2023-06-03 19:25:20.096438'),
-	 ('be1345ee-0444-484a-863e-c5f72d8630de','23923422059','2023-06-03 19:25:20.214147','patrica.berge@yahoo.com','August Russel DVM','$2a$10$BqdueIkAgDyhVek6gHVlXOTtvSuc4jnboyvLdo.D8T.ESxscWveuK','2023-06-03 19:25:20.214176'),
-	 ('1f79b203-0ed6-43ca-b847-b3087d5c0270','76962614746','2023-06-03 19:25:20.334318','lorretta.hackett@hotmail.com','Timmy Koss','$2a$10$8D11oDY4Lf4ppAPbNJYeIeMOuGdGB56Lkk9VKWKxMyawJ4LkeEPFC','2023-06-03 19:25:20.334342'),
-	 ('9dda6e25-ee0d-458a-a598-5934042fd263','05713072196','2023-06-03 19:25:20.446017','melvin.borer@gmail.com','Taylor Morissette','$2a$10$C1C./3BcaYzcFWQA3i4MiuyMrL2D0FBdtizOGd3Yg3u5OB6hcfosS','2023-06-03 19:25:20.446045');
+INSERT INTO public.users (id,created_at,email,name,"password",updated_at) VALUES
+	 ('bb9e488b-0a7b-4d0b-8185-cd12b4949361','2023-06-03 19:25:19.798271','admin@admin.com','admin','$2a$10$K9no9asHKVIAJBvdxQ20Q.oIWJku9dGGR.9yxPq0UWug.V7UEM26.','2023-06-03 19:25:19.798344'),
+	 ('672d8ad6-7769-425e-ad89-b50a4b46b557','2023-06-03 19:25:19.915509','user@user.com','user','$2a$10$w1/iW3ms5IR1Os44Gw/i6u73s1ty5yeIzhTk5UVH9XxVdu7qZ3M/.','2023-06-03 19:25:19.915539'),
+	 ('84c76505-7d07-468d-9f6a-3b506385ed28','2023-06-03 19:25:20.096407','lois.osinski@gmail.com','Mr. Merle Feeney','$2a$10$b/5IfEGhabLhHOaSp5IF2OXq1U41TucayT0EUmy34/4w18pdcdIUa','2023-06-03 19:25:20.096438'),
+	 ('be1345ee-0444-484a-863e-c5f72d8630de','2023-06-03 19:25:20.214147','patrica.berge@yahoo.com','August Russel DVM','$2a$10$BqdueIkAgDyhVek6gHVlXOTtvSuc4jnboyvLdo.D8T.ESxscWveuK','2023-06-03 19:25:20.214176'),
+	 ('1f79b203-0ed6-43ca-b847-b3087d5c0270','2023-06-03 19:25:20.334318','lorretta.hackett@hotmail.com','Timmy Koss','$2a$10$8D11oDY4Lf4ppAPbNJYeIeMOuGdGB56Lkk9VKWKxMyawJ4LkeEPFC','2023-06-03 19:25:20.334342'),
+	 ('9dda6e25-ee0d-458a-a598-5934042fd263','2023-06-03 19:25:20.446017','melvin.borer@gmail.com','Taylor Morissette','$2a$10$C1C./3BcaYzcFWQA3i4MiuyMrL2D0FBdtizOGd3Yg3u5OB6hcfosS','2023-06-03 19:25:20.446045');

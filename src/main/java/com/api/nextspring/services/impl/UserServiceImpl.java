@@ -42,9 +42,6 @@ public class UserServiceImpl implements UserService {
 		if (request.getEmail() != null)
 			currentUser.setEmail(request.getEmail());
 
-		if (request.getCpf() != null)
-			currentUser.setCpf(request.getCpf());
-
 		if (request.getPassword() != null)
 			currentUser.setPassword(passwordEncoder.encode(request.getPassword()));
 

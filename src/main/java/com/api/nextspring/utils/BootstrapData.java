@@ -67,7 +67,6 @@ public class BootstrapData implements CommandLineRunner {
 		userRepository.save(UserEntity
 				.builder()
 				.name("user")
-				.cpf("00000000000")
 				.email("user@user.com")
 				.password(passwordEncoder.encode("password"))
 				.roles(Set.of(
@@ -79,7 +78,6 @@ public class BootstrapData implements CommandLineRunner {
 			userRepository.save(UserEntity
 					.builder()
 					.name(faker.name().fullName())
-					.cpf(faker.number().digits(11))
 					.email(faker.internet().emailAddress())
 					.password(passwordEncoder.encode("user"))
 					.roles(Set.of(
@@ -95,7 +93,6 @@ public class BootstrapData implements CommandLineRunner {
 		userRepository.save(UserEntity
 				.builder()
 				.name("admin")
-				.cpf("11111111111")
 				.email("admin@admin.com")
 				.password(passwordEncoder.encode("password"))
 				.roles(Set.of(

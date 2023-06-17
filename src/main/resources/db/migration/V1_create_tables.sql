@@ -56,14 +56,12 @@ CREATE TABLE roles (
 
 CREATE TABLE users (
 	id uuid NOT NULL,
-	cpf varchar(11) NOT NULL,
 	created_at timestamp(6) NULL,
 	email varchar(60) NOT NULL,
 	"name" varchar(60) NOT NULL,
 	"password" varchar(60) NOT NULL,
 	updated_at timestamp(6) NULL,
 	CONSTRAINT uk_6dotkott2kjsp8vw4d0m25fb7 UNIQUE (email),
-	CONSTRAINT uk_7kqluf7wl0oxs7n90fpya03ss UNIQUE (cpf),
 	CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 

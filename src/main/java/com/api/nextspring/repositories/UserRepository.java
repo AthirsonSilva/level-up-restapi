@@ -16,9 +16,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 	@Cacheable(value = "user", key = "#email")
 	Optional<UserEntity> findByEmail(String email);
 
-	@Cacheable(value = "user", key = "#cpf")
+	@Cacheable(value = "user", key = "#email")
 	boolean existsByEmail(String email);
-
-	@Cacheable(value = "user", key = "#cpf")
-	boolean existsByCpf(String cpf);
 }
