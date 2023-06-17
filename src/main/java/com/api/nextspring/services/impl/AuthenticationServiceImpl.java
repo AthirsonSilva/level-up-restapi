@@ -69,6 +69,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				.builder()
 				.name(request.getName())
 				.email(request.getEmail())
+				.enabled(false)
+				.locked(true)
 				.password(passwordEncoder.encode(request.getPassword()))
 				.roles(roles)
 				.build();

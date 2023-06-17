@@ -46,6 +46,12 @@ public class UserEntity {
 	@Column(nullable = false, length = 60)
 	private String password;
 
+	@Column(nullable = false)
+	private boolean enabled;
+
+	@Column(nullable = false)
+	private boolean locked;
+
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private Set<RoleEntity> roles;
