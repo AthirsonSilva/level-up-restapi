@@ -13,13 +13,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.api.nextspring.dto.LoginDto;
+import com.api.nextspring.dto.RegisterDto;
+import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
-import com.api.nextspring.enums.ApplicationUserRoles;
+import com.api.nextspring.enums.UserRoles;
 import com.api.nextspring.exceptions.RestApiException;
-import com.api.nextspring.payload.LoginDto;
-import com.api.nextspring.payload.RegisterDto;
-import com.api.nextspring.payload.UserDto;
 import com.api.nextspring.repositories.RoleRepository;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
@@ -56,10 +56,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		RoleEntity role;
 
 		if (request.isAdmin()) {
-			role = roleRepository.findByName(ApplicationUserRoles.ADMIN.name())
+			role = roleRepository.findByName(UserRoles.ADMIN.name())
 					.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Role not found"));
 		} else {
-			role = roleRepository.findByName(ApplicationUserRoles.USER.name())
+			role = roleRepository.findByName(UserRoles.USER.name())
 					.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Role not found"));
 		}
 

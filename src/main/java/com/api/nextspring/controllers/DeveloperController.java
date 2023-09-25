@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.api.nextspring.payload.DeveloperDto;
-import com.api.nextspring.payload.Response;
-import com.api.nextspring.payload.optionals.OptionalDeveloperDto;
+import com.api.nextspring.dto.DeveloperDto;
+import com.api.nextspring.dto.Response;
+import com.api.nextspring.dto.optionals.OptionalDeveloperDto;
 import com.api.nextspring.services.impl.DeveloperServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;

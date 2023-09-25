@@ -6,10 +6,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.api.nextspring.dto.UserDto;
+import com.api.nextspring.dto.optionals.OptionalUserDto;
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
-import com.api.nextspring.payload.UserDto;
-import com.api.nextspring.payload.optionals.OptionalUserDto;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
 import com.api.nextspring.services.UserService;

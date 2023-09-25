@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.api.nextspring.payload.LoginDto;
-import com.api.nextspring.payload.RegisterDto;
-import com.api.nextspring.payload.Response;
-import com.api.nextspring.payload.UserDto;
+import com.api.nextspring.dto.LoginDto;
+import com.api.nextspring.dto.RegisterDto;
+import com.api.nextspring.dto.Response;
+import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.services.impl.AuthenticationServiceImpl;
 import com.api.nextspring.utils.GenerateHashMapResponse;
 

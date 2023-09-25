@@ -1,16 +1,9 @@
 package com.api.nextspring.security;
 
-import com.api.nextspring.exceptions.RestApiException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,14 +15,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import com.api.nextspring.exceptions.RestApiException;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserDetailsService userDetailsService;
 
@@ -46,8 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(
 			@NonNull HttpServletRequest request,
 			@NonNull HttpServletResponse response,
-			@NonNull FilterChain filterChain
-	) throws ServletException, IOException {
+			@NonNull FilterChain filterChain) throws ServletException, IOException {
 		// get jwt token from request
 		String jwtToken = getTokenFromRequestHeaders(request);
 
@@ -73,22 +73,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
 				// get authorities from claims
-				List<Map<String, String>> authorities = (List<Map<String, String>>) claims.get("authorities");
+				List<Map<String, String>> authorities = claims.get("authorities", List.class);
 
 				// create list of authorities from user details
 				List<SimpleGrantedAuthority> simpleGrantedAuthorities = authorities
 						.stream()
 						.map(
-								authority -> new SimpleGrantedAuthority(authority.get("authority"))
-						)
+								authority -> new SimpleGrantedAuthority(authority.get("authority")))
 						.toList();
 
 				// create authentication token
 				Authentication authentication = new UsernamePasswordAuthenticationToken(
 						userDetails,
-						null,
-						simpleGrantedAuthorities
-				);
+						usernameFromClaims,
+						simpleGrantedAuthorities);
 
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			} catch (JwtException e) {

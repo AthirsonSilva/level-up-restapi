@@ -8,10 +8,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.api.nextspring.dto.GenreDto;
+import com.api.nextspring.dto.optionals.OptionalGenreDto;
 import com.api.nextspring.entity.GenreEntity;
 import com.api.nextspring.exceptions.RestApiException;
-import com.api.nextspring.payload.GenreDto;
-import com.api.nextspring.payload.optionals.OptionalGenreDto;
 import com.api.nextspring.repositories.GenreRepository;
 import com.api.nextspring.services.GenreService;
 

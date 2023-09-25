@@ -1,4 +1,4 @@
-package com.api.nextspring.payload;
+package com.api.nextspring.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

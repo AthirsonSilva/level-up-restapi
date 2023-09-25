@@ -8,10 +8,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.api.nextspring.dto.DeveloperDto;
+import com.api.nextspring.dto.optionals.OptionalDeveloperDto;
 import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.exceptions.RestApiException;
-import com.api.nextspring.payload.DeveloperDto;
-import com.api.nextspring.payload.optionals.OptionalDeveloperDto;
 import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.services.DeveloperService;
 

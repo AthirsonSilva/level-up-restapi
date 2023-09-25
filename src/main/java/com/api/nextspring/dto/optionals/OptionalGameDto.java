@@ -1,4 +1,4 @@
-package com.api.nextspring.payload.optionals;
+package com.api.nextspring.dto.optionals;
 
 import com.api.nextspring.enums.GameRatingOptions;
 import lombok.Data;

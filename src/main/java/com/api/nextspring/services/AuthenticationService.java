@@ -1,8 +1,8 @@
 package com.api.nextspring.services;
 
-import com.api.nextspring.payload.LoginDto;
-import com.api.nextspring.payload.RegisterDto;
-import com.api.nextspring.payload.UserDto;
+import com.api.nextspring.dto.LoginDto;
+import com.api.nextspring.dto.RegisterDto;
+import com.api.nextspring.dto.UserDto;
 
 public interface AuthenticationService {
 	public UserDto register(RegisterDto request);

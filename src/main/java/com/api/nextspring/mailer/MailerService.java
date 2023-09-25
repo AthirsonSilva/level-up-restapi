@@ -1,6 +1,6 @@
 package com.api.nextspring.mailer;
 
-import com.api.nextspring.payload.EmailDto;
+import com.api.nextspring.dto.EmailDto;
 
 public interface MailerService {
 	EmailDto sendEmail(EmailDto email);

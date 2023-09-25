@@ -9,8 +9,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import com.api.nextspring.dto.EmailDto;
 import com.api.nextspring.entity.EmailEntity;
-import com.api.nextspring.payload.EmailDto;
 import com.api.nextspring.repositories.EmailRepository;
 
 import jakarta.mail.MessagingException;

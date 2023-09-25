@@ -3,8 +3,8 @@ package com.api.nextspring.services;
 import java.util.List;
 import java.util.UUID;
 
-import com.api.nextspring.payload.GenreDto;
-import com.api.nextspring.payload.optionals.OptionalGenreDto;
+import com.api.nextspring.dto.GenreDto;
+import com.api.nextspring.dto.optionals.OptionalGenreDto;
 
 public interface GenreService {
 	public List<GenreDto> findAll();

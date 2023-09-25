@@ -11,8 +11,8 @@ import com.api.nextspring.entity.GameEntity;
 import com.api.nextspring.entity.GenreEntity;
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
-import com.api.nextspring.enums.ApplicationUserRoles;
 import com.api.nextspring.enums.GameRatingOptions;
+import com.api.nextspring.enums.UserRoles;
 import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.repositories.GameRepository;
 import com.api.nextspring.repositories.GenreRepository;
@@ -70,7 +70,7 @@ public class BootstrapData implements CommandLineRunner {
 				.email("user@user.com")
 				.password(passwordEncoder.encode("password"))
 				.roles(Set.of(
-						roleRepository.findByName(ApplicationUserRoles.USER.name()).orElseThrow(
+						roleRepository.findByName(UserRoles.USER.name()).orElseThrow(
 								() -> new RuntimeException("User role not found!"))))
 				.build());
 
@@ -81,7 +81,7 @@ public class BootstrapData implements CommandLineRunner {
 					.email(faker.internet().emailAddress())
 					.password(passwordEncoder.encode("user"))
 					.roles(Set.of(
-							roleRepository.findByName(ApplicationUserRoles.USER.name()).orElseThrow(
+							roleRepository.findByName(UserRoles.USER.name()).orElseThrow(
 									() -> new RuntimeException("User role not found!"))))
 					.build());
 		}
@@ -96,7 +96,7 @@ public class BootstrapData implements CommandLineRunner {
 				.email("admin@admin.com")
 				.password(passwordEncoder.encode("password"))
 				.roles(Set.of(
-						roleRepository.findByName(ApplicationUserRoles.ADMIN.name()).orElseThrow(
+						roleRepository.findByName(UserRoles.ADMIN.name()).orElseThrow(
 								() -> new RuntimeException("Admin role not found!"))))
 				.build());
 
@@ -110,12 +110,16 @@ public class BootstrapData implements CommandLineRunner {
 				.description("Games without genre")
 				.build());
 
-		for (int i = 0; i < 4; i++) {
-			genreRepository.save(GenreEntity
-					.builder()
-					.name(faker.book().genre())
-					.description(faker.lorem().sentence())
-					.build());
+		long genreCount = genreRepository.count();
+
+		if (genreCount == 0L) {
+			for (int i = 0; i < 4; i++) {
+				genreRepository.save(GenreEntity
+						.builder()
+						.name(faker.book().genre())
+						.description(faker.lorem().sentence())
+						.build());
+			}
 		}
 	}
 
@@ -163,7 +167,7 @@ public class BootstrapData implements CommandLineRunner {
 	private void createUserRole() {
 		roleRepository.save(RoleEntity
 				.builder()
-				.name(ApplicationUserRoles.USER.name())
+				.name(UserRoles.USER.name())
 				.build());
 
 		System.out.println("\n------------ User role created!!! ------------\n");
@@ -172,20 +176,20 @@ public class BootstrapData implements CommandLineRunner {
 	private void createAdminRole() {
 		roleRepository.save(RoleEntity
 				.builder()
-				.name(ApplicationUserRoles.ADMIN.name())
+				.name(UserRoles.ADMIN.name())
 				.build());
 
 		System.out.println("\n------------ Admin role created!!! ------------\n");
 	}
 
 	private boolean checkIfAdminRoleAlreadyExists() {
-		RoleEntity admin = roleRepository.findByName(ApplicationUserRoles.ADMIN.name()).orElse(null);
+		RoleEntity admin = roleRepository.findByName(UserRoles.ADMIN.name()).orElse(null);
 
 		return admin != null;
 	}
 
 	private boolean checkIfUserRoleAlreadyExists() {
-		RoleEntity user = roleRepository.findByName(ApplicationUserRoles.USER.name()).orElse(null);
+		RoleEntity user = roleRepository.findByName(UserRoles.USER.name()).orElse(null);
 
 		return user != null;
 	}

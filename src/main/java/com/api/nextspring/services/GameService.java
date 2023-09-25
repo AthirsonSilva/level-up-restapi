@@ -3,8 +3,8 @@ package com.api.nextspring.services;
 import java.util.List;
 import java.util.UUID;
 
-import com.api.nextspring.payload.GameDto;
-import com.api.nextspring.payload.optionals.OptionalGameDto;
+import com.api.nextspring.dto.GameDto;
+import com.api.nextspring.dto.optionals.OptionalGameDto;
 
 public interface GameService {
 	public GameDto create(GameDto gameDto);

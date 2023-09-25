@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.api.nextspring.payload.Response;
-import com.api.nextspring.payload.UserDto;
-import com.api.nextspring.payload.optionals.OptionalUserDto;
+import com.api.nextspring.dto.Response;
+import com.api.nextspring.dto.UserDto;
+import com.api.nextspring.dto.optionals.OptionalUserDto;
 import com.api.nextspring.services.UserService;
 import com.api.nextspring.utils.GenerateHashMapResponse;
 import com.api.nextspring.utils.GetJwtTokenFromHeaders;

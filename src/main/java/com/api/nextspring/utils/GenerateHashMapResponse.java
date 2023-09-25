@@ -1,8 +1,8 @@
 package com.api.nextspring.utils;
 
-import com.api.nextspring.payload.Response;
 import org.springframework.stereotype.Service;
 
+import com.api.nextspring.dto.Response;
 
 /**
  * @param <K> The type of the message
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class GenerateHashMapResponse<K, V> {
 	/**
 	 * @param message The message to be returned
-	 * @param data The data to be returned
+	 * @param data    The data to be returned
 	 * @return The response with the message and data passed as parameters
 	 */
 	public Response<String, V> generateHashMapResponse(K message, V data) {

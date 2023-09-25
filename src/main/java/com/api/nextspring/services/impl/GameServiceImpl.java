@@ -1,11 +1,11 @@
 package com.api.nextspring.services.impl;
 
+import com.api.nextspring.dto.GameDto;
+import com.api.nextspring.dto.optionals.OptionalGameDto;
 import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.entity.GameEntity;
 import com.api.nextspring.entity.GenreEntity;
 import com.api.nextspring.exceptions.RestApiException;
-import com.api.nextspring.payload.GameDto;
-import com.api.nextspring.payload.optionals.OptionalGameDto;
 import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.repositories.GameRepository;
 import com.api.nextspring.repositories.GenreRepository;

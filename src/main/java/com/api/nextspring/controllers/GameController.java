@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.api.nextspring.payload.GameDto;
-import com.api.nextspring.payload.Response;
-import com.api.nextspring.payload.optionals.OptionalGameDto;
+import com.api.nextspring.dto.GameDto;
+import com.api.nextspring.dto.Response;
+import com.api.nextspring.dto.optionals.OptionalGameDto;
 import com.api.nextspring.services.GameService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,7 +48,7 @@ public class GameController {
 	public ResponseEntity<Response<String, GameDto>> createGame(@RequestBody GameDto request) {
 		GameDto gameDto = gameServices.create(request);
 
-		Response<String, GameDto> response = new Response<>("Restaurant created successfully!", gameDto);
+		Response<String, GameDto> response = new Response<>("Game created successfully!", gameDto);
 
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}

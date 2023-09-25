@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.api.nextspring.payload.GenreDto;
-import com.api.nextspring.payload.Response;
-import com.api.nextspring.payload.optionals.OptionalGenreDto;
+import com.api.nextspring.dto.GenreDto;
+import com.api.nextspring.dto.Response;
+import com.api.nextspring.dto.optionals.OptionalGenreDto;
 import com.api.nextspring.services.impl.GenreServiceImpl;
 import com.api.nextspring.utils.GenerateHashMapResponse;
 

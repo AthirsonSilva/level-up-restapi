@@ -1,4 +1,4 @@
-package com.api.nextspring.payload;
+package com.api.nextspring.dto;
 
 import java.util.UUID;
 
@@ -10,8 +10,10 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class GameDto {
 	@NotEmpty(message = "Name is required")
 	@Length(min = 3, max = 50, message = "Name must be between 3 and 50 characters")

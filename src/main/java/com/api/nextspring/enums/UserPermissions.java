@@ -1,6 +1,6 @@
 package com.api.nextspring.enums;
 
-public enum ApplicationUserPermissions {
+public enum UserPermissions {
 	USER_READ("user:read"),
 	USER_WRITE("user:write"),
 	GAME_READ("game:read"),
@@ -12,7 +12,7 @@ public enum ApplicationUserPermissions {
 
 	private final String permission;
 
-	ApplicationUserPermissions(String permission) {
+	UserPermissions(String permission) {
 		this.permission = permission;
 	}
 
