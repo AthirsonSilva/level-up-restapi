@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.services.UserService;
-import com.api.nextspring.utils.GetJwtTokenFromHeaders;
+import com.api.nextspring.utils.JwtTokenUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Admin", description = "Admin endpoint for getting the current logged in admin")
 public class AdminController {
 	private final UserService userServices;
-	private final GetJwtTokenFromHeaders getJwtFromRequest;
+	private final JwtTokenUtils getJwtFromRequest;
 
 	@GetMapping("/admin")
 	@Operation(summary = "Get the current logged in admin")

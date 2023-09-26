@@ -70,4 +70,15 @@ public class DeveloperServiceImpl implements DeveloperService {
 
 		developerRepository.delete(developerEntity);
 	}
+
+	@Override
+	public List<DeveloperDto> search(String query) {
+		List<DeveloperEntity> developerEntities = developerRepository
+				.searchDeveloperEntities(query)
+				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given information not found"));
+
+		return developerEntities.stream()
+				.map(developerEntity -> modelMapper.map(developerEntity, DeveloperDto.class))
+				.toList();
+	}
 }

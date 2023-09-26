@@ -21,8 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.nextspring.dto.GenreDto;
 import com.api.nextspring.dto.Response;
 import com.api.nextspring.dto.optionals.OptionalGenreDto;
+import com.api.nextspring.exceptions.RestApiException;
+import com.api.nextspring.services.LinkingService;
 import com.api.nextspring.services.impl.GenreServiceImpl;
-import com.api.nextspring.utils.GenerateHashMapResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,6 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -38,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Genre", description = "Genre endpoint for getting, creating, updating and deleting genres")
 public class GenreController {
 	private final GenreServiceImpl genreServices;
-	private final GenerateHashMapResponse<Object, Object> generateHashMapResponse;
+	private final LinkingService linkingService;
 
 	@GetMapping
 	@Operation(summary = "Get all genres endpoint")
@@ -48,11 +50,14 @@ public class GenreController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, Object>> getAllGenres() {
+	public ResponseEntity<Response<String, List<GenreDto>>> getAllGenres(HttpServletRequest servletRequest) {
 		List<GenreDto> genreList = genreServices.findAll();
 
-		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse("Genres fetched successfully!",
-				genreList);
+		for (GenreDto genreDto : genreList) {
+			genreDto = linkingService.addHateoasLinksToClass(servletRequest, "genres", genreDto);
+		}
+
+		Response<String, List<GenreDto>> response = new Response<>("Genres fetched successfully!", genreList);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -65,11 +70,13 @@ public class GenreController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, Object>> getGenreById(@PathVariable UUID id) {
+	public ResponseEntity<Response<String, GenreDto>> getGenreById(@PathVariable UUID id,
+			HttpServletRequest servletRequest) {
 		GenreDto genreDto = genreServices.findByID(id);
 
-		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse("Genre fetched successfully!",
-				genreDto);
+		genreDto = linkingService.addHateoasLinksToClass(servletRequest, "genres", genreDto);
+
+		Response<String, GenreDto> response = new Response<>("Genre fetched successfully!", genreDto);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -82,11 +89,28 @@ public class GenreController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, Object>> getGenreByName(@RequestParam String query) {
-		List<GenreDto> genreDto = genreServices.searchByKeyword(query);
+	public ResponseEntity<Response<String, List<GenreDto>>> getGenreByName(@RequestParam String query,
+			HttpServletRequest servletRequest) {
+		if (query.isEmpty() || query.isBlank()) {
+			throw new RestApiException(HttpStatus.BAD_REQUEST,
+					"Query parameter with the genre information is required!");
+		}
 
-		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse("Genre fetched successfully!",
-				genreDto);
+		List<GenreDto> genreDtoList = genreServices.searchByKeyword(query);
+
+		if (genreDtoList.size() == 0) {
+			Response<String, List<GenreDto>> response = new Response<>("No genre found with given information's!",
+					genreDtoList);
+
+			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		}
+
+		for (GenreDto genre : genreDtoList) {
+			genre = linkingService.addHateoasLinksToClass(servletRequest, "genres", genre);
+		}
+
+		Response<String, List<GenreDto>> response = new Response<>("Genres with given information fetched successfully!",
+				genreDtoList);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -99,11 +123,13 @@ public class GenreController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, Object>> createGenre(@Validated @RequestBody GenreDto request) {
+	public ResponseEntity<Response<String, GenreDto>> createGenre(@Validated @RequestBody GenreDto request,
+			HttpServletRequest servletRequest) {
 		GenreDto genreDto = genreServices.create(request);
 
-		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse("Genre created successfully!",
-				genreDto);
+		genreDto = linkingService.addHateoasLinksToClass(servletRequest, "genres", genreDto);
+
+		Response<String, GenreDto> response = new Response<>("Genre created successfully!", genreDto);
 
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
@@ -134,12 +160,13 @@ public class GenreController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, Object>> updateGenre(@Validated @RequestBody OptionalGenreDto request,
-			@PathVariable UUID id) {
+	public ResponseEntity<Response<String, GenreDto>> updateGenre(@Validated @RequestBody OptionalGenreDto request,
+			@PathVariable UUID id, HttpServletRequest servletRequest) {
 		GenreDto genreDto = genreServices.updateByID(id, request);
 
-		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse("Genre updated successfully!",
-				genreDto);
+		genreDto = linkingService.addHateoasLinksToClass(servletRequest, "genres", genreDto);
+
+		Response<String, GenreDto> response = new Response<>("Genre updated successfully!", genreDto);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}

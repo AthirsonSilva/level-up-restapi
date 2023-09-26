@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.nextspring.dto.Response;
 import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.dto.optionals.OptionalUserDto;
+import com.api.nextspring.services.LinkingService;
 import com.api.nextspring.services.UserService;
-import com.api.nextspring.utils.GenerateHashMapResponse;
-import com.api.nextspring.utils.GetJwtTokenFromHeaders;
+import com.api.nextspring.utils.JwtTokenUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -35,8 +36,8 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "User", description = "User endpoint for getting and updating the current logged in user")
 public class UserController {
 	private final UserService userServices;
-	private final GenerateHashMapResponse<String, Object> generator;
-	private final GetJwtTokenFromHeaders getJwtFromRequest;
+	private final JwtTokenUtils jwtTokenUtils;
+	private final LinkingService linkingService;
 
 	@GetMapping
 	@Operation(summary = "Get the current logged in user")
@@ -46,12 +47,15 @@ public class UserController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, Object>> getCurrentUser(@RequestHeader Map<String, String> headers) {
-		String token = getJwtFromRequest.execute(headers);
+	public ResponseEntity<Response<String, UserDto>> getCurrentUser(@RequestHeader Map<String, String> headers,
+			HttpServletRequest servletRequest) {
+		String token = jwtTokenUtils.execute(headers);
 
 		UserDto currentUser = userServices.getCurrentUser(token);
 
-		Response<String, Object> response = generator.generateHashMapResponse("Logged in successfully!", currentUser);
+		currentUser = linkingService.addHateoasLinksToClass(servletRequest, "users", currentUser);
+
+		Response<String, UserDto> response = new Response<>("Current user found successfully!", currentUser);
 
 		return ResponseEntity.ok(response);
 	}
@@ -64,14 +68,15 @@ public class UserController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, Object>> updateCurrentUser(@RequestHeader Map<String, String> headers,
+	public ResponseEntity<Response<String, UserDto>> updateCurrentUser(@RequestHeader Map<String, String> headers,
 			@RequestBody OptionalUserDto request) {
-		String token = getJwtFromRequest.execute(headers);
+		String token = jwtTokenUtils.execute(headers);
 
 		UserDto updatedCurrentUser = userServices.updateCurrentUser(token, request);
 
-		Response<String, Object> response = generator.generateHashMapResponse("Current user updated successfully!",
-				updatedCurrentUser);
+		updatedCurrentUser = linkingService.addHateoasLinksToClass(null, "users", updatedCurrentUser);
+
+		Response<String, UserDto> response = new Response<>("Current user updated successfully!", updatedCurrentUser);
 
 		return ResponseEntity.ok(response);
 	}
@@ -85,7 +90,7 @@ public class UserController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
 	public ResponseEntity<HashMap<String, String>> deleteUser(@RequestHeader Map<String, String> headers) {
-		String token = getJwtFromRequest.execute(headers);
+		String token = jwtTokenUtils.execute(headers);
 
 		userServices.deleteCurrentUser(token);
 

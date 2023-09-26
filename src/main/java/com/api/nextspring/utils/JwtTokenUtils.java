@@ -1,13 +1,13 @@
 package com.api.nextspring.utils;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-import java.util.Map;
-
 @Service
-public class GetJwtTokenFromHeaders {
+public class JwtTokenUtils {
 	public String execute(@RequestHeader Map<String, String> headers) {
 		String bearerToken = headers.get("authorization");
 

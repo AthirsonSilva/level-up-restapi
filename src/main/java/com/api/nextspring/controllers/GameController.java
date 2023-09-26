@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.nextspring.dto.GameDto;
 import com.api.nextspring.dto.Response;
 import com.api.nextspring.dto.optionals.OptionalGameDto;
+import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.services.GameService;
+import com.api.nextspring.services.LinkingService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,6 +30,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -36,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Game", description = "Game endpoint for creating, getting, updating and deleting games")
 public class GameController {
 	private final GameService gameServices;
+	private final LinkingService linkingService;
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
@@ -45,8 +50,11 @@ public class GameController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, GameDto>> createGame(@RequestBody GameDto request) {
+	public ResponseEntity<Response<String, GameDto>> createGame(@Valid @RequestBody GameDto request,
+			HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.create(request);
+
+		gameDto = linkingService.addHateoasLinksToClass(servletRequest, "games", gameDto);
 
 		Response<String, GameDto> response = new Response<>("Game created successfully!", gameDto);
 
@@ -61,13 +69,23 @@ public class GameController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, List<GameDto>>> getGames(@RequestParam("query") String query) {
+	public ResponseEntity<Response<String, List<GameDto>>> getGames(
+			@RequestParam(value = "query", defaultValue = "") String query, HttpServletRequest servletRequest) {
+		if (query.isEmpty() || query.isBlank()) {
+			throw new RestApiException(HttpStatus.BAD_REQUEST, "Query parameter with the game information is required!");
+		}
+
 		List<GameDto> gameList = gameServices.searchByKeyword(query);
 
-		if (gameList.size() < 1) {
-			Response<String, List<GameDto>> response = new Response<>("No game found with given information's!", gameList);
+		if (gameList.size() == 0) {
+			Response<String, List<GameDto>> response = new Response<>("No game found with given information's!",
+					gameList);
 
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		}
+
+		for (GameDto gameDto : gameList) {
+			gameDto = linkingService.addHateoasLinksToClass(servletRequest, "games", gameDto);
 		}
 
 		Response<String, List<GameDto>> response = new Response<>("Games found with given information's!", gameList);
@@ -82,8 +100,12 @@ public class GameController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, List<GameDto>>> getAllGames() {
+	public ResponseEntity<Response<String, List<GameDto>>> getAllGames(HttpServletRequest servletRequest) {
 		List<GameDto> gameList = gameServices.findAll();
+
+		for (GameDto gameDto : gameList) {
+			gameDto = linkingService.addHateoasLinksToClass(servletRequest, "games", gameDto);
+		}
 
 		Response<String, List<GameDto>> response = new Response<>("All games found!", gameList);
 
@@ -97,8 +119,11 @@ public class GameController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, GameDto>> getGameById(@PathVariable("id") UUID id) {
+	public ResponseEntity<Response<String, GameDto>> getGameById(@PathVariable(value = "id") UUID id,
+			HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.findByID(id);
+
+		gameDto = linkingService.addHateoasLinksToClass(servletRequest, "games", gameDto);
 
 		Response<String, GameDto> response = new Response<>("Game found with given id!", gameDto);
 
@@ -113,9 +138,11 @@ public class GameController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, GameDto>> updateGame(@PathVariable("id") UUID id,
-			@RequestBody OptionalGameDto request) {
+	public ResponseEntity<Response<String, GameDto>> updateGame(@PathVariable(value = "id", required = true) UUID id,
+			@RequestBody OptionalGameDto request, HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.updateById(id, request);
+
+		gameDto = linkingService.addHateoasLinksToClass(servletRequest, "games", gameDto);
 
 		Response<String, GameDto> response = new Response<>("Game updated successfully!", gameDto);
 
@@ -130,7 +157,8 @@ public class GameController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<HashMap<String, String>> deleteGame(@PathVariable("id") UUID id) {
+	public ResponseEntity<HashMap<String, String>> deleteGame(@PathVariable(value = "id", required = true) UUID id,
+			HttpServletRequest request) {
 		gameServices.deleteById(id);
 
 		HashMap<String, String> response = new HashMap<>();

@@ -16,4 +16,6 @@ public interface DeveloperService {
 	public DeveloperDto updateByID(UUID id, OptionalDeveloperDto developerDto);
 
 	public void deleteByID(UUID id);
+
+	public List<DeveloperDto> search(String query);
 }

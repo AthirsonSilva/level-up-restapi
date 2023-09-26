@@ -1,14 +1,21 @@
 package com.api.nextspring.dto;
 
+import java.util.UUID;
+
 import org.hibernate.validator.constraints.Length;
+import org.springframework.hateoas.RepresentationModel;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class UserDto {
+@EqualsAndHashCode(callSuper = false)
+public class UserDto extends RepresentationModel<UserDto> {
+	private UUID id;
+
 	@NotEmpty(message = "Name is required")
 	@Length(min = 3, max = 60, message = "Name must be between 3 and 60 characters")
 	@Size(min = 3, max = 60, message = "Name must be between 3 and 60 characters")

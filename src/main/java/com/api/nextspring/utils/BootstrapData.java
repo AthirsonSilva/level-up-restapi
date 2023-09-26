@@ -72,6 +72,8 @@ public class BootstrapData implements CommandLineRunner {
 				.roles(Set.of(
 						roleRepository.findByName(UserRoles.USER.name()).orElseThrow(
 								() -> new RuntimeException("User role not found!"))))
+				.enabled(true)
+				.locked(false)
 				.build());
 
 		for (int i = 0; i < 4; i++) {
@@ -83,6 +85,8 @@ public class BootstrapData implements CommandLineRunner {
 					.roles(Set.of(
 							roleRepository.findByName(UserRoles.USER.name()).orElseThrow(
 									() -> new RuntimeException("User role not found!"))))
+					.enabled(true)
+					.locked(false)
 					.build());
 		}
 
@@ -98,6 +102,8 @@ public class BootstrapData implements CommandLineRunner {
 				.roles(Set.of(
 						roleRepository.findByName(UserRoles.ADMIN.name()).orElseThrow(
 								() -> new RuntimeException("Admin role not found!"))))
+				.enabled(true)
+				.locked(false)
 				.build());
 
 		System.out.println("\n------------ Admin created!!! ------------\n");
@@ -148,6 +154,7 @@ public class BootstrapData implements CommandLineRunner {
 					.description(faker.lorem().sentence())
 					.developer(getNoDeveloper())
 					.genre(getNoGenre())
+					.year(faker.number().numberBetween(1900, 2023))
 					.build());
 		}
 	}

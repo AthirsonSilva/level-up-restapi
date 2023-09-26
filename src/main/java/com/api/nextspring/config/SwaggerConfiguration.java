@@ -15,7 +15,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 
 @Configuration
-public class OpenApiConfiguration {
+public class SwaggerConfiguration {
 
 	@Bean
 	@Description("This bean configures the OpenAPI specification version 3.0.3")

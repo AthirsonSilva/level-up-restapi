@@ -1,5 +1,12 @@
 package com.api.nextspring.services.impl;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import com.api.nextspring.dto.GameDto;
 import com.api.nextspring.dto.optionals.OptionalGameDto;
 import com.api.nextspring.entity.DeveloperEntity;
@@ -10,15 +17,13 @@ import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.repositories.GameRepository;
 import com.api.nextspring.repositories.GenreRepository;
 import com.api.nextspring.services.GameService;
-import java.util.List;
-import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class GameServiceImpl implements GameService {
 	private final GameRepository gameRepository;
 	private final GenreRepository genreRepository;
@@ -27,6 +32,8 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public GameDto create(GameDto gameDto) {
+		log.info("Game object received: " + gameDto.toString());
+
 		if (gameDto.getGenreId() == null || !genreRepository.existsById(gameDto.getGenreId())) {
 			gameDto.setGenreId(getNoGenreEntity().getId());
 		} else if (gameDto.getDeveloperId() == null
@@ -53,7 +60,11 @@ public class GameServiceImpl implements GameService {
 		else
 			gameEntity.setName(gameDto.getName());
 
-		return modelMapper.map(gameRepository.save(gameEntity), GameDto.class);
+		log.info("Saving game: " + gameEntity.toString());
+
+		GameEntity savedGame = gameRepository.save(gameEntity);
+
+		return modelMapper.map(savedGame, GameDto.class);
 	}
 
 	@Override
@@ -71,7 +82,8 @@ public class GameServiceImpl implements GameService {
 	public List<GameDto> findAll() {
 		List<GameEntity> gameEntityList = gameRepository.findAll();
 
-		return gameEntityList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
+		return gameEntityList.stream()
+				.map(game -> modelMapper.map(game, GameDto.class)).toList();
 	}
 
 	@Override

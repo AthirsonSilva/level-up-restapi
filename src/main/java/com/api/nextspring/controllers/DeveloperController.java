@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.nextspring.dto.DeveloperDto;
 import com.api.nextspring.dto.Response;
 import com.api.nextspring.dto.optionals.OptionalDeveloperDto;
+import com.api.nextspring.exceptions.RestApiException;
+import com.api.nextspring.services.LinkingService;
 import com.api.nextspring.services.impl.DeveloperServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +32,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -36,8 +40,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Tag(name = "Developer", description = "Developer endpoints for creating, getting, updating and deleting developers")
 public class DeveloperController {
-
 	private final DeveloperServiceImpl developerServices;
+	private final LinkingService linkingService;
 
 	@PostMapping
 	@Operation(summary = "Create a new developer endpoint")
@@ -47,10 +51,13 @@ public class DeveloperController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, Object>> create(@Validated @RequestBody DeveloperDto request) {
+	public ResponseEntity<Response<String, DeveloperDto>> create(@Validated @RequestBody DeveloperDto request,
+			HttpServletRequest servletRequest) {
 		DeveloperDto creator = developerServices.create(request);
 
-		Response<String, Object> response = new Response<>("Developer created successfully", creator);
+		creator = linkingService.addHateoasLinksToClass(servletRequest, "developers", creator);
+
+		Response<String, DeveloperDto> response = new Response<>("Developer created successfully", creator);
 
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
@@ -63,10 +70,14 @@ public class DeveloperController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, Object>> getAll() {
+	public ResponseEntity<Response<String, List<DeveloperDto>>> getAll(HttpServletRequest servletRequest) {
 		List<DeveloperDto> creator = developerServices.findAll();
 
-		Response<String, Object> response = new Response<>("All developers fetched successfully", creator);
+		for (DeveloperDto developerDto : creator) {
+			developerDto = linkingService.addHateoasLinksToClass(servletRequest, "developers", developerDto);
+		}
+
+		Response<String, List<DeveloperDto>> response = new Response<>("All developers fetched successfully", creator);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -80,10 +91,12 @@ public class DeveloperController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, Object>> get(@PathVariable UUID id) {
+	public ResponseEntity<Response<String, DeveloperDto>> get(@PathVariable UUID id, HttpServletRequest servletRequest) {
 		DeveloperDto creator = developerServices.findByID(id);
 
-		Response<String, Object> response = new Response<>("Developer fetched successfully", creator);
+		creator = linkingService.addHateoasLinksToClass(servletRequest, "developers", creator);
+
+		Response<String, DeveloperDto> response = new Response<>("Developer fetched successfully", creator);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -121,5 +134,38 @@ public class DeveloperController {
 		response.put("message", "Developer deleted successfully");
 
 		return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+	}
+
+	@GetMapping("/search")
+	@Operation(summary = "Search a developer by name or description endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	@SecurityRequirement(name = "JWT Authentication")
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+	})
+	public ResponseEntity<Response<String, List<DeveloperDto>>> getDevelopers(
+			@RequestParam(value = "query", defaultValue = "") String query, HttpServletRequest servletRequest) {
+		if (query.isEmpty() || query.isBlank()) {
+			throw new RestApiException(HttpStatus.BAD_REQUEST, "Query parameter with the developer information is required!");
+		}
+
+		List<DeveloperDto> developerList = developerServices.search(query);
+
+		if (developerList.size() == 0) {
+			Response<String, List<DeveloperDto>> response = new Response<>("No developer found with given information's!",
+					developerList);
+
+			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		}
+
+		for (DeveloperDto developerDto : developerList) {
+			developerDto = linkingService.addHateoasLinksToClass(servletRequest, "developers", developerDto);
+		}
+
+		Response<String, List<DeveloperDto>> response = new Response<>("Developers found with given information's!",
+				developerList);
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }
