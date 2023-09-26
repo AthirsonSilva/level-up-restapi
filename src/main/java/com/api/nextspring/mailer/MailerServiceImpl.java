@@ -44,7 +44,7 @@ public class MailerServiceImpl implements MailerService {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
-			helper.setText(buildEmail(emailEntity.getDestination(), emailEntity.getContent()), true);
+			helper.setText(buildEmail(emailEntity.getUsername(), emailEntity.getContent()), true);
 			helper.setTo(emailEntity.getDestination());
 			helper.setSubject("Confirm your email registration");
 			helper.setFrom("athirsonarceus@gmail.com");

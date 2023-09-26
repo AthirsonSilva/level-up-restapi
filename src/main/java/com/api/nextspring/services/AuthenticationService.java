@@ -10,4 +10,6 @@ public interface AuthenticationService {
 	public String login(LoginDto request);
 
 	public void logout();
+
+	public void confirmUserAccount(String token);
 }

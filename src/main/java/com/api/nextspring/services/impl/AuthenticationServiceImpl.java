@@ -2,6 +2,7 @@ package com.api.nextspring.services.impl;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.api.nextspring.dto.EmailDto;
 import com.api.nextspring.dto.LoginDto;
 import com.api.nextspring.dto.RegisterDto;
 import com.api.nextspring.dto.UserDto;
@@ -20,15 +22,18 @@ import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
 import com.api.nextspring.enums.UserRoles;
 import com.api.nextspring.exceptions.RestApiException;
+import com.api.nextspring.mailer.MailerService;
 import com.api.nextspring.repositories.RoleRepository;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
 import com.api.nextspring.services.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class AuthenticationServiceImpl implements AuthenticationService {
 	private final AuthenticationManager authenticationManager;
 	private final UserRepository userRepository;
@@ -36,8 +41,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RoleRepository roleRepository;
 	private final ModelMapper modelMapper;
+	private final MailerService mailerService;
 
 	public String login(LoginDto request) {
+		UserEntity user = userRepository
+				.findByEmail(request.getEmail())
+				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "User not found"));
+
+		if (!user.isEnabled())
+			throw new RestApiException(HttpStatus.BAD_REQUEST, "User account is not activated!");
+
+		if (user.isLocked())
+			throw new RestApiException(HttpStatus.BAD_REQUEST, "User account is locked!");
+
+		if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
+			throw new RestApiException(HttpStatus.BAD_REQUEST, "Invalid password!");
+
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
 						request.getEmail(), request.getPassword()));
@@ -48,6 +67,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	public UserDto register(RegisterDto request) {
+		log.info("Registering user: {}", request.toString());
+
 		if (userRepository.existsByEmail(request.getEmail()))
 			throw new BadCredentialsException("A user with given email already exists");
 
@@ -75,12 +96,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				.roles(roles)
 				.build();
 
+		log.info("Saving user: {}", user.toString());
+
 		userRepository.save(user);
+
+		EmailDto emailDto = EmailDto.builder()
+				.username(user.getName())
+				.destination(user.getEmail())
+				.sender("athirsonarceus@gmail.com")
+				.subject("Account activation")
+				.content("http://localhost:8000/api/v1/auth/confirm-account?token=" + user.getId())
+				.build();
+
+		log.info("Sending account confirmation email: {}", emailDto.toString());
+
+		mailerService.sendEmail(emailDto);
 
 		return modelMapper.map(user, UserDto.class);
 	}
 
 	public void logout() {
 		SecurityContextHolder.clearContext();
+	}
+
+	public void confirmUserAccount(String token) {
+		UserEntity user = userRepository
+				.findById(UUID.fromString(token))
+				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "User with given token was not found!"));
+
+		if (user.isEnabled())
+			throw new RestApiException(HttpStatus.BAD_REQUEST, "User account is already activated!");
+
+		user.setEnabled(true);
+		user.setLocked(false);
+
+		log.info("Activating user account: {}", user.toString());
+
+		userRepository.save(user);
+
+		log.info("User account activated successfully!");
 	}
 }

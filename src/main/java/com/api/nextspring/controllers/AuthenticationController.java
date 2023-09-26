@@ -59,7 +59,8 @@ public class AuthenticationController {
 	public ResponseEntity<Response<String, Object>> userRegister(@Validated @RequestBody RegisterDto request) {
 		UserDto authenticationUserObject = authenticationServices.register(request);
 
-		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse("Registered in successfully!",
+		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse(
+				"Registered in successfully! An email was sent to your email to confirm your account!",
 				authenticationUserObject);
 
 		return ResponseEntity.ok(response);
@@ -69,13 +70,28 @@ public class AuthenticationController {
 	@Operation(summary = "User logout endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+			@ApiResponse(responseCode = "200", description = "OK, the user logged out successfully", content = @Content(mediaType = "application/json")),
 	})
 	public ResponseEntity<Response<String, Object>> userLogout() {
 		authenticationServices.logout();
 
 		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse("Logged out successfully!",
+				"Go to login page!");
+
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/confirm-account")
+	@Operation(summary = "User confirmation and activation account endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	@ApiResponses({
+			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+	})
+	public ResponseEntity<Response<String, Object>> confirmUserAccount(String token) {
+		authenticationServices.confirmUserAccount(token);
+
+		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse(
+				"Account activated successfully!",
 				"Go to login page!");
 
 		return ResponseEntity.ok(response);
