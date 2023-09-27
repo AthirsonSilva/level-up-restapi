@@ -11,5 +11,5 @@ public interface AuthenticationService {
 
 	public void logout();
 
-	public void confirmUserAccount(String token);
+	public void activateAccount(String token);
 }

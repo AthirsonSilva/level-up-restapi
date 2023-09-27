@@ -119,7 +119,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		SecurityContextHolder.clearContext();
 	}
 
-	public void confirmUserAccount(String token) {
+	public void activateAccount(String token) {
 		UserEntity user = userRepository
 				.findById(UUID.fromString(token))
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "User with given token was not found!"));

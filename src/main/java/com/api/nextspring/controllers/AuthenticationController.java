@@ -88,7 +88,7 @@ public class AuthenticationController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 	})
 	public ResponseEntity<Response<String, Object>> confirmUserAccount(String token) {
-		authenticationServices.confirmUserAccount(token);
+		authenticationServices.activateAccount(token);
 
 		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse(
 				"Account activated successfully!",

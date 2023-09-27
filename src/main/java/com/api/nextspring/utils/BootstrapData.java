@@ -2,7 +2,7 @@ package com.api.nextspring.utils;
 
 import java.util.Set;
 
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class BootstrapData implements CommandLineRunner {
+public class BootstrapData implements InitializingBean {
 	private final RoleRepository roleRepository;
 	private final UserRepository userRepository;
 	private final GenreRepository genreRepository;
@@ -34,7 +34,7 @@ public class BootstrapData implements CommandLineRunner {
 	private final Faker faker;
 
 	@Override
-	public void run(String... args) {
+	public void afterPropertiesSet() throws Exception {
 		createApplicationRoles();
 	}
 
