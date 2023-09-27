@@ -35,11 +35,11 @@ Game rental service API done with Spring Boot to test my knowledge of this frame
 
 ✔️ Global Error Handling
 
-✔️ Testing with JUnit (Coming soon)
+✔️ Testing with JUnit (In development)
 
 ✔️ API versioning
 
-✔️ Logging with Log4j2 (Coming soon)
+✔️ Logging with Log4j2 (In development)
 
 ✔️ Use rate limiting (Coming soon)
 
