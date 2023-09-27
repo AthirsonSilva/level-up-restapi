@@ -3,11 +3,49 @@ Game rental service API done with Spring Boot to test my knowledge of this frame
 
 ## Requirements
 
-- [Java 17](https://adoptium.net/)
+- [Java 21](https://adoptium.net/)
 - [Maven](https://maven.apache.org/)
 - [Gradle](https://gradle.org/)
 
 ## Architecture Layers
+
+## Project Features
+
+✔️ Consistent API design
+
+✔️ Use of DTOs (Data Transfer Objects)
+
+✔️ Use of HATEOS (Hypertext as the Engine of Application State)
+
+✔️ Spring Security with JWT (Json Web Token)
+
+✔️ User authentication with email verification
+
+✔️ Caching with Redis
+
+✔️ Documentation with SwaggerUI
+
+✔️ Pagination and sorting (Coming soon)
+
+✔️ Mailing service with JavaMail
+
+✔️ Data generation with JavaFaker
+
+✔️ Layered architecture
+
+✔️ Global Error Handling
+
+✔️ Testing with JUnit (Coming soon)
+
+✔️ API versioning
+
+✔️ Logging with Log4j2 (Coming soon)
+
+✔️ Use rate limiting (Coming soon)
+
+✔️ Circuit breakers (Coming soon)
+
+✔️ CI/ CD with Docker and Railway
 
 #### PRESENTATION LAYER
 
@@ -56,7 +94,7 @@ This layer is simply the actual database that is responsible for:
 3. Build the project using Maven:
 
 ```
-./mvnw clean install
+./mvnw clean package -DskipTests
 ```
 
 4. Run the project using Maven wrapper:
@@ -65,7 +103,7 @@ This layer is simply the actual database that is responsible for:
 ./mvnw spring-boot:run
 ```
 
-5. The application will start on http://localhost:8080
+5. The application will start on http://localhost:8000
 
 ## Usage
 
