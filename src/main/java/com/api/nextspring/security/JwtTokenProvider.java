@@ -1,24 +1,28 @@
 package com.api.nextspring.security;
 
+import java.security.Key;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
+
 import com.api.nextspring.exceptions.RestApiException;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
-
-import java.security.Key;
-import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
+
 	@Value("${app.jwt-secret}")
 	private String jwtSecret;
+
 	@Value("${app.jwt-expiration-milliseconds}")
 	private long jwtExpirationDate;
 
@@ -32,12 +36,15 @@ public class JwtTokenProvider {
 	public String generateJwtToken(Authentication authentication) {
 		// get username from authentication
 		String username = authentication.getName();
+
 		// get current date
 		Date currentDate = new Date();
+
 		// set expiry date
 		Date expiryDate = new Date(currentDate.getTime() + jwtExpirationDate);
 
-		// generate and return jwt token with username, current date, expiry date and decoded secret key
+		// generate and return jwt token with username, current date, expiry date and
+		// decoded secret key
 		return Jwts.builder()
 				.setSubject(username)
 				.setIssuedAt(currentDate)

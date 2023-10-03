@@ -22,11 +22,11 @@ import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
 import com.api.nextspring.enums.UserRoles;
 import com.api.nextspring.exceptions.RestApiException;
-import com.api.nextspring.mailer.MailerService;
 import com.api.nextspring.repositories.RoleRepository;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
 import com.api.nextspring.services.AuthenticationService;
+import com.api.nextspring.services.EmailService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -41,7 +41,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RoleRepository roleRepository;
 	private final ModelMapper modelMapper;
-	private final MailerService mailerService;
+	private final EmailService emailService;
 
 	public String login(LoginDto request) {
 		UserEntity user = userRepository
@@ -110,7 +110,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		log.info("Sending account confirmation email: {}", emailDto.toString());
 
-		mailerService.sendEmail(emailDto);
+		emailService.sendEmail(emailDto);
 
 		return modelMapper.map(user, UserDto.class);
 	}

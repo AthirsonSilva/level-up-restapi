@@ -39,6 +39,8 @@ Game rental service API done with Spring Boot to test my knowledge of this frame
 
 ✔️ API versioning
 
+✔️ File upload (Coming soon)
+
 ✔️ Logging with Log4j2 (In development)
 
 ✔️ Use rate limiting (Coming soon)

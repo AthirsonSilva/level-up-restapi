@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.nextspring.dto.EmailDto;
-import com.api.nextspring.mailer.MailerService;
+import com.api.nextspring.services.EmailService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Tag(name = "Email", description = "Email endpoints for sending emails")
 public class EmailController {
-	private final MailerService mailerService;
+	private final EmailService emailService;
 
 	@PostMapping("/send")
 	@Operation(summary = "Send an email to the user")
@@ -38,7 +38,7 @@ public class EmailController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
 	public ResponseEntity<HashMap<String, String>> sendEmail(@Validated @RequestBody EmailDto request) {
-		mailerService.sendEmail(request);
+		emailService.sendEmail(request);
 
 		HashMap<String, String> response = new HashMap<>();
 		response.put("message", "Email sent successfully!!");

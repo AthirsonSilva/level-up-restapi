@@ -1,4 +1,4 @@
-package com.api.nextspring.mailer;
+package com.api.nextspring.services.impl;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.api.nextspring.dto.EmailDto;
 import com.api.nextspring.entity.EmailEntity;
 import com.api.nextspring.repositories.EmailRepository;
+import com.api.nextspring.services.EmailService;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -21,9 +22,9 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class MailerServiceImpl implements MailerService {
+public class EmailServiceImpl implements EmailService {
 	private final EmailRepository emailRepository;
-	private final JavaMailSender mailSender;
+	private final JavaMailSender emailSender;
 	private final ModelMapper modelMapper;
 
 	@Value("${spring.mail.username}") // get the email from application.properties
@@ -41,7 +42,7 @@ public class MailerServiceImpl implements MailerService {
 		emailEntity.setCreatedAt(LocalDateTime.now());
 
 		try {
-			MimeMessage mimeMessage = mailSender.createMimeMessage();
+			MimeMessage mimeMessage = emailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
 			helper.setText(buildEmail(emailEntity.getUsername(), emailEntity.getContent()), true);
@@ -51,7 +52,7 @@ public class MailerServiceImpl implements MailerService {
 
 			log.info("Sending email --> {}", helper.toString());
 
-			mailSender.send(mimeMessage);
+			emailSender.send(mimeMessage);
 
 			return modelMapper.map(emailRepository.save(emailEntity), EmailDto.class);
 		} catch (MailException e) {
