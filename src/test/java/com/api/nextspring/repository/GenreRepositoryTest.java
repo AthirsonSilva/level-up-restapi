@@ -4,19 +4,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.api.nextspring.containers.PostgresTestContainerConfig;
 import com.api.nextspring.entity.GenreEntity;
 import com.api.nextspring.repositories.GenreRepository;
 import com.github.javafaker.Faker;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-class GenreRepositoryTest {
+@Testcontainers
+class GenreRepositoryTest extends PostgresTestContainerConfig {
 
 	@Autowired
 	GenreRepository genreRepository;
@@ -37,6 +44,11 @@ class GenreRepositoryTest {
 				.build();
 	}
 
+	@AfterEach
+	void tearDown() {
+		genreRepository.deleteAll();
+	}
+
 	@Test
 	public void shouldSaveAndRetrieveGenre() {
 		// given a new genre
@@ -53,9 +65,11 @@ class GenreRepositoryTest {
 	public void shouldFindByName() {
 		// given a new genre
 		genreRepository.save(genreEntity);
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.fromString("ASC"), "name"));
 
 		// when the genre is retrieved by name
-		List<GenreEntity> retrievedGenreEntityList = genreRepository.searchGenreEntities(genreEntity.getName()).get();
+		List<GenreEntity> retrievedGenreEntityList = genreRepository.searchGenreEntities(genreEntity.getName(), pageable)
+				.toList();
 
 		// then the saved genre should equal the retrieved genre
 		assertThat(retrievedGenreEntityList).isNotEmpty();
@@ -67,9 +81,10 @@ class GenreRepositoryTest {
 		// given two new developers
 		genreRepository.save(genreEntity);
 		genreRepository.save(getGenreEntity());
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.fromString("ASC"), "name"));
 
 		// when the developers are retrieved
-		List<GenreEntity> genreList = genreRepository.findAll();
+		List<GenreEntity> genreList = genreRepository.findAll(pageable).toList();
 
 		// then the developers should not be empty and should have a size of 2
 		assertThat(genreList).isNotEmpty();

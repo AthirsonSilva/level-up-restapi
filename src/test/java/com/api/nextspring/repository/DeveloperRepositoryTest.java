@@ -4,19 +4,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.api.nextspring.containers.PostgresTestContainerConfig;
 import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.repositories.DeveloperRepository;
 import com.github.javafaker.Faker;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-class DeveloperRepositoryTest {
+@Testcontainers
+class DeveloperRepositoryTest extends PostgresTestContainerConfig {
 
 	@Autowired
 	DeveloperRepository developerRepository;
@@ -26,6 +33,11 @@ class DeveloperRepositoryTest {
 	@BeforeEach
 	void setUp() {
 		developerEntity = getDeveloperEntity();
+	}
+
+	@AfterEach
+	void tearDown() {
+		developerRepository.deleteAll();
 	}
 
 	private DeveloperEntity getDeveloperEntity() {
@@ -53,10 +65,11 @@ class DeveloperRepositoryTest {
 	public void shouldFindByName() {
 		// given a new developer
 		developerRepository.save(developerEntity);
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.fromString("ASC"), "name"));
 
 		// when the developer is retrieved by name
 		List<DeveloperEntity> retrievedDeveloperEntityList = developerRepository
-				.searchDeveloperEntities(developerEntity.getName()).get();
+				.searchDeveloperEntities(developerEntity.getName(), pageable).toList();
 
 		// then the saved developer should equal the retrieved developer
 		assertThat(retrievedDeveloperEntityList).isNotEmpty();
@@ -68,9 +81,10 @@ class DeveloperRepositoryTest {
 		// given two new developers
 		developerRepository.save(developerEntity);
 		developerRepository.save(getDeveloperEntity());
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.fromString("ASC"), "name"));
 
 		// when the developers are retrieved
-		List<DeveloperEntity> developers = developerRepository.findAll();
+		List<DeveloperEntity> developers = developerRepository.findAll(pageable).toList();
 
 		// then the developers should not be empty and should have a size of 2
 		assertThat(developers).isNotEmpty();

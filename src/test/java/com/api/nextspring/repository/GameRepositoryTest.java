@@ -4,12 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.api.nextspring.containers.PostgresTestContainerConfig;
 import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.entity.GameEntity;
 import com.api.nextspring.entity.GenreEntity;
@@ -21,7 +27,8 @@ import com.github.javafaker.Faker;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-class GameRepositoryTest {
+@Testcontainers
+class GameRepositoryTest extends PostgresTestContainerConfig {
 
 	@Autowired
 	GameRepository gameRepository;
@@ -56,6 +63,13 @@ class GameRepositoryTest {
 		gameEntity = getGameEntity();
 	}
 
+	@AfterEach
+	void tearDown() {
+		gameRepository.deleteAll();
+		genreRepository.deleteAll();
+		developerRepository.deleteAll();
+	}
+
 	private GameEntity getGameEntity() {
 		Faker faker = new Faker();
 
@@ -85,9 +99,11 @@ class GameRepositoryTest {
 	public void shouldFindByName() {
 		// given a new game
 		gameRepository.save(gameEntity);
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.fromString("ASC"), "name"));
 
 		// when the game is retrieved by name
-		List<GameEntity> retrievedGameEntityList = gameRepository.searchGameEntities(gameEntity.getName()).get();
+		List<GameEntity> retrievedGameEntityList = gameRepository.searchGameEntities(gameEntity.getName(), pageable)
+				.toList();
 
 		// then the saved game should equal the retrieved game
 		assertThat(retrievedGameEntityList).isNotEmpty();
@@ -99,9 +115,10 @@ class GameRepositoryTest {
 		// given two new games
 		gameRepository.save(gameEntity);
 		gameRepository.save(getGameEntity());
+		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.fromString("ASC"), "name"));
 
 		// when the games are retrieved
-		List<GameEntity> games = gameRepository.findAll();
+		List<GameEntity> games = gameRepository.findAll(pageable).toList();
 
 		// then the games should not be empty and should have a size of 2
 		assertThat(games).isNotEmpty();

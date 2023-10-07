@@ -10,14 +10,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.api.nextspring.containers.PostgresTestContainerConfig;
 import com.api.nextspring.entity.EmailEntity;
 import com.api.nextspring.repositories.EmailRepository;
 import com.github.javafaker.Faker;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class EmailRepositoryTest {
+@Testcontainers
+public class EmailRepositoryTest extends PostgresTestContainerConfig {
 
 	@Autowired
 	private EmailRepository emailRepository;
