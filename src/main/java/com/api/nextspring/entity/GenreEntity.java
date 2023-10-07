@@ -1,15 +1,27 @@
 package com.api.nextspring.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,11 +38,7 @@ public class GenreEntity {
 	@Column(nullable = false)
 	private String description;
 
-	@OneToMany(
-			mappedBy = "genre",
-			cascade = CascadeType.ALL,
-			orphanRemoval = true
-	)
+	@OneToMany(mappedBy = "genre", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GameEntity> games;
 
 	@CreationTimestamp

@@ -9,17 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.api.nextspring.containers.BaseTest;
 import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.repositories.DeveloperRepository;
 import com.github.javafaker.Faker;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Testcontainers
 @DataJpaTest
-class DeveloperRepositoryTest extends BaseTest {
+class DeveloperRepositoryTest {
 
 	@Autowired
 	DeveloperRepository developerRepository;
@@ -41,7 +38,7 @@ class DeveloperRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldSaveAndRetrieveDeveloper() {
+	public void shouldSaveAndRetrieveDeveloper() {
 		// given a new developer
 		developerRepository.save(developerEntity);
 
@@ -53,7 +50,7 @@ class DeveloperRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldFindByName() {
+	public void shouldFindByName() {
 		// given a new developer
 		developerRepository.save(developerEntity);
 
@@ -67,7 +64,7 @@ class DeveloperRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldFindAllDevelopers() {
+	public void shouldFindAllDevelopers() {
 		// given two new developers
 		developerRepository.save(developerEntity);
 		developerRepository.save(getDeveloperEntity());
@@ -81,7 +78,7 @@ class DeveloperRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldUpdateDeveloper() {
+	public void shouldUpdateDeveloper() {
 		// given a saved developer
 		developerRepository.save(developerEntity);
 
@@ -95,7 +92,7 @@ class DeveloperRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldDeleteDeveloper() {
+	public void shouldDeleteDeveloper() {
 		// given a new developer
 		developerRepository.save(developerEntity);
 

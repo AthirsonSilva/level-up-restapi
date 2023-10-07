@@ -11,11 +11,17 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class GameDto extends RepresentationModel<GameDto> {
 	private UUID id;
 
@@ -28,6 +34,8 @@ public class GameDto extends RepresentationModel<GameDto> {
 	@Length(min = 3, max = 50, message = "Description must be between 3 and 50 characters")
 	@Size(min = 3, max = 50, message = "Description must be between 3 and 50 characters")
 	private String description;
+
+	private String photoPath;
 
 	@NotNull(message = "Year is required")
 	@Min(value = 1900, message = "Year must be greater than 1900")

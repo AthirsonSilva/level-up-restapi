@@ -1,8 +1,10 @@
 package com.api.nextspring.services.impl;
 
+import java.util.List;
 import java.util.Set;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +12,14 @@ import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.dto.optionals.OptionalUserDto;
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
+import com.api.nextspring.enums.EntityOptions;
+import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
 import com.api.nextspring.services.UserService;
+import com.api.nextspring.utils.ExcelUtils;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -23,6 +29,7 @@ public class UserServiceImpl implements UserService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final ModelMapper modelMapper;
 	private final PasswordEncoder passwordEncoder;
+	private final ExcelUtils excelUtils;
 
 	public UserDto getCurrentUser(String token) {
 		String authentication = jwtTokenProvider.getUsernameFromJwtToken(token);
@@ -70,5 +77,20 @@ public class UserServiceImpl implements UserService {
 
 		return userRepository.findByEmail(authentication)
 				.orElseThrow(() -> new RuntimeException("User not found"));
+	}
+
+	@Override
+	public void exportToExcel(HttpServletResponse response) {
+		List<UserEntity> entityList = userRepository.findAll();
+
+		try {
+			excelUtils.export(response, entityList, EntityOptions.USER);
+		} catch (IllegalArgumentException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while exporting data to Excel file: " + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while exporting data to Excel file: " + e.getMessage());
+		}
 	}
 }

@@ -19,12 +19,10 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
-@Getter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,7 +37,7 @@ public class DeveloperEntity {
 	private String name;
 
 	@OneToMany(mappedBy = "developer", cascade = CascadeType.ALL, orphanRemoval = true)
-	List<GameEntity> games;
+	private List<GameEntity> games;
 
 	@Column(nullable = false)
 	private String description;

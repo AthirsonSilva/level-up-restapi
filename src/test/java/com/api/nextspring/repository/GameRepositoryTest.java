@@ -9,9 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.api.nextspring.containers.BaseTest;
 import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.entity.GameEntity;
 import com.api.nextspring.entity.GenreEntity;
@@ -22,9 +20,8 @@ import com.api.nextspring.repositories.GenreRepository;
 import com.github.javafaker.Faker;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Testcontainers
 @DataJpaTest
-class GameRepositoryTest extends BaseTest {
+class GameRepositoryTest {
 
 	@Autowired
 	GameRepository gameRepository;
@@ -73,7 +70,7 @@ class GameRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldSaveAndRetrieveGame() {
+	public void shouldSaveAndRetrieveGame() {
 		// given a new game
 		gameRepository.save(gameEntity);
 
@@ -85,7 +82,7 @@ class GameRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldFindByName() {
+	public void shouldFindByName() {
 		// given a new game
 		gameRepository.save(gameEntity);
 
@@ -98,7 +95,7 @@ class GameRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldFindAllGames() {
+	public void shouldFindAllGames() {
 		// given two new games
 		gameRepository.save(gameEntity);
 		gameRepository.save(getGameEntity());
@@ -112,7 +109,7 @@ class GameRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldUpdateGame() {
+	public void shouldUpdateGame() {
 		// given a saved game
 		gameRepository.save(gameEntity);
 
@@ -126,7 +123,7 @@ class GameRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldDeleteGame() {
+	public void shouldDeleteGame() {
 		// given a new game
 		gameRepository.save(gameEntity);
 

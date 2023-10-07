@@ -10,17 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.api.nextspring.containers.BaseTest;
 import com.api.nextspring.entity.EmailEntity;
 import com.api.nextspring.repositories.EmailRepository;
 import com.github.javafaker.Faker;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Testcontainers
 @DataJpaTest
-public class EmailRepositoryTest extends BaseTest {
+public class EmailRepositoryTest {
 
 	@Autowired
 	private EmailRepository emailRepository;
@@ -50,7 +47,7 @@ public class EmailRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldSaveAndRetrieveEmail() {
+	public void shouldSaveAndRetrieveEmail() {
 		// given a new email
 		emailRepository.save(emailEntity);
 
@@ -63,7 +60,7 @@ public class EmailRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldSaveAndFindAllEmails() {
+	public void shouldSaveAndFindAllEmails() {
 		// given two new emails
 		emailRepository.save(emailEntity);
 		emailRepository.save(generateEmailEntity());

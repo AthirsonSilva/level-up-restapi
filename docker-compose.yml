@@ -5,7 +5,7 @@ services:
     container_name: next-api
     image: next-api:latest
     build:
-      context: ../../
+      context: ./
       dockerfile: Dockerfile
     environment:
       - DATABASE_URL=jdbc:postgresql://next-db:5432/postgres

@@ -155,6 +155,7 @@ public class BootstrapData implements InitializingBean {
 					.developer(getNoDeveloper())
 					.genre(getNoGenre())
 					.year(faker.number().numberBetween(1900, 2023))
+					.photoPath("https://avatars.dicebear.com/api/open-peeps/" + faker.name().firstName() + ".svg")
 					.build());
 		}
 	}

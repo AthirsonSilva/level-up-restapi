@@ -1,7 +1,7 @@
 #
 # Build stage
 #
-FROM maven:3.9.1-eclipse-temurin-20 AS build
+FROM maven:3.9.4-amazoncorretto-21 AS build
 
 COPY src /home/app/src
 
@@ -12,7 +12,7 @@ RUN mvn -f /home/app/pom.xml clean package -DskipTests
 #
 # Package stage
 #
-FROM eclipse-temurin:20-jdk
+FROM openjdk:21-ea-21-slim
 
 COPY --from=build /home/app/target/*.jar /usr/local/lib/app.jar
 

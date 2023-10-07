@@ -11,9 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.api.nextspring.containers.BaseTest;
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
 import com.api.nextspring.repositories.RoleRepository;
@@ -21,9 +19,8 @@ import com.api.nextspring.repositories.UserRepository;
 import com.github.javafaker.Faker;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Testcontainers
 @DataJpaTest
-class UserRepositoryTest extends BaseTest {
+class UserRepositoryTest {
 
 	@Autowired
 	UserRepository userRepository;
@@ -59,7 +56,7 @@ class UserRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldSaveAndRetrieveUser() {
+	public void shouldSaveAndRetrieveUser() {
 		// given a new user
 		userRepository.save(userEntity);
 
@@ -71,7 +68,7 @@ class UserRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldFindByEmail() {
+	public void shouldFindByEmail() {
 		// given a new user
 		userRepository.save(userEntity);
 
@@ -83,7 +80,7 @@ class UserRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldFindAllUsers() {
+	public void shouldFindAllUsers() {
 		// given two new users
 		userRepository.save(userEntity);
 		userRepository.save(getUserEntity(new HashSet<>()));
@@ -97,7 +94,7 @@ class UserRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldUpdateUser() {
+	public void shouldUpdateUser() {
 		// given a saved user
 		userRepository.save(userEntity);
 
@@ -112,7 +109,7 @@ class UserRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldDeleteUser() {
+	public void shouldDeleteUser() {
 		// Save the user
 		userRepository.save(userEntity);
 

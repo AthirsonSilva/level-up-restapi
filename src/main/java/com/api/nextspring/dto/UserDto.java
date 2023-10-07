@@ -1,5 +1,6 @@
 package com.api.nextspring.dto;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.validator.constraints.Length;
@@ -8,11 +9,17 @@ import org.springframework.hateoas.RepresentationModel;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto extends RepresentationModel<UserDto> {
 	private UUID id;
 
@@ -31,4 +38,8 @@ public class UserDto extends RepresentationModel<UserDto> {
 	@Length(min = 6, max = 60, message = "Password must be between 6 and 60 characters")
 	@Size(min = 6, max = 60, message = "Password must be between 6 and 60 characters")
 	private String password;
+
+	private LocalDateTime createdAt;
+
+	private LocalDateTime updatedAt;
 }

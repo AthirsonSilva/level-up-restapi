@@ -11,10 +11,13 @@ import org.springframework.stereotype.Service;
 import com.api.nextspring.dto.GenreDto;
 import com.api.nextspring.dto.optionals.OptionalGenreDto;
 import com.api.nextspring.entity.GenreEntity;
+import com.api.nextspring.enums.EntityOptions;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.GenreRepository;
 import com.api.nextspring.services.GenreService;
+import com.api.nextspring.utils.ExcelUtils;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class GenreServiceImpl implements GenreService {
 	private final GenreRepository genreRepository;
 	private final ModelMapper modelMapper;
+	private final ExcelUtils excelUtils;
 
 	public List<GenreDto> findAll() {
 		List<GenreEntity> genreEntities = genreRepository.findAll();
@@ -78,5 +82,20 @@ public class GenreServiceImpl implements GenreService {
 						genreEntity -> modelMapper.map(genreEntity, GenreDto.class)).toList())
 				.orElseThrow(
 						() -> new RestApiException(HttpStatus.BAD_REQUEST, "No genres were found with given information!"));
+	}
+
+	@Override
+	public void exportToExcel(HttpServletResponse response) {
+		List<GenreEntity> entityList = genreRepository.findAll();
+
+		try {
+			excelUtils.export(response, entityList, EntityOptions.GENRE);
+		} catch (IllegalArgumentException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while exporting data to Excel file: " + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while exporting data to Excel file: " + e.getMessage());
+		}
 	}
 }

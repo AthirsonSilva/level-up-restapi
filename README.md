@@ -21,7 +21,7 @@ Game rental service API done with Spring Boot to test my knowledge of this frame
 
 ✔️ User authentication with email verification
 
-✔️ Caching with Redis
+✔️ Caching with Redis (Coming soon)
 
 ✔️ Documentation with SwaggerUI
 

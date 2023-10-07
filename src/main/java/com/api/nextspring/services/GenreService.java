@@ -6,6 +6,8 @@ import java.util.UUID;
 import com.api.nextspring.dto.GenreDto;
 import com.api.nextspring.dto.optionals.OptionalGenreDto;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 public interface GenreService {
 	public List<GenreDto> findAll();
 
@@ -18,4 +20,6 @@ public interface GenreService {
 	public GenreDto updateByID(UUID id, OptionalGenreDto request);
 
 	public List<GenreDto> searchByKeyword(String query);
+
+	public void exportToExcel(HttpServletResponse response);
 }

@@ -11,10 +11,13 @@ import org.springframework.stereotype.Service;
 import com.api.nextspring.dto.DeveloperDto;
 import com.api.nextspring.dto.optionals.OptionalDeveloperDto;
 import com.api.nextspring.entity.DeveloperEntity;
+import com.api.nextspring.enums.EntityOptions;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.services.DeveloperService;
+import com.api.nextspring.utils.ExcelUtils;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class DeveloperServiceImpl implements DeveloperService {
 	private final DeveloperRepository developerRepository;
 	private final ModelMapper modelMapper;
+	private final ExcelUtils excelUtils;
 
 	public DeveloperDto create(DeveloperDto request) {
 		if (developerRepository.existsByName(request.getName())) {
@@ -80,5 +84,20 @@ public class DeveloperServiceImpl implements DeveloperService {
 		return developerEntities.stream()
 				.map(developerEntity -> modelMapper.map(developerEntity, DeveloperDto.class))
 				.toList();
+	}
+
+	@Override
+	public void exportToExcel(HttpServletResponse response) {
+		List<DeveloperEntity> entityList = developerRepository.findAll();
+
+		try {
+			excelUtils.export(response, entityList, EntityOptions.DEVELOPER);
+		} catch (IllegalArgumentException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while exporting data to Excel file: " + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while exporting data to Excel file: " + e.getMessage());
+		}
 	}
 }

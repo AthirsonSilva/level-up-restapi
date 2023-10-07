@@ -6,6 +6,8 @@ import java.util.UUID;
 import com.api.nextspring.dto.DeveloperDto;
 import com.api.nextspring.dto.optionals.OptionalDeveloperDto;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 public interface DeveloperService {
 	public DeveloperDto create(DeveloperDto developerDto);
 
@@ -18,4 +20,6 @@ public interface DeveloperService {
 	public void deleteByID(UUID id);
 
 	public List<DeveloperDto> search(String query);
+
+	public void exportToExcel(HttpServletResponse response);
 }

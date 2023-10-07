@@ -9,17 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.api.nextspring.containers.BaseTest;
 import com.api.nextspring.entity.GenreEntity;
 import com.api.nextspring.repositories.GenreRepository;
 import com.github.javafaker.Faker;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Testcontainers
 @DataJpaTest
-class GenreRepositoryTest extends BaseTest {
+class GenreRepositoryTest {
 
 	@Autowired
 	GenreRepository genreRepository;
@@ -41,7 +38,7 @@ class GenreRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldSaveAndRetrieveGenre() {
+	public void shouldSaveAndRetrieveGenre() {
 		// given a new genre
 		genreRepository.save(genreEntity);
 
@@ -53,7 +50,7 @@ class GenreRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldFindByName() {
+	public void shouldFindByName() {
 		// given a new genre
 		genreRepository.save(genreEntity);
 
@@ -66,7 +63,7 @@ class GenreRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldFindAllGenres() {
+	public void shouldFindAllGenres() {
 		// given two new developers
 		genreRepository.save(genreEntity);
 		genreRepository.save(getGenreEntity());
@@ -80,7 +77,7 @@ class GenreRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldUpdateGenre() {
+	public void shouldUpdateGenre() {
 		// given a saved genre
 		genreRepository.save(genreEntity);
 
@@ -94,7 +91,7 @@ class GenreRepositoryTest extends BaseTest {
 	}
 
 	@Test
-	void shouldDeleteGenre() {
+	public void shouldDeleteGenre() {
 		// given a new genre
 		genreRepository.save(genreEntity);
 
