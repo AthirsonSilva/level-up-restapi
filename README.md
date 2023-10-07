@@ -39,7 +39,7 @@ Game rental service API done with Spring Boot to test my knowledge of this frame
 
 ✔️ API versioning
 
-✔️ File upload 
+✔️ File upload and download (In development)
 
 ✔️ Logging with Log4j2 (In development)
 
