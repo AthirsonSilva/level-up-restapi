@@ -1,12 +1,12 @@
 package com.api.nextspring.repositories;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -25,5 +25,7 @@ public interface GameRepository extends JpaRepository<GameEntity, UUID> {
 			"OR LOWER(g.genre.name) LIKE LOWER(CONCAT('%', :query, '%'))" +
 			"OR LOWER(g.genre.description) LIKE LOWER(CONCAT('%', :query, '%'))")
 	@Cacheable(value = "game", key = "#query")
-	Optional<List<GameEntity>> searchGameEntities(String query);
+	Page<GameEntity> searchGameEntities(String query, Pageable pageable);
+
+	Page<GameEntity> findAll(Pageable pageable);
 }

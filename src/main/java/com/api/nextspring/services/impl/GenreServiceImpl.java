@@ -1,10 +1,12 @@
 package com.api.nextspring.services.impl;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +29,14 @@ public class GenreServiceImpl implements GenreService {
 	private final ModelMapper modelMapper;
 	private final ExcelUtils excelUtils;
 
-	public List<GenreDto> findAll() {
-		List<GenreEntity> genreEntities = genreRepository.findAll();
+	public List<GenreDto> findAll(Integer page, Integer size, String sort, String direction) {
+		Pageable pageable = PageRequest
+				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
+
+		List<GenreEntity> genreEntities = genreRepository.findAll(pageable).toList();
+
+		if (genreEntities.isEmpty())
+			throw new RestApiException(HttpStatus.NOT_FOUND, "No genres found!");
 
 		return genreEntities.stream().map(
 				genreEntity -> modelMapper.map(genreEntity, GenreDto.class)).toList();
@@ -74,14 +82,17 @@ public class GenreServiceImpl implements GenreService {
 		return modelMapper.map(genreRepository.save(genreEntity), GenreDto.class);
 	}
 
-	public List<GenreDto> searchByKeyword(String query) {
-		Optional<List<GenreEntity>> genreEntities = genreRepository.searchGenreEntities(query);
+	public List<GenreDto> searchByKeyword(String query, Integer page, Integer size, String sort, String direction) {
+		Pageable pageable = PageRequest
+				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
 
-		return genreEntities.map(
-				genreEntityList -> genreEntityList.stream().map(
-						genreEntity -> modelMapper.map(genreEntity, GenreDto.class)).toList())
-				.orElseThrow(
-						() -> new RestApiException(HttpStatus.BAD_REQUEST, "No genres were found with given information!"));
+		List<GenreEntity> genreEntities = genreRepository.searchGenreEntities(query, pageable).toList();
+
+		if (genreEntities.isEmpty())
+			throw new RestApiException(HttpStatus.NOT_FOUND, "No genres found with given keyword!");
+
+		return genreEntities.stream().map(
+				genreEntity -> modelMapper.map(genreEntity, GenreDto.class)).toList();
 	}
 
 	@Override

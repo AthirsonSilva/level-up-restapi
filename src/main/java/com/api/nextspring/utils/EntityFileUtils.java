@@ -9,7 +9,6 @@ import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class FileUtils {
+public class EntityFileUtils {
 
 	private String getFilesPath() {
 		String workingDirectory = System.getProperty("user.dir");
@@ -47,11 +46,13 @@ public class FileUtils {
 		return path.toString();
 	}
 
-	public InputStreamResource getPhoto(String filePath) {
-		InputStream inputStream = getClass().getResourceAsStream(filePath);
+	public void getPhoto(String filePath) {
+		Path path = Paths.get(filePath);
 
-		return inputStream != null
-				? new InputStreamResource(inputStream)
-				: new InputStreamResource(getClass().getResourceAsStream("https://api.dicebear.com/avatar.svg"));
+		try (InputStream inputStream = Files.newInputStream(path);) {
+			Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
+		} catch (Exception e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while downloading the file!");
+		}
 	}
 }

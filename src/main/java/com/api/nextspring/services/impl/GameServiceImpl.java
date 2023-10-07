@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,8 +22,8 @@ import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.repositories.GameRepository;
 import com.api.nextspring.repositories.GenreRepository;
 import com.api.nextspring.services.GameService;
+import com.api.nextspring.utils.EntityFileUtils;
 import com.api.nextspring.utils.ExcelUtils;
-import com.api.nextspring.utils.FileUtils;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +38,7 @@ public class GameServiceImpl implements GameService {
 	private final DeveloperRepository developerRepository;
 	private final ModelMapper modelMapper;
 	private final ExcelUtils excelUtils;
-	private final FileUtils fileUtils;
+	private final EntityFileUtils fileUtils;
 
 	@Override
 	public GameDto create(GameDto gameDto) {
@@ -76,19 +78,29 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public List<GameDto> searchByKeyword(String query) {
+	public List<GameDto> searchByKeyword(String query, Integer page, Integer size, String sort, String direction) {
+		Pageable pageable = PageRequest
+				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
+
 		List<GameEntity> gameEntityList = gameRepository
-				.searchGameEntities(query)
-				.orElseThrow(
-						() -> new RestApiException(
-								HttpStatus.NOT_FOUND, "Game with given information was not found!"));
+				.searchGameEntities(query, pageable)
+				.toList();
+
+		if (gameEntityList.isEmpty())
+			throw new RestApiException(HttpStatus.NOT_FOUND, "No games found with given keyword!");
 
 		return gameEntityList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
 	}
 
 	@Override
-	public List<GameDto> findAll() {
-		List<GameEntity> gameEntityList = gameRepository.findAll();
+	public List<GameDto> findAll(Integer page, Integer size, String sort, String direction) {
+		Pageable pageable = PageRequest
+				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
+
+		List<GameEntity> gameEntityList = gameRepository.findAll(pageable).toList();
+
+		if (gameEntityList.isEmpty())
+			throw new RestApiException(HttpStatus.NOT_FOUND, "No games found!");
 
 		return gameEntityList.stream()
 				.map(game -> modelMapper.map(game, GameDto.class)).toList();
@@ -170,16 +182,14 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public InputStreamResource downloadPhotoByGame(UUID id) {
+	public void downloadPhotoByGame(UUID id) {
 		GameEntity entity = gameRepository
 				.findById(id)
 				.orElseThrow(
 						() -> new RestApiException(
 								HttpStatus.NOT_FOUND, "Game with given id was not found!"));
 
-		InputStreamResource inputStreamResource = fileUtils.getPhoto(entity.getPhotoPath());
-
-		return inputStreamResource;
+		fileUtils.getPhoto(entity.getPhotoPath());
 	}
 
 	@Override

@@ -56,8 +56,13 @@ public class GenreController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, List<GenreDto>>> getAllGenres(HttpServletRequest servletRequest) {
-		List<GenreDto> genreList = genreServices.findAll();
+	public ResponseEntity<Response<String, List<GenreDto>>> getAllGenres(
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size,
+			@RequestParam(value = "sort", defaultValue = "name") String sort,
+			@RequestParam(value = "direction", defaultValue = "asc") String direction,
+			HttpServletRequest servletRequest) {
+		List<GenreDto> genreList = genreServices.findAll(page, size, sort, direction);
 
 		for (GenreDto genreDto : genreList) {
 			genreDto = linkingService.addHateoasLinksToClass(servletRequest, "genres", genreDto);
@@ -95,14 +100,19 @@ public class GenreController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, List<GenreDto>>> getGenreByName(@RequestParam String query,
+	public ResponseEntity<Response<String, List<GenreDto>>> searchGenresByQuery(
+			@RequestParam(value = "query", defaultValue = "") String query,
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size,
+			@RequestParam(value = "sort", defaultValue = "name") String sort,
+			@RequestParam(value = "direction", defaultValue = "asc") String direction,
 			HttpServletRequest servletRequest) {
 		if (query.isEmpty() || query.isBlank()) {
 			throw new RestApiException(HttpStatus.BAD_REQUEST,
 					"Query parameter with the genre information is required!");
 		}
 
-		List<GenreDto> genreDtoList = genreServices.searchByKeyword(query);
+		List<GenreDto> genreDtoList = genreServices.searchByKeyword(query, page, size, sort, direction);
 
 		if (genreDtoList.size() == 0) {
 			Response<String, List<GenreDto>> response = new Response<>("No genre found with given information's!",

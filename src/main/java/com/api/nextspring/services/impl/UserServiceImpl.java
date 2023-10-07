@@ -20,8 +20,8 @@ import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
 import com.api.nextspring.services.UserService;
+import com.api.nextspring.utils.EntityFileUtils;
 import com.api.nextspring.utils.ExcelUtils;
-import com.api.nextspring.utils.FileUtils;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 	private final ModelMapper modelMapper;
 	private final PasswordEncoder passwordEncoder;
 	private final ExcelUtils excelUtils;
-	private final FileUtils fileUtils;
+	private final EntityFileUtils fileUtils;
 
 	public UserDto getCurrentUser(String token) {
 		String authentication = jwtTokenProvider.getUsernameFromJwtToken(token);
@@ -107,9 +107,7 @@ public class UserServiceImpl implements UserService {
 						() -> new RestApiException(
 								HttpStatus.NOT_FOUND, "User with given id was not found!"));
 
-		InputStreamResource inputStreamResource = fileUtils.getPhoto(entity.getPhotoPath());
-
-		return inputStreamResource;
+		return null;
 	}
 
 	@Override

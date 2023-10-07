@@ -5,6 +5,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -41,8 +44,14 @@ public class DeveloperServiceImpl implements DeveloperService {
 		return modelMapper.map(developerRepository.save(developerEntity), DeveloperDto.class);
 	}
 
-	public List<DeveloperDto> findAll() {
-		List<DeveloperEntity> developerEntities = developerRepository.findAll();
+	public List<DeveloperDto> findAll(Integer page, Integer size, String sort, String direction) {
+		Pageable pageable = PageRequest
+				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
+
+		List<DeveloperEntity> developerEntities = developerRepository.findAll(pageable).toList();
+
+		if (developerEntities.isEmpty())
+			throw new RestApiException(HttpStatus.NOT_FOUND, "No developers found!");
 
 		return developerEntities.stream().map(
 				developerEntity -> modelMapper.map(developerEntity, DeveloperDto.class)).collect(Collectors.toList());
@@ -76,10 +85,16 @@ public class DeveloperServiceImpl implements DeveloperService {
 	}
 
 	@Override
-	public List<DeveloperDto> search(String query) {
+	public List<DeveloperDto> search(String query, Integer page, Integer size, String sort, String direction) {
+		Pageable pageable = PageRequest
+				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
+
 		List<DeveloperEntity> developerEntities = developerRepository
-				.searchDeveloperEntities(query)
-				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given information not found"));
+				.searchDeveloperEntities(query, pageable)
+				.toList();
+
+		if (developerEntities.isEmpty())
+			throw new RestApiException(HttpStatus.NOT_FOUND, "No developers found with given keyword!");
 
 		return developerEntities.stream()
 				.map(developerEntity -> modelMapper.map(developerEntity, DeveloperDto.class))

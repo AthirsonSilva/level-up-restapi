@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -77,13 +76,18 @@ public class GameController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, List<GameDto>>> getGames(
-			@RequestParam(value = "query", defaultValue = "") String query, HttpServletRequest servletRequest) {
+	public ResponseEntity<Response<String, List<GameDto>>> searchGameByQuery(
+			@RequestParam(value = "query", defaultValue = "") String query,
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size,
+			@RequestParam(value = "sort", defaultValue = "name") String sort,
+			@RequestParam(value = "direction", defaultValue = "asc") String direction,
+			HttpServletRequest servletRequest) {
 		if (query.isEmpty() || query.isBlank()) {
 			throw new RestApiException(HttpStatus.BAD_REQUEST, "Query parameter with the game information is required!");
 		}
 
-		List<GameDto> gameList = gameServices.searchByKeyword(query);
+		List<GameDto> gameList = gameServices.searchByKeyword(query, page, size, sort, direction);
 
 		if (gameList.size() == 0) {
 			Response<String, List<GameDto>> response = new Response<>("No game found with given information's!",
@@ -108,8 +112,13 @@ public class GameController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, List<GameDto>>> getAllGames(HttpServletRequest servletRequest) {
-		List<GameDto> gameList = gameServices.findAll();
+	public ResponseEntity<Response<String, List<GameDto>>> getAllGames(
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size,
+			@RequestParam(value = "sort", defaultValue = "name") String sort,
+			@RequestParam(value = "direction", defaultValue = "asc") String direction,
+			HttpServletRequest servletRequest) {
+		List<GameDto> gameList = gameServices.findAll(page, size, sort, direction);
 
 		for (GameDto gameDto : gameList) {
 			gameDto = linkingService.addHateoasLinksToClass(servletRequest, "games", gameDto);
@@ -205,10 +214,13 @@ public class GameController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<InputStreamResource> getImageDynamicType(@PathVariable("id") UUID id) {
-		InputStreamResource image = gameServices.downloadPhotoByGame(id);
+	public void downloadGameImage(@PathVariable("id") UUID id,
+			HttpServletResponse response) {
+		response.setContentType(MediaType.IMAGE_PNG_VALUE);
 
-		return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(image);
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=game_" + id.toString() + ".png";
+		response.setHeader(headerKey, headerValue);
 	}
 
 	@GetMapping(value = "/export/excel", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)

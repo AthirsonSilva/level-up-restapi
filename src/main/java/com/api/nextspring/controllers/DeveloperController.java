@@ -75,8 +75,13 @@ public class DeveloperController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public ResponseEntity<Response<String, List<DeveloperDto>>> getAll(HttpServletRequest servletRequest) {
-		List<DeveloperDto> creator = developerServices.findAll();
+	public ResponseEntity<Response<String, List<DeveloperDto>>> getAll(
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size,
+			@RequestParam(value = "sort", defaultValue = "name") String sort,
+			@RequestParam(value = "direction", defaultValue = "asc") String direction,
+			HttpServletRequest servletRequest) {
+		List<DeveloperDto> creator = developerServices.findAll(page, size, sort, direction);
 
 		for (DeveloperDto developerDto : creator) {
 			developerDto = linkingService.addHateoasLinksToClass(servletRequest, "developers", developerDto);
@@ -151,12 +156,17 @@ public class DeveloperController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
 	public ResponseEntity<Response<String, List<DeveloperDto>>> getDevelopers(
-			@RequestParam(value = "query", defaultValue = "") String query, HttpServletRequest servletRequest) {
+			@RequestParam(value = "query", defaultValue = "") String query,
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size,
+			@RequestParam(value = "sort", defaultValue = "name") String sort,
+			@RequestParam(value = "direction", defaultValue = "asc") String direction,
+			HttpServletRequest servletRequest) {
 		if (query.isEmpty() || query.isBlank()) {
 			throw new RestApiException(HttpStatus.BAD_REQUEST, "Query parameter with the developer information is required!");
 		}
 
-		List<DeveloperDto> developerList = developerServices.search(query);
+		List<DeveloperDto> developerList = developerServices.search(query, page, size, sort, direction);
 
 		if (developerList.size() == 0) {
 			Response<String, List<DeveloperDto>> response = new Response<>("No developer found with given information's!",

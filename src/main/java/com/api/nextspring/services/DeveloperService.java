@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public interface DeveloperService {
 	public DeveloperDto create(DeveloperDto developerDto);
 
-	public List<DeveloperDto> findAll();
+	public List<DeveloperDto> findAll(Integer page, Integer size, String sort, String direction);
 
 	public DeveloperDto findByID(UUID id);
 
@@ -19,7 +19,7 @@ public interface DeveloperService {
 
 	public void deleteByID(UUID id);
 
-	public List<DeveloperDto> search(String query);
+	public List<DeveloperDto> search(String query, Integer page, Integer size, String sort, String direction);
 
 	public void exportToExcel(HttpServletResponse response);
 }

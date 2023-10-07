@@ -25,7 +25,7 @@ Game rental service API done with Spring Boot to test my knowledge of this frame
 
 ✔️ Documentation with SwaggerUI
 
-✔️ Pagination and sorting (Coming soon)
+✔️ Pagination and sorting 
 
 ✔️ Mailing service with JavaMail
 
@@ -39,7 +39,7 @@ Game rental service API done with Spring Boot to test my knowledge of this frame
 
 ✔️ API versioning
 
-✔️ File upload (Coming soon)
+✔️ File upload 
 
 ✔️ Logging with Log4j2 (In development)
 

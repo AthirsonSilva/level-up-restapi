@@ -9,7 +9,7 @@ import com.api.nextspring.dto.optionals.OptionalGenreDto;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface GenreService {
-	public List<GenreDto> findAll();
+	public List<GenreDto> findAll(Integer page, Integer size, String sort, String direction);
 
 	public GenreDto findByID(UUID id);
 
@@ -19,7 +19,7 @@ public interface GenreService {
 
 	public GenreDto updateByID(UUID id, OptionalGenreDto request);
 
-	public List<GenreDto> searchByKeyword(String query);
+	public List<GenreDto> searchByKeyword(String query, Integer page, Integer size, String sort, String direction);
 
 	public void exportToExcel(HttpServletResponse response);
 }
