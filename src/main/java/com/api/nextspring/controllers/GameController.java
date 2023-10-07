@@ -206,7 +206,7 @@ public class GameController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
 	public ResponseEntity<InputStreamResource> getImageDynamicType(@PathVariable("id") UUID id) {
-		InputStreamResource image = gameServices.downloadPhotoByUser(id);
+		InputStreamResource image = gameServices.downloadPhotoByGame(id);
 
 		return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(image);
 	}

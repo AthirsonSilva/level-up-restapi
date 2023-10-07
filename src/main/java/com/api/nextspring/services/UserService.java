@@ -1,6 +1,10 @@
 package com.api.nextspring.services;
 
 import java.util.Set;
+import java.util.UUID;
+
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.dto.optionals.OptionalUserDto;
@@ -16,6 +20,10 @@ public interface UserService {
 	public void deleteCurrentUser(String token);
 
 	public Set<RoleEntity> getUserRole(String token);
+
+	public UserDto uploadPhoto(UUID id, MultipartFile file);
+
+	public InputStreamResource downloadPhotoByUser(UUID id);
 
 	public void exportToExcel(HttpServletResponse response);
 }

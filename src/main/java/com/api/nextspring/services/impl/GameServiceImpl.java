@@ -1,12 +1,5 @@
 package com.api.nextspring.services.impl;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +21,7 @@ import com.api.nextspring.repositories.GameRepository;
 import com.api.nextspring.repositories.GenreRepository;
 import com.api.nextspring.services.GameService;
 import com.api.nextspring.utils.ExcelUtils;
+import com.api.nextspring.utils.FileUtils;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +36,7 @@ public class GameServiceImpl implements GameService {
 	private final DeveloperRepository developerRepository;
 	private final ModelMapper modelMapper;
 	private final ExcelUtils excelUtils;
+	private final FileUtils fileUtils;
 
 	@Override
 	public GameDto create(GameDto gameDto) {
@@ -160,49 +155,6 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public GameDto uploadPhoto(UUID id, MultipartFile file) {
-		if (file.isEmpty())
-			throw new RestApiException(HttpStatus.BAD_REQUEST, "File is empty!");
-
-		// Create a new Game object and set the path
-		GameEntity game = gameRepository.findById(id).orElseThrow(
-				() -> new RestApiException(HttpStatus.NOT_FOUND, "Game with given id was not found!"));
-
-		// Define the directory to save the file
-		String directory = getFilesPath() + "images/games";
-		long seconds = Instant.now().getEpochSecond();
-		String photoName = game.getId() + String.valueOf(seconds) + ".png";
-		Path path = Paths.get(directory + File.separator + photoName);
-
-		// Save the file in the directory
-		try (InputStream inputStream = file.getInputStream()) {
-			Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
-		} catch (Exception e) {
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while uploading the file!");
-		}
-
-		// Set the path in the Game object
-		game.setPhotoPath(path.toString());
-
-		// Save the Game object in the repository
-		gameRepository.save(game);
-
-		return modelMapper.map(game, GameDto.class);
-	}
-
-	@Override
-	public InputStreamResource downloadPhotoByUser(UUID id) {
-		GameEntity game = gameRepository.findById(id).orElseThrow(
-				() -> new RestApiException(HttpStatus.NOT_FOUND, "Game with given id was not found!"));
-
-		InputStream inputStream = getClass().getResourceAsStream(game.getPhotoPath());
-
-		return inputStream != null
-				? new InputStreamResource(inputStream)
-				: new InputStreamResource(getClass().getResourceAsStream("https://api.dicebear.com/avatar.svg"));
-	}
-
-	@Override
 	public void exportToExcel(HttpServletResponse response) {
 		List<GameEntity> gameEntityList = gameRepository.findAll();
 
@@ -217,10 +169,34 @@ public class GameServiceImpl implements GameService {
 		}
 	}
 
-	private String getFilesPath() {
-		String workingDirectory = System.getProperty("user.dir");
-		String directory = workingDirectory + "/src/main/resources/static/";
+	@Override
+	public InputStreamResource downloadPhotoByGame(UUID id) {
+		GameEntity entity = gameRepository
+				.findById(id)
+				.orElseThrow(
+						() -> new RestApiException(
+								HttpStatus.NOT_FOUND, "Game with given id was not found!"));
 
-		return directory;
+		InputStreamResource inputStreamResource = fileUtils.getPhoto(entity.getPhotoPath());
+
+		return inputStreamResource;
 	}
+
+	@Override
+	public GameDto uploadPhoto(UUID id, MultipartFile file) {
+		GameEntity entity = gameRepository
+				.findById(id)
+				.orElseThrow(
+						() -> new RestApiException(
+								HttpStatus.NOT_FOUND, "Game with given id was not found!"));
+
+		String filePath = fileUtils.savePhoto(id, file);
+
+		entity.setPhotoPath(filePath);
+
+		GameEntity save = gameRepository.save(entity);
+
+		return modelMapper.map(save, GameDto.class);
+	}
+
 }

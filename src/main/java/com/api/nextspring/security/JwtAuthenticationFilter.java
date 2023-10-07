@@ -44,6 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	 * @throws IOException      java.io. i o exception
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	protected void doFilterInternal(
 			@NonNull HttpServletRequest request,
 			@NonNull HttpServletResponse response,

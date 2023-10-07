@@ -2,11 +2,14 @@ package com.api.nextspring.services.impl;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.dto.optionals.OptionalUserDto;
@@ -18,6 +21,7 @@ import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
 import com.api.nextspring.services.UserService;
 import com.api.nextspring.utils.ExcelUtils;
+import com.api.nextspring.utils.FileUtils;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +34,7 @@ public class UserServiceImpl implements UserService {
 	private final ModelMapper modelMapper;
 	private final PasswordEncoder passwordEncoder;
 	private final ExcelUtils excelUtils;
+	private final FileUtils fileUtils;
 
 	public UserDto getCurrentUser(String token) {
 		String authentication = jwtTokenProvider.getUsernameFromJwtToken(token);
@@ -93,4 +98,35 @@ public class UserServiceImpl implements UserService {
 					"Error occurred while exporting data to Excel file: " + e.getMessage());
 		}
 	}
+
+	@Override
+	public InputStreamResource downloadPhotoByUser(UUID id) {
+		UserEntity entity = userRepository
+				.findById(id)
+				.orElseThrow(
+						() -> new RestApiException(
+								HttpStatus.NOT_FOUND, "User with given id was not found!"));
+
+		InputStreamResource inputStreamResource = fileUtils.getPhoto(entity.getPhotoPath());
+
+		return inputStreamResource;
+	}
+
+	@Override
+	public UserDto uploadPhoto(UUID id, MultipartFile file) {
+		UserEntity entity = userRepository
+				.findById(id)
+				.orElseThrow(
+						() -> new RestApiException(
+								HttpStatus.NOT_FOUND, "User with given id was not found!"));
+
+		String filePath = fileUtils.savePhoto(id, file);
+
+		entity.setPhotoPath(filePath);
+
+		UserEntity save = userRepository.save(entity);
+
+		return modelMapper.map(save, UserDto.class);
+	}
+
 }

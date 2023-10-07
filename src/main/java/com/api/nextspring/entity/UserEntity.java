@@ -44,6 +44,9 @@ public class UserEntity {
 	@Column(nullable = false, length = 60)
 	private String password;
 
+	@Column
+	private String photoPath;
+
 	@Column(nullable = false)
 	private boolean enabled;
 

@@ -165,6 +165,7 @@ public class ExcelUtils {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> void selectAndPopulateSheet(List<T> entityList, EntityOptions entity) throws IllegalAccessException {
 		switch (entity) {
 			case GAME -> populateGameDtoSheet((List<GameEntity>) entityList, writeDataLines());
