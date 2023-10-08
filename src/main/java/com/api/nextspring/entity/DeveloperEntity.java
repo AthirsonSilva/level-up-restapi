@@ -33,7 +33,7 @@ public class DeveloperEntity {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false)
 	private String name;
 
 	@OneToMany(mappedBy = "developer", cascade = CascadeType.ALL, orphanRemoval = true)

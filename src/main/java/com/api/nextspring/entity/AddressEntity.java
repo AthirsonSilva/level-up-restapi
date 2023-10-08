@@ -1,23 +1,16 @@
 package com.api.nextspring.entity;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -31,37 +24,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
-public class UserEntity {
+@Table(name = "addresses")
+public class AddressEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
 	@Column(nullable = false, length = 60)
-	private String name;
-
-	@Column(nullable = false, length = 60, unique = true)
-	private String email;
+	private String street;
 
 	@Column(nullable = false, length = 60)
-	private String password;
+	private String complement;
 
-	@Column
-	private String photoPath;
+	@Column(nullable = false, length = 60)
+	private String neighborhood;
 
-	@Column(nullable = false)
-	private boolean enabled;
+	@Column(nullable = false, length = 60)
+	private String city;
 
-	@Column(nullable = false)
-	private boolean locked;
+	@Column(nullable = false, length = 60)
+	private String state;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-	private Set<RoleEntity> roles;
-
-	@OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-	@JoinColumn(name = "address_id", referencedColumnName = "id")
-	private AddressEntity address;
+	@Column(nullable = false, length = 60)
+	private String zipCode;
 
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)

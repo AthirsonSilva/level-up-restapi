@@ -21,6 +21,7 @@ import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.repositories.GameRepository;
 import com.api.nextspring.repositories.GenreRepository;
+import com.api.nextspring.repositories.custom.CustomGameRepository;
 import com.api.nextspring.services.GameService;
 import com.api.nextspring.utils.EntityFileUtils;
 import com.api.nextspring.utils.ExcelUtils;
@@ -29,17 +30,37 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+/**
+ * This class implements the GameService interface and provides the
+ * implementation for the CRUD operations
+ * for the Game entity. It also provides methods for exporting the game data to
+ * an Excel file and downloading the photo of a game.
+ * 
+ * @author Athirson Silva
+ * @implNote This class implements the UserService interface and provides the
+ */
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class GameServiceImpl implements GameService {
+
+	// Dependencies
 	private final GameRepository gameRepository;
+	private final CustomGameRepository customGameRepository;
 	private final GenreRepository genreRepository;
 	private final DeveloperRepository developerRepository;
 	private final ModelMapper modelMapper;
 	private final ExcelUtils excelUtils;
 	private final EntityFileUtils fileUtils;
 
+	/**
+	 * Creates a new Game entity from the provided GameDto object.
+	 * 
+	 * @param gameDto The GameDto object to create the entity from.
+	 * @return The created GameDto object.
+	 * @throws RestApiException If a game with the same name already exists or if
+	 *                          the genre or developer ID is invalid.
+	 */
 	@Override
 	public GameDto create(GameDto gameDto) {
 		log.info("Game object received: " + gameDto.toString());
@@ -77,13 +98,24 @@ public class GameServiceImpl implements GameService {
 		return modelMapper.map(savedGame, GameDto.class);
 	}
 
+	/**
+	 * Searches for Game entities that match the provided keyword.
+	 * 
+	 * @param query     The keyword to search for.
+	 * @param page      The page number of the search results.
+	 * @param size      The number of results per page.
+	 * @param sort      The field to sort the results by.
+	 * @param direction The direction to sort the results in.
+	 * @return A list of GameDto objects that match the search query.
+	 * @throws RestApiException If no games are found with the given keyword.
+	 */
 	@Override
 	public List<GameDto> searchByKeyword(String query, Integer page, Integer size, String sort, String direction) {
 		Pageable pageable = PageRequest
 				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
 
-		List<GameEntity> gameEntityList = gameRepository
-				.searchGameEntities(query, pageable)
+		List<GameEntity> gameEntityList = customGameRepository
+				.findAllByFilter(query, pageable)
 				.toList();
 
 		if (gameEntityList.isEmpty())
@@ -92,12 +124,22 @@ public class GameServiceImpl implements GameService {
 		return gameEntityList.stream().map(game -> modelMapper.map(game, GameDto.class)).toList();
 	}
 
+	/**
+	 * Retrieves all Game entities.
+	 * 
+	 * @param page      The page number of the search results.
+	 * @param size      The number of results per page.
+	 * @param sort      The field to sort the results by.
+	 * @param direction The direction to sort the results in.
+	 * @return A list of all GameDto objects.
+	 * @throws RestApiException If no games are found.
+	 */
 	@Override
 	public List<GameDto> findAll(Integer page, Integer size, String sort, String direction) {
 		Pageable pageable = PageRequest
 				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
 
-		List<GameEntity> gameEntityList = gameRepository.findAll(pageable).toList();
+		List<GameEntity> gameEntityList = customGameRepository.findAll(pageable).toList();
 
 		if (gameEntityList.isEmpty())
 			throw new RestApiException(HttpStatus.NOT_FOUND, "No games found!");
@@ -106,6 +148,13 @@ public class GameServiceImpl implements GameService {
 				.map(game -> modelMapper.map(game, GameDto.class)).toList();
 	}
 
+	/**
+	 * Retrieves a Game entity by its ID.
+	 * 
+	 * @param id The ID of the Game entity to retrieve.
+	 * @return The GameDto object that matches the provided ID.
+	 * @throws RestApiException If no game is found with the provided ID.
+	 */
 	@Override
 	public GameDto findByID(UUID id) {
 		GameEntity gameEntity = gameRepository
@@ -117,6 +166,12 @@ public class GameServiceImpl implements GameService {
 		return modelMapper.map(gameEntity, GameDto.class);
 	}
 
+	/**
+	 * Deletes a Game entity by its ID.
+	 * 
+	 * @param id The ID of the Game entity to delete.
+	 * @throws RestApiException If no game is found with the provided ID.
+	 */
 	@Override
 	public void deleteById(UUID id) {
 		if (gameRepository.existsById(id)) {
@@ -126,6 +181,14 @@ public class GameServiceImpl implements GameService {
 		throw new RestApiException(HttpStatus.NOT_FOUND, "Game with given id was not found!");
 	}
 
+	/**
+	 * Updates a Game entity by its ID with the provided OptionalGameDto object.
+	 * 
+	 * @param id      The ID of the Game entity to update.
+	 * @param request The OptionalGameDto object containing the fields to update.
+	 * @return The updated GameDto object.
+	 * @throws RestApiException If no game is found with the provided ID.
+	 */
 	@Override
 	public GameDto updateById(UUID id, OptionalGameDto request) {
 		GameEntity gameEntity = gameRepository
@@ -154,18 +217,36 @@ public class GameServiceImpl implements GameService {
 		return modelMapper.map(gameRepository.save(gameEntity), GameDto.class);
 	}
 
+	/**
+	 * Retrieves the "No Genre" GenreEntity object.
+	 * 
+	 * @return The "No Genre" GenreEntity object.
+	 */
 	private GenreEntity getNoGenreEntity() {
 		return genreRepository
 				.findByName("No Genre")
 				.orElse(GenreEntity.builder().name("No Genre").description("No Genre").build());
 	}
 
+	/**
+	 * Retrieves the "No Developer" DeveloperEntity object.
+	 * 
+	 * @return The "No Developer" DeveloperEntity object.
+	 */
 	private DeveloperEntity getNoDeveloperEntity() {
 		return developerRepository
 				.findByName("No Developer")
 				.orElse(DeveloperEntity.builder().name("No Developer").description("No Developer").build());
 	}
 
+	/**
+	 * Exports all Game entities to an Excel file and sends it as a response.
+	 * 
+	 * @param response The HttpServletResponse object to send the file as a
+	 *                 response.
+	 * @throws RestApiException If an error occurs while exporting the data to the
+	 *                          Excel file.
+	 */
 	@Override
 	public void exportToExcel(HttpServletResponse response) {
 		List<GameEntity> gameEntityList = gameRepository.findAll();
@@ -181,6 +262,14 @@ public class GameServiceImpl implements GameService {
 		}
 	}
 
+	/**
+	 * Downloads the photo of a Game entity by its ID and sends it as a response.
+	 * 
+	 * @param id       The ID of the Game entity to download the photo of.
+	 * @param response The HttpServletResponse object to send the photo as a
+	 *                 response.
+	 * @throws RestApiException If no game is found with the provided ID.
+	 */
 	@Override
 	public void downloadPhotoByGame(UUID id, HttpServletResponse response) {
 		GameEntity entity = gameRepository

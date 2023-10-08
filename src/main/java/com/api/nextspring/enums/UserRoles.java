@@ -14,6 +14,29 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.google.common.collect.Sets;
 
+/**
+ * Enum representing the different roles that a user can have in the system.
+ * Each role has a set of permissions associated with it.
+ * 
+ * @param ADMIN     The admin role, with all permissions.
+ * @param USER      The user role, with permissions to read and write users,
+ *                  games, genres, and developers.
+ * @param DEVELOPER The developer role, with permissions to read users, games,
+ *                  genres, and developers.
+ * 
+ * @see {@link com.api.nextspring.entity.UserEntity} the User entity class
+ * @see {@link com.api.nextspring.entity.UserEntity#getRoles()} the method that
+ *      returns the user's roles
+ * @see {@link com.api.nextspring.config.SecurityConfiguration} the class that
+ *      configures the security of the application
+ * @see {@link UserPermissions} the enum representing the permissions that a
+ *      user
+ *      can have in the system
+ * @see {@link UserPermissions#getPermission()} the method that returns the
+ *      permission string value
+ * 
+ * @author Athirson Silva
+ */
 public enum UserRoles {
 	ADMIN(Sets.newHashSet(
 			USER_READ,
@@ -40,10 +63,20 @@ public enum UserRoles {
 		this.permissions = permissions;
 	}
 
+	/**
+	 * Returns the set of permissions associated with this role.
+	 *
+	 * @return the set of permissions associated with this role
+	 */
 	public Set<UserPermissions> getPermissions() {
 		return permissions;
 	}
 
+	/**
+	 * Returns the set of granted authorities associated with this role.
+	 *
+	 * @return the set of granted authorities associated with this role
+	 */
 	public Set<SimpleGrantedAuthority> getGrantedAuthorities() {
 		Set<SimpleGrantedAuthority> permissions = getPermissions()
 				.stream()

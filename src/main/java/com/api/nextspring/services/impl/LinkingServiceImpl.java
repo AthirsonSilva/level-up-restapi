@@ -21,6 +21,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * This class implements the LinkingService interface and provides methods to
+ * add HATEOAS links to DTO classes.
+ * It also provides methods to get the server complete address, application
+ * host, and controller request URL.
+ * 
+ * @author Athirson Silva
+ * @implNote This class implements the UserService interface and provides the
+ */
 @Service
 @Getter
 @RequiredArgsConstructor
@@ -28,11 +37,16 @@ public class LinkingServiceImpl implements LinkingService {
 	@Value("${server.address:localhost}")
 	private String serverAddress;
 
-	@Value("${server.port:8000}")
+	@Value("${server.port:8080}")
 	private String serverPort;
 
 	private final Environment environment;
 
+	/**
+	 * This method returns the complete server address.
+	 *
+	 * @return The complete server address.
+	 */
 	public String getServerCompleteAddress() {
 		String localAddress = new String();
 
@@ -48,6 +62,11 @@ public class LinkingServiceImpl implements LinkingService {
 		return localAddress;
 	}
 
+	/**
+	 * This method returns the application host.
+	 *
+	 * @return The application host.
+	 */
 	public String getApplicationHost() {
 		String host = new String();
 
@@ -64,10 +83,25 @@ public class LinkingServiceImpl implements LinkingService {
 		return host;
 	}
 
+	/**
+	 * This method returns the request URL for the given resource.
+	 *
+	 * @param request  The HttpServletRequest object.
+	 * @param resource The resource name.
+	 * @return The request URL for the given resource.
+	 */
 	public String getControllersRequestUrl(HttpServletRequest request, String resource) {
 		return request.getHeader("host") + "/api/v1/" + resource;
 	}
 
+	/**
+	 * This method adds HATEOAS links to the given GameDto object.
+	 *
+	 * @param request  The HttpServletRequest object.
+	 * @param resource The resource name.
+	 * @param model    The GameDto object.
+	 * @return The GameDto object with HATEOAS links added.
+	 */
 	public GameDto addHateoasLinksToClass(HttpServletRequest request, String resource,
 			GameDto model) {
 		model.add(
@@ -94,6 +128,14 @@ public class LinkingServiceImpl implements LinkingService {
 		return model;
 	}
 
+	/**
+	 * This method adds HATEOAS links to the given GenreDto object.
+	 *
+	 * @param request  The HttpServletRequest object.
+	 * @param resource The resource name.
+	 * @param model    The GenreDto object.
+	 * @return The GenreDto object with HATEOAS links added.
+	 */
 	@Override
 	public GenreDto addHateoasLinksToClass(HttpServletRequest request, String resource, GenreDto model) {
 		model.add(
@@ -120,6 +162,14 @@ public class LinkingServiceImpl implements LinkingService {
 		return model;
 	}
 
+	/**
+	 * This method adds HATEOAS links to the given UserDto object.
+	 *
+	 * @param request  The HttpServletRequest object.
+	 * @param resource The resource name.
+	 * @param model    The UserDto object.
+	 * @return The UserDto object with HATEOAS links added.
+	 */
 	@Override
 	public UserDto addHateoasLinksToClass(HttpServletRequest request, String resource, UserDto model) {
 		model.add(
@@ -146,6 +196,14 @@ public class LinkingServiceImpl implements LinkingService {
 		return model;
 	}
 
+	/**
+	 * This method adds HATEOAS links to the given DeveloperDto object.
+	 *
+	 * @param request  The HttpServletRequest object.
+	 * @param resource The resource name.
+	 * @param model    The DeveloperDto object.
+	 * @return The DeveloperDto object with HATEOAS links added.
+	 */
 	@Override
 	public DeveloperDto addHateoasLinksToClass(HttpServletRequest request, String resource, DeveloperDto model) {
 		model.add(

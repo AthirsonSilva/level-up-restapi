@@ -7,8 +7,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -24,7 +22,26 @@ import com.api.nextspring.security.JwtUsernameAndPasswordFilter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * security config
+ * This class provides configuration for the security. It also provides
+ * configuration for the authentication manager bean and the security filter
+ * chain.
+ * 
+ * @see AuthenticationManager
+ * @see SecurityFilterChain
+ * @see JwtAuthenticationEntryPoint
+ * @see JwtAuthenticationFilter
+ * @see JwtTokenProvider
+ * @see JwtUsernameAndPasswordFilter
+ * 
+ * @param jwtAuthenticationEntryPoint The JwtAuthenticationEntryPoint bean.
+ * @param jwtAuthenticationFilter     The JwtAuthenticationFilter bean.
+ * @param jwtTokenProvider            The JwtTokenProvider bean.
+ * 
+ * @return a new instance of the SecurityConfiguration class.
+ * 
+ * @throws Exception java.lang.exception
+ * 
+ * @author Athirson Silva
  */
 @Configuration
 @EnableMethodSecurity
@@ -34,13 +51,8 @@ public class SecurityConfiguration {
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final JwtTokenProvider jwtTokenProvider;
 
-	@Bean
-	public static PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-
 	/**
-	 * authentication manager bean
+	 * Returns the authentication manager bean.
 	 *
 	 * @param configuration configuration
 	 * @return {@link AuthenticationManager}

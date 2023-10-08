@@ -23,6 +23,17 @@ import com.api.nextspring.utils.ExcelUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * This class implements the DeveloperService interface and provides the
+ * implementation for the CRUD operations
+ * related to developers. It uses DeveloperRepository to interact with the
+ * database and ModelMapper to map between
+ * DTOs and entities. It also provides an implementation for exporting developer
+ * data to an Excel file using ExcelUtils.
+ * 
+ * @author Athirson Silva
+ * @implNote This class implements the UserService interface and provides the
+ */
 @Service
 @RequiredArgsConstructor
 public class DeveloperServiceImpl implements DeveloperService {
@@ -30,6 +41,14 @@ public class DeveloperServiceImpl implements DeveloperService {
 	private final ModelMapper modelMapper;
 	private final ExcelUtils excelUtils;
 
+	/**
+	 * Creates a new developer with the given name and description.
+	 *
+	 * @param request the DeveloperDto object containing the name and description of
+	 *                the developer to be created.
+	 * @return the DeveloperDto object representing the newly created developer.
+	 * @throws RestApiException if a developer with the given name already exists.
+	 */
 	public DeveloperDto create(DeveloperDto request) {
 		if (developerRepository.existsByName(request.getName())) {
 			throw new RestApiException(HttpStatus.NOT_FOUND, "Developer with given name already exists");
@@ -44,6 +63,18 @@ public class DeveloperServiceImpl implements DeveloperService {
 		return modelMapper.map(developerRepository.save(developerEntity), DeveloperDto.class);
 	}
 
+	/**
+	 * Finds all developers in the database and returns them as a list of
+	 * DeveloperDto objects.
+	 *
+	 * @param page      the page number of the results to return.
+	 * @param size      the number of results to return per page.
+	 * @param sort      the field to sort the results by.
+	 * @param direction the direction to sort the results in (ASC or DESC).
+	 * @return a list of DeveloperDto objects representing the developers found in
+	 *         the database.
+	 * @throws RestApiException if no developers are found in the database.
+	 */
 	public List<DeveloperDto> findAll(Integer page, Integer size, String sort, String direction) {
 		Pageable pageable = PageRequest
 				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
@@ -57,6 +88,16 @@ public class DeveloperServiceImpl implements DeveloperService {
 				developerEntity -> modelMapper.map(developerEntity, DeveloperDto.class)).collect(Collectors.toList());
 	}
 
+	/**
+	 * Finds the developer with the given ID in the database and returns it as a
+	 * DeveloperDto object.
+	 *
+	 * @param id the ID of the developer to find.
+	 * @return a DeveloperDto object representing the developer found in the
+	 *         database.
+	 * @throws RestApiException if no developer with the given ID is found in the
+	 *                          database.
+	 */
 	public DeveloperDto findByID(UUID id) {
 		DeveloperEntity developerEntity = developerRepository.findById(id)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given name not found"));
@@ -64,6 +105,17 @@ public class DeveloperServiceImpl implements DeveloperService {
 		return modelMapper.map(developerEntity, DeveloperDto.class);
 	}
 
+	/**
+	 * Updates the developer with the given ID in the database with the new name
+	 * and/or description.
+	 *
+	 * @param id      the ID of the developer to update.
+	 * @param request the OptionalDeveloperDto object containing the new name and/or
+	 *                description of the developer.
+	 * @return a DeveloperDto object representing the updated developer.
+	 * @throws RestApiException if no developer with the given ID is found in the
+	 *                          database.
+	 */
 	public DeveloperDto updateByID(UUID id, OptionalDeveloperDto request) {
 		DeveloperEntity developerEntity = developerRepository.findById(id)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given id not found"));
@@ -77,6 +129,13 @@ public class DeveloperServiceImpl implements DeveloperService {
 		return modelMapper.map(developerRepository.save(developerEntity), DeveloperDto.class);
 	}
 
+	/**
+	 * Deletes the developer with the given ID from the database.
+	 *
+	 * @param id the ID of the developer to delete.
+	 * @throws RestApiException if no developer with the given ID is found in the
+	 *                          database.
+	 */
 	public void deleteByID(UUID id) {
 		DeveloperEntity developerEntity = developerRepository.findById(id)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given name not found"));
@@ -84,6 +143,20 @@ public class DeveloperServiceImpl implements DeveloperService {
 		developerRepository.delete(developerEntity);
 	}
 
+	/**
+	 * Searches for developers in the database with the given keyword and returns
+	 * them as a list of DeveloperDto objects.
+	 *
+	 * @param query     the keyword to search for.
+	 * @param page      the page number of the results to return.
+	 * @param size      the number of results to return per page.
+	 * @param sort      the field to sort the results by.
+	 * @param direction the direction to sort the results in (ASC or DESC).
+	 * @return a list of DeveloperDto objects representing the developers found in
+	 *         the database.
+	 * @throws RestApiException if no developers are found in the database with the
+	 *                          given keyword.
+	 */
 	@Override
 	public List<DeveloperDto> search(String query, Integer page, Integer size, String sort, String direction) {
 		Pageable pageable = PageRequest
@@ -101,6 +174,15 @@ public class DeveloperServiceImpl implements DeveloperService {
 				.toList();
 	}
 
+	/**
+	 * Exports all developers in the database to an Excel file and sends it as a
+	 * response to the client.
+	 *
+	 * @param response the HttpServletResponse object representing the response to
+	 *                 send to the client.
+	 * @throws RestApiException if an error occurs while exporting the data to the
+	 *                          Excel file.
+	 */
 	@Override
 	public void exportToExcel(HttpServletResponse response) {
 		List<DeveloperEntity> entityList = developerRepository.findAll();

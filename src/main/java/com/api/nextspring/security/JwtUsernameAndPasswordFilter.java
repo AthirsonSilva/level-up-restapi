@@ -1,5 +1,12 @@
 package com.api.nextspring.security;
 
+import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,13 +15,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.io.IOException;
-import java.sql.Date;
-import java.time.LocalDate;
-
+/**
+ * This class extends the UsernamePasswordAuthenticationFilter class and
+ * overrides the successfulAuthentication method
+ * to generate a JWT token and add it to the response headers and cookies.
+ * 
+ * @see UsernamePasswordAuthenticationFilter
+ * @see JwtTokenProvider
+ * 
+ * @author Athirson Silva
+ */
 @RequiredArgsConstructor
 public class JwtUsernameAndPasswordFilter extends UsernamePasswordAuthenticationFilter {
 	private final JwtTokenProvider jwtTokenProvider;
@@ -24,8 +35,7 @@ public class JwtUsernameAndPasswordFilter extends UsernamePasswordAuthentication
 			@NonNull HttpServletRequest request,
 			@NonNull HttpServletResponse response,
 			@NonNull FilterChain filterChain,
-			@NonNull Authentication authenticationResult
-	) throws ServletException, IOException {
+			@NonNull Authentication authenticationResult) throws ServletException, IOException {
 		String token = Jwts
 				.builder()
 				.setSubject(authenticationResult.getName())

@@ -39,6 +39,8 @@ public class UserDto extends RepresentationModel<UserDto> {
 	@Size(min = 6, max = 60, message = "Password must be between 6 and 60 characters")
 	private String password;
 
+	private AddressDto address;
+
 	private String photoPath;
 
 	private LocalDateTime createdAt;
