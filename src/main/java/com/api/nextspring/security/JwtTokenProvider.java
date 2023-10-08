@@ -17,6 +17,18 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+/**
+ * JwtTokenProvider class provides methods to generate, validate and get
+ * username from JWT token. It uses the secret key and expiry date from
+ * application.properties file.
+ * 
+ * @see JwtAuthenticationFilter
+ * @see JwtAuthenticationEntryPoint
+ * @see JwtTokenProvider
+ * @see JwtUsernameAndPasswordFilter
+ * 
+ * @author Athirson Silva
+ */
 @Component
 public class JwtTokenProvider {
 

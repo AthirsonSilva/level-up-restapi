@@ -28,6 +28,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * This class is responsible for filtering incoming requests and authenticating
+ * them using JWT token.
+ * It extends OncePerRequestFilter class and overrides doFilterInternal method
+ * to implement the authentication logic.
+ * It also has a private method getTokenFromRequestHeaders to extract JWT token
+ * from the request headers.
+ * 
+ * @see OncePerRequestFilter
+ * @see JwtTokenProvider
+ * @see UserDetailsService
+ * @author Athirson Silva
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
