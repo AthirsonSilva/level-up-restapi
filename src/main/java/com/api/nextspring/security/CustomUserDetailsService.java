@@ -16,6 +16,22 @@ import com.api.nextspring.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * This class implements the UserDetailsService interface and provides a custom implementation for loading user details.
+ * It loads user details based on the email provided and returns a UserDetails object containing the user's email, password, roles, and authorities.
+ * The user details are retrieved from the UserRepository.
+ */
+/**
+ * This method loads a user by their email address and returns a UserDetails
+ * object.
+ *
+ * @param email the email address of the user to load
+ * @return a UserDetails object representing the loaded user
+ * @throws UsernameNotFoundException if no user is found with the given email
+ *                                   address
+ * @see UserDetails
+ * @author Athirson Silva
+ */
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
