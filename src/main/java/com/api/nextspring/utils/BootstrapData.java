@@ -22,6 +22,15 @@ import com.github.javafaker.Faker;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * This class is responsible for creating all the data needed for the
+ * application to be used in development.
+ * It implements the InitializingBean interface to ensure that the
+ * createApplicationRoles() method is called after all the dependencies are
+ * injected.
+ * The class uses repositories to persist data in the database and the Faker
+ * library to generate random data.
+ */
 @Component
 @RequiredArgsConstructor
 public class BootstrapData implements InitializingBean {
@@ -38,6 +47,9 @@ public class BootstrapData implements InitializingBean {
 		createApplicationRoles();
 	}
 
+	/**
+	 * creates all the data needed for the application to be used in development
+	 */
 	private void createApplicationRoles() {
 		if (!checkIfAdminRoleAlreadyExists())
 			createAdminRole();
@@ -63,6 +75,9 @@ public class BootstrapData implements InitializingBean {
 		System.out.println("\n------------ Application Bootstraped!!! ------------\n");
 	}
 
+	/**
+	 * creates 4 users with random data and one user with name "user"
+	 */
 	private void createUsers() {
 		userRepository.save(UserEntity
 				.builder()
@@ -93,6 +108,9 @@ public class BootstrapData implements InitializingBean {
 		System.out.println("\n------------ User created!!! ------------\n");
 	}
 
+	/**
+	 * creates the admin user in the database
+	 */
 	private void createAdmin() {
 		userRepository.save(UserEntity
 				.builder()
@@ -109,6 +127,9 @@ public class BootstrapData implements InitializingBean {
 		System.out.println("\n------------ Admin created!!! ------------\n");
 	}
 
+	/**
+	 * creates 4 genres with random data and one genre with name "No Genre"
+	 */
 	private void createGenres() {
 		genreRepository.save(GenreEntity
 				.builder()
@@ -116,19 +137,19 @@ public class BootstrapData implements InitializingBean {
 				.description("Games without genre")
 				.build());
 
-		long genreCount = genreRepository.count();
-
-		if (genreCount == 0L) {
-			for (int i = 0; i < 4; i++) {
-				genreRepository.save(GenreEntity
-						.builder()
-						.name(faker.book().genre())
-						.description(faker.lorem().sentence())
-						.build());
-			}
+		for (int i = 0; i < 4; i++) {
+			genreRepository.save(GenreEntity
+					.builder()
+					.name(faker.book().genre())
+					.description(faker.lorem().sentence())
+					.build());
 		}
 	}
 
+	/**
+	 * creates 4 developers with random data and one developer with name "No
+	 * Developer"
+	 */
 	private void createDevelopers() {
 		developerRepository.save(DeveloperEntity
 				.builder()
@@ -145,6 +166,9 @@ public class BootstrapData implements InitializingBean {
 		}
 	}
 
+	/**
+	 * creates 5 games with random data
+	 */
 	private void createGames() {
 		for (int i = 0; i < 5; i++) {
 			gameRepository.save(GameEntity
@@ -160,18 +184,31 @@ public class BootstrapData implements InitializingBean {
 		}
 	}
 
+	/**
+	 * creates the user role in the database
+	 * 
+	 * @return whether or not there is at least one admin in the database
+	 */
 	private boolean checkIfAdminAlreadyExists() {
 		UserEntity admin = userRepository.findByEmail("admin@admin.com").orElse(null);
 
 		return admin != null;
 	}
 
+	/**
+	 * creates the user role in the database
+	 * 
+	 * @return whether or not there is at least one user in the database
+	 */
 	private boolean checkIfUserAlreadyExists() {
 		UserEntity user = userRepository.findByEmail("user@user.com").orElse(null);
 
 		return user != null;
 	}
 
+	/**
+	 * creates the user role in the database
+	 */
 	private void createUserRole() {
 		roleRepository.save(RoleEntity
 				.builder()
@@ -181,6 +218,9 @@ public class BootstrapData implements InitializingBean {
 		System.out.println("\n------------ User role created!!! ------------\n");
 	}
 
+	/**
+	 * creates the admin role in the database
+	 */
 	private void createAdminRole() {
 		roleRepository.save(RoleEntity
 				.builder()
@@ -190,39 +230,74 @@ public class BootstrapData implements InitializingBean {
 		System.out.println("\n------------ Admin role created!!! ------------\n");
 	}
 
+	/**
+	 * checks if the admin role already exists in the database
+	 * 
+	 * @return whether or not there is at least one admin role in the database
+	 */
 	private boolean checkIfAdminRoleAlreadyExists() {
 		RoleEntity admin = roleRepository.findByName(UserRoles.ADMIN.name()).orElse(null);
 
 		return admin != null;
 	}
 
+	/**
+	 * checks if the user role already exists in the database
+	 * 
+	 * @return whether or not there is at least one user role in the database
+	 */
 	private boolean checkIfUserRoleAlreadyExists() {
 		RoleEntity user = roleRepository.findByName(UserRoles.USER.name()).orElse(null);
 
 		return user != null;
 	}
 
+	/**
+	 * checks if the genre already exists in the database
+	 * 
+	 * @return whether or not there is at least one genre in the database
+	 */
 	private boolean checkIfGenreAlreadyExists() {
 		GenreEntity genre = genreRepository.findByName("No Genre").orElse(null);
 
 		return genre != null;
 	}
 
+	/**
+	 * Returns whether or not there is at least one developer in the database
+	 * 
+	 * @return whether or not there is at least one developer in the database
+	 */
 	private boolean checkIfDeveloperAlreadyExists() {
 		DeveloperEntity developer = developerRepository.findByName("No Developer").orElse(null);
 
 		return developer != null;
 	}
 
+	/**
+	 * Returns whether or not there is at least one game in the database
+	 * 
+	 * @return whether or not there is at least one game in the database
+	 */
 	private boolean checkIfGameAlreadyExists() {
 		return gameRepository.count() > 0;
 	}
 
+	/**
+	 * Returns the developer with name "No Developer" which is the default developer
+	 * 
+	 * @return the developer with name "No Developer" which is the default developer
+	 */
 	private DeveloperEntity getNoDeveloper() {
 		return developerRepository.findByName("No Developer").orElseThrow(
 				() -> new RuntimeException("No Developer not found!"));
 	}
 
+	/**
+	 * Returns the genre with name "No Genre" which is the default genre
+	 * 
+	 * @return the genre with name "No Genre" which is the default genre
+	 */
 	private GenreEntity getNoGenre() {
 		return genreRepository.findByName("No Genre").orElseThrow(
 				() -> new RuntimeException("No Genre not found!"));

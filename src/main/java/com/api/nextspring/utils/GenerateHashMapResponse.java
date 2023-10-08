@@ -10,10 +10,14 @@ import com.api.nextspring.dto.Response;
  */
 @Service
 public class GenerateHashMapResponse<K, V> {
+
 	/**
-	 * @param message The message to be returned
-	 * @param data    The data to be returned
-	 * @return The response with the message and data passed as parameters
+	 * Generates a response with the message and data passed as parameters in the
+	 * 
+	 * @param message The message to be returned in the response
+	 * @param data    The data to be returned in the response
+	 * @return The response with the message and data passed as parameters in the
+	 *         body of the response
 	 */
 	public Response<String, V> generateHashMapResponse(K message, V data) {
 		return new Response<>(message.toString(), data);
