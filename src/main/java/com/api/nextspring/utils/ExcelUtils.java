@@ -34,6 +34,16 @@ import jakarta.servlet.http.HttpServletResponse;
  * Excel sheets with data from different entity types. The class uses
  * ModelMapper to map entity objects to DTO objects
  * before writing them to the Excel sheet.
+ * 
+ * @param workbook    the workbook of the excel file
+ * @param sheet       the sheet of the excel file
+ * @param modelMapper the model mapper that will be used to map entity objects
+ *                    to
+ * 
+ * @see XSSFWorkbook
+ * @see XSSFSheet
+ * 
+ * @author Athirson Silva
  */
 @Service
 public class ExcelUtils {

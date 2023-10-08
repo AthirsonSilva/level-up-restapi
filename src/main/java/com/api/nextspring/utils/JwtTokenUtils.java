@@ -11,6 +11,15 @@ import com.api.nextspring.exceptions.RestApiException;
 
 /**
  * Utility class for handling JWT tokens.
+ * It has a method execute that extracts the JWT token from the authorization
+ * header of a request.
+ * 
+ * @see RestApiException
+ * @see HttpStatus
+ * @see RequestHeader
+ * @see StringUtils
+ * 
+ * @author Athirson Silva
  */
 @Service
 public class JwtTokenUtils {

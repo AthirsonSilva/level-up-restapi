@@ -30,6 +30,19 @@ import lombok.RequiredArgsConstructor;
  * injected.
  * The class uses repositories to persist data in the database and the Faker
  * library to generate random data.
+ * 
+ * @see InitializingBean
+ * 
+ * @param roleRepository      repository for the role entity
+ * @param userRepository      repository for the user entity
+ * @param genreRepository     repository for the genre entity
+ * @param developerRepository repository for the developer entity
+ * @param gameRepository      repository for the game entity
+ * @param passwordEncoder     password encoder to encode users's password before
+ *                            saving
+ * @param faker               library to generate random data
+ * 
+ * @author Athirson Silva
  */
 @Component
 @RequiredArgsConstructor
@@ -83,6 +96,7 @@ public class BootstrapData implements InitializingBean {
 				.builder()
 				.name("user")
 				.email("user@user.com")
+				.photoPath(faker.internet().avatar())
 				.password(passwordEncoder.encode("password"))
 				.roles(Set.of(
 						roleRepository.findByName(UserRoles.USER.name()).orElseThrow(
@@ -96,6 +110,7 @@ public class BootstrapData implements InitializingBean {
 					.builder()
 					.name(faker.name().fullName())
 					.email(faker.internet().emailAddress())
+					.photoPath(faker.internet().avatar())
 					.password(passwordEncoder.encode("user"))
 					.roles(Set.of(
 							roleRepository.findByName(UserRoles.USER.name()).orElseThrow(
@@ -116,6 +131,7 @@ public class BootstrapData implements InitializingBean {
 				.builder()
 				.name("admin")
 				.email("admin@admin.com")
+				.photoPath(faker.internet().avatar())
 				.password(passwordEncoder.encode("password"))
 				.roles(Set.of(
 						roleRepository.findByName(UserRoles.ADMIN.name()).orElseThrow(
@@ -281,6 +297,10 @@ public class BootstrapData implements InitializingBean {
 	 */
 	private boolean checkIfGameAlreadyExists() {
 		return gameRepository.count() > 0;
+	}
+
+	private boolean checkIfAddressAlreadyExists() {
+		return false;
 	}
 
 	/**

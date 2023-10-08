@@ -20,6 +20,10 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * This class provides utility methods for handling files related to entities.
+ * It has a private method getFilesPath that returns the path of the directory
+ * where the files will be saved.
+ * 
+ * @author Athirson Silva
  */
 @Service
 @RequiredArgsConstructor
