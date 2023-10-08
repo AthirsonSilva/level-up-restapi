@@ -14,9 +14,24 @@ import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 
+/**
+ * This bean configures the OpenAPI specification version 3.0.3
+ *
+ * @see OpenAPI
+ *
+ * @return OpenAPI object with custom configuration
+ *
+ * @author Athirson Silva
+ */
 @Configuration
 public class SwaggerConfiguration {
 
+	/**
+	 * This method returns a custom OpenAPI specification version 3.0.3 object with
+	 * configured servers, info, and security scheme.
+	 * 
+	 * @return OpenAPI object with configured servers, info, and security scheme.
+	 */
 	@Bean
 	@Description("This bean configures the OpenAPI specification version 3.0.3")
 	OpenAPI customOpenAPI() {
