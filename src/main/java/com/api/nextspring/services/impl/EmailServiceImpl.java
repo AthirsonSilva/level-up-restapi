@@ -19,6 +19,17 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+/**
+ * This class implements the EmailService interface and provides methods for
+ * sending confirmation and password reset emails.
+ * It uses an EmailRepository to save the emails and a JavaMailSender to send
+ * them.
+ * The class also uses a ModelMapper to map between EmailEntity and EmailDto
+ * objects.
+ * 
+ * @author Athirson Silva
+ * @implNote This class implements the UserService interface and provides the
+ */
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -30,6 +41,14 @@ public class EmailServiceImpl implements EmailService {
 	@Value("${spring.mail.username}") // get the email from application.properties
 	private String fromEmail;
 
+	/**
+	 * Sends a confirmation email to the specified email address.
+	 *
+	 * @param email the email object containing the necessary information to send
+	 *              the email
+	 * @return the email object with the updated information after sending the email
+	 * @throws RuntimeException if there was an error sending the email
+	 */
 	@Override
 	public EmailDto sendConfirmationEmail(EmailDto email) {
 		EmailEntity emailEntity = buildEmailEntity(email);
@@ -59,6 +78,13 @@ public class EmailServiceImpl implements EmailService {
 		}
 	}
 
+	/**
+	 * Sends a password reset email to the specified email address.
+	 *
+	 * @param email the email DTO containing the necessary information for the email
+	 * @return the email DTO that was sent
+	 * @throws RuntimeException if there was an error sending the email
+	 */
 	@Override
 	public EmailDto sendPasswordResetEmail(EmailDto email) {
 		EmailEntity emailEntity = buildEmailEntity(email);
@@ -88,6 +114,12 @@ public class EmailServiceImpl implements EmailService {
 		}
 	}
 
+	/**
+	 * Builds an EmailEntity object from an EmailDto object.
+	 *
+	 * @param email the EmailDto object to be converted to an EmailEntity object
+	 * @return the EmailEntity object built from the EmailDto object
+	 */
 	private EmailEntity buildEmailEntity(EmailDto email) {
 		EmailEntity emailEntity = new EmailEntity();
 
@@ -100,6 +132,13 @@ public class EmailServiceImpl implements EmailService {
 		return emailEntity;
 	}
 
+	/**
+	 * Builds a confirmation email with the given name and activation link.
+	 * 
+	 * @param name the name of the recipient
+	 * @param link the activation link
+	 * @return the confirmation email as a string
+	 */
 	@Override
 	public String buildConfirmationEmail(String name, String link) {
 		return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +

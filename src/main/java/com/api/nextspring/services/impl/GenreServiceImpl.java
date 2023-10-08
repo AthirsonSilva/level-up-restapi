@@ -22,6 +22,15 @@ import com.api.nextspring.utils.ExcelUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * This class implements the GenreService interface and provides the
+ * implementation for all its methods.
+ * It uses GenreRepository, ModelMapper, and ExcelUtils to perform CRUD
+ * operations on GenreEntity objects.
+ * 
+ * @author Athirson Silva
+ * @implNote This class implements the UserService interface and provides the
+ */
 @Service
 @RequiredArgsConstructor
 public class GenreServiceImpl implements GenreService {
@@ -29,6 +38,17 @@ public class GenreServiceImpl implements GenreService {
 	private final ModelMapper modelMapper;
 	private final ExcelUtils excelUtils;
 
+	/**
+	 * Returns a list of all genres, sorted and paginated according to the given
+	 * parameters.
+	 *
+	 * @param page      the page number
+	 * @param size      the page size
+	 * @param sort      the sort field
+	 * @param direction the sort direction
+	 * @return a list of GenreDto objects
+	 * @throws RestApiException if no genres are found
+	 */
 	public List<GenreDto> findAll(Integer page, Integer size, String sort, String direction) {
 		Pageable pageable = PageRequest
 				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
@@ -42,6 +62,13 @@ public class GenreServiceImpl implements GenreService {
 				genreEntity -> modelMapper.map(genreEntity, GenreDto.class)).toList();
 	}
 
+	/**
+	 * Returns the genre with the given ID.
+	 *
+	 * @param id the genre ID
+	 * @return a GenreDto object
+	 * @throws RestApiException if the genre is not found
+	 */
 	public GenreDto findByID(UUID id) {
 		GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(
 				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!"));
@@ -49,6 +76,13 @@ public class GenreServiceImpl implements GenreService {
 		return modelMapper.map(genreEntity, GenreDto.class);
 	}
 
+	/**
+	 * Creates a new genre with the given data.
+	 *
+	 * @param request a GenreDto object containing the genre data
+	 * @return the created GenreDto object
+	 * @throws RestApiException if a genre with the same name already exists
+	 */
 	public GenreDto create(GenreDto request) {
 		if (genreRepository.existsByName(request.getName()))
 			throw new RestApiException(HttpStatus.BAD_REQUEST, "Genre already exists!");
@@ -62,6 +96,12 @@ public class GenreServiceImpl implements GenreService {
 		return modelMapper.map(genreRepository.save(genreEntity), GenreDto.class);
 	}
 
+	/**
+	 * Deletes the genre with the given ID.
+	 *
+	 * @param id the genre ID
+	 * @throws RestApiException if the genre is not found
+	 */
 	public void deleteByID(UUID id) {
 		GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(
 				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!"));
@@ -69,6 +109,15 @@ public class GenreServiceImpl implements GenreService {
 		genreRepository.delete(genreEntity);
 	}
 
+	/**
+	 * Updates the genre with the given ID using the data in the OptionalGenreDto
+	 * object.
+	 *
+	 * @param id      the genre ID
+	 * @param request an OptionalGenreDto object containing the updated genre data
+	 * @return the updated GenreDto object
+	 * @throws RestApiException if the genre is not found
+	 */
 	public GenreDto updateByID(UUID id, OptionalGenreDto request) {
 		GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(
 				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!"));
@@ -82,6 +131,18 @@ public class GenreServiceImpl implements GenreService {
 		return modelMapper.map(genreRepository.save(genreEntity), GenreDto.class);
 	}
 
+	/**
+	 * Searches for genres with the given keyword, sorted and paginated according to
+	 * the given parameters.
+	 *
+	 * @param query     the search keyword
+	 * @param page      the page number
+	 * @param size      the page size
+	 * @param sort      the sort field
+	 * @param direction the sort direction
+	 * @return a list of GenreDto objects
+	 * @throws RestApiException if no genres are found
+	 */
 	public List<GenreDto> searchByKeyword(String query, Integer page, Integer size, String sort, String direction) {
 		Pageable pageable = PageRequest
 				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
@@ -95,6 +156,12 @@ public class GenreServiceImpl implements GenreService {
 				genreEntity -> modelMapper.map(genreEntity, GenreDto.class)).toList();
 	}
 
+	/**
+	 * Exports all genres to an Excel file and sends it as a response to the client.
+	 *
+	 * @param response the HttpServletResponse object
+	 * @throws RestApiException if an error occurs while exporting the data
+	 */
 	@Override
 	public void exportToExcel(HttpServletResponse response) {
 		List<GenreEntity> entityList = genreRepository.findAll();
