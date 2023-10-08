@@ -26,19 +26,19 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/email")
 @RequiredArgsConstructor
 @Tag(name = "Email", description = "Email endpoints for sending emails")
+@SecurityRequirement(name = "JWT Authentication")
+@ApiResponses({
+		@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+		@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+})
 public class EmailController {
 	private final EmailService emailService;
 
 	@PostMapping("/send")
 	@Operation(summary = "Send an email to the user")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<HashMap<String, String>> sendEmail(@Validated @RequestBody EmailDto request) {
-		emailService.sendEmail(request);
+		emailService.sendConfirmationEmail(request);
 
 		HashMap<String, String> response = new HashMap<>();
 		response.put("message", "Email sent successfully!!");

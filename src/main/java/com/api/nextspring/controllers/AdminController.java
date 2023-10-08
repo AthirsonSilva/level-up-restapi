@@ -28,6 +28,12 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
 @Tag(name = "Admin", description = "Admin endpoint for getting the current logged in admin")
+@SecurityRequirement(name = "JWT Authentication")
+@ApiResponses({
+		@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+		@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in", content = @Content(mediaType = "application/json")),
+		@ApiResponse(responseCode = "403", description = "Forbidden, the user does not have access permition", content = @Content(mediaType = "application/json"))
+})
 public class AdminController {
 	private final UserService userServices;
 	private final JwtTokenUtils getJwtFromRequest;
@@ -35,11 +41,6 @@ public class AdminController {
 	@GetMapping("/admin")
 	@Operation(summary = "Get the current logged in admin")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<HashMap<String, String>> helloAdmin(@RequestHeader Map<String, String> headers) {
 		HashMap<String, String> response = new HashMap<>();
 		String token = getJwtFromRequest.execute(headers);

@@ -26,7 +26,6 @@ public class SwaggerConfiguration {
 
 		servers.add(new Server().url("https://next-spring.up.railway.app").description("Production"));
 		servers.add(new Server().url("http://localhost:8080").description("Development:8080"));
-		servers.add(new Server().url("http://localhost:8000").description("Development:8000"));
 
 		openApi.setServers(servers);
 

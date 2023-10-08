@@ -45,6 +45,11 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/games")
 @RequiredArgsConstructor
 @Tag(name = "Game", description = "Game endpoint for creating, getting, updating and deleting games")
+@SecurityRequirement(name = "JWT Authentication")
+@ApiResponses({
+		@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+		@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+})
 public class GameController {
 	private final GameService gameServices;
 	private final LinkingService linkingService;
@@ -52,11 +57,6 @@ public class GameController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "Create a new game endpoint")
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, GameDto>> createGame(@Valid @RequestBody GameDto request,
 			HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.create(request);
@@ -71,11 +71,6 @@ public class GameController {
 	@GetMapping("/search")
 	@Operation(summary = "Search a game by name endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, List<GameDto>>> searchGameByQuery(
 			@RequestParam(value = "query", defaultValue = "") String query,
 			@RequestParam(value = "page", defaultValue = "0") int page,
@@ -108,10 +103,6 @@ public class GameController {
 	@GetMapping
 	@Operation(summary = "Get all games endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, List<GameDto>>> getAllGames(
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size,
@@ -132,10 +123,6 @@ public class GameController {
 	@GetMapping("/{id}")
 	@Operation(summary = "Get a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, GameDto>> getGameById(@PathVariable(value = "id") UUID id,
 			HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.findByID(id);
@@ -150,11 +137,6 @@ public class GameController {
 	@PatchMapping("/{id}")
 	@Operation(summary = "Update a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, GameDto>> updateGame(@PathVariable(value = "id", required = true) UUID id,
 			@RequestBody OptionalGameDto request, HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.updateById(id, request);
@@ -169,11 +151,6 @@ public class GameController {
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<HashMap<String, String>> deleteGame(@PathVariable(value = "id", required = true) UUID id,
 			HttpServletRequest request) {
 		gameServices.deleteById(id);
@@ -188,11 +165,6 @@ public class GameController {
 	@PostMapping("/uploadPhoto/{id}")
 	@Operation(summary = "Upload a game photo by id endpoint")
 	@ResponseStatus(HttpStatus.CREATED)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, GameDto>> uploadGamePhoto(
 			@PathVariable(value = "id", required = true) UUID id,
 			@RequestParam(value = "file", required = true) MultipartFile file, HttpServletRequest servletRequest) {
@@ -205,34 +177,29 @@ public class GameController {
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
-	@GetMapping("/downloadPhoto/{id}")
+	@GetMapping(value = "/downloadPhoto/{id}", produces = MediaType.IMAGE_PNG_VALUE)
 	@ResponseBody
 	@Operation(summary = "Download a game photo by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
-	public void downloadGameImage(@PathVariable("id") UUID id,
+	public ResponseEntity<?> downloadGameImage(@PathVariable("id") UUID id,
 			HttpServletResponse response) {
 		response.setContentType(MediaType.IMAGE_PNG_VALUE);
 
 		String headerKey = "Content-Disposition";
 		String headerValue = "attachment; filename=game_" + id.toString() + ".png";
+
 		response.setHeader(headerKey, headerValue);
+
+		gameServices.downloadPhotoByGame(id, response);
+
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/export/excel", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	@ResponseBody
 	@Operation(summary = "Export all games in the database to excel endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
-	public void exportToExcel(HttpServletResponse response) {
+	public ResponseEntity<?> exportToExcel(HttpServletResponse response) {
 		response.setContentType("application/octet-stream");
 		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 		String currentDateTime = dateFormatter.format(new Date());
@@ -242,5 +209,7 @@ public class GameController {
 		response.setHeader(headerKey, headerValue);
 
 		gameServices.exportToExcel(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 }

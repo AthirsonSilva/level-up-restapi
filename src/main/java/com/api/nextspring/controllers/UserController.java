@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.api.nextspring.dto.ChangePasswordDto;
 import com.api.nextspring.dto.Response;
 import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.dto.optionals.OptionalUserDto;
@@ -46,6 +47,11 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Tag(name = "User", description = "User endpoint for getting and updating the current logged in user")
+@SecurityRequirement(name = "JWT Authentication")
+@ApiResponses({
+		@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+		@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+})
 public class UserController {
 	private final UserService userServices;
 	private final JwtTokenUtils jwtTokenUtils;
@@ -54,11 +60,6 @@ public class UserController {
 	@GetMapping
 	@Operation(summary = "Get the current logged in user")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, UserDto>> getCurrentUser(@RequestHeader Map<String, String> headers,
 			HttpServletRequest servletRequest) {
 		String token = jwtTokenUtils.execute(headers);
@@ -75,11 +76,6 @@ public class UserController {
 	@PatchMapping
 	@Operation(summary = "Update the current logged in user")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, UserDto>> updateCurrentUser(@RequestHeader Map<String, String> headers,
 			@RequestBody OptionalUserDto request) {
 		String token = jwtTokenUtils.execute(headers);
@@ -96,11 +92,6 @@ public class UserController {
 	@DeleteMapping
 	@Operation(summary = "Delete the current logged in user")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<HashMap<String, String>> deleteUser(@RequestHeader Map<String, String> headers) {
 		String token = jwtTokenUtils.execute(headers);
 
@@ -113,16 +104,42 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 
+	@PostMapping("/password/change")
+	@Operation(summary = "Change the current logged in user password")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<Response<String, UserDto>> changeCurrentUserPassword(
+			@RequestHeader Map<String, String> headers,
+			@RequestBody ChangePasswordDto request) {
+		String token = jwtTokenUtils.execute(headers);
+
+		UserDto updatedCurrentUser = userServices.changeCurrentUserPassword(token, request);
+
+		Response<String, UserDto> response = new Response<>("Current user password changed successfully!",
+				updatedCurrentUser);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/password/reset")
+	@Operation(summary = "Reset the current logged in user password")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<Response<String, ?>> resetCurrentUserPassword(
+			@RequestHeader Map<String, String> headers) {
+		String token = jwtTokenUtils.execute(headers);
+
+		userServices.resetCurrentUserPassword(token);
+
+		Response<String, String> response = new Response<>("Current user password reseted successfully.",
+				"The new password was sent to your email!");
+
+		return ResponseEntity.ok(response);
+	}
+
 	@GetMapping(value = "/export/excel", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	@ResponseBody
 	@Operation(summary = "Export all users in the database to excel endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
-	public void exportToExcel(HttpServletResponse response) {
+	public ResponseEntity<?> exportToExcel(HttpServletResponse response) {
 		response.setContentType("application/octet-stream");
 		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 		String currentDateTime = dateFormatter.format(new Date());
@@ -132,20 +149,20 @@ public class UserController {
 		response.setHeader(headerKey, headerValue);
 
 		userServices.exportToExcel(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
 	@PostMapping("/uploadPhoto/{id}")
 	@Operation(summary = "Upload a user photo by id endpoint")
 	@ResponseStatus(HttpStatus.CREATED)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, UserDto>> uploadGamePhoto(
-			@PathVariable(value = "id", required = true) UUID id,
-			@RequestParam(value = "file", required = true) MultipartFile file, HttpServletRequest servletRequest) {
-		UserDto userDto = userServices.uploadPhoto(id, file);
+			@RequestParam(value = "file", required = true) MultipartFile file,
+			@RequestHeader Map<String, String> headers,
+			HttpServletRequest servletRequest) {
+		String token = jwtTokenUtils.execute(headers);
+
+		UserDto userDto = userServices.uploadPhoto(token, file);
 
 		userDto = linkingService.addHateoasLinksToClass(servletRequest, "users", userDto);
 
@@ -158,11 +175,6 @@ public class UserController {
 	@ResponseBody
 	@Operation(summary = "Download a user photo by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<InputStreamResource> getImageDynamicType(@PathVariable("id") UUID id) {
 		InputStreamResource image = userServices.downloadPhotoByUser(id);
 

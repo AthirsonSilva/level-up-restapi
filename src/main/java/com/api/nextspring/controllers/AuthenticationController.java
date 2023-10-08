@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +29,11 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication", description = "Authentication endpoint for login, register and logout")
+@SecurityRequirement(name = "JWT Authentication")
+@ApiResponses({
+		@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+		@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+})
 public class AuthenticationController {
 
 	private final AuthenticationServiceImpl authenticationServices;
@@ -36,10 +42,6 @@ public class AuthenticationController {
 	@PostMapping("/login")
 	@Operation(summary = "User login endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, Object>> userLogin(@Validated @RequestBody LoginDto request) {
 		String authenticationToken = authenticationServices.login(request);
 
@@ -52,10 +54,6 @@ public class AuthenticationController {
 	@PostMapping("/register")
 	@Operation(summary = "User register endpoint")
 	@ResponseStatus(HttpStatus.CREATED)
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, Object>> userRegister(@Validated @RequestBody RegisterDto request) {
 		UserDto authenticationUserObject = authenticationServices.register(request);
 
@@ -69,9 +67,6 @@ public class AuthenticationController {
 	@GetMapping("/logout")
 	@Operation(summary = "User logout endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", description = "OK, the user logged out successfully", content = @Content(mediaType = "application/json")),
-	})
 	public ResponseEntity<Response<String, Object>> userLogout() {
 		authenticationServices.logout();
 
@@ -84,9 +79,6 @@ public class AuthenticationController {
 	@GetMapping("/confirm-account")
 	@Operation(summary = "User confirmation and activation account endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-	})
 	public ResponseEntity<Response<String, Object>> confirmUserAccount(String token) {
 		authenticationServices.activateAccount(token);
 

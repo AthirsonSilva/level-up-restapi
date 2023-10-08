@@ -44,6 +44,11 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/genres")
 @RequiredArgsConstructor
 @Tag(name = "Genre", description = "Genre endpoint for getting, creating, updating and deleting genres")
+@SecurityRequirement(name = "JWT Authentication")
+@ApiResponses({
+		@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+		@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+})
 public class GenreController {
 	private final GenreServiceImpl genreServices;
 	private final LinkingService linkingService;
@@ -51,11 +56,6 @@ public class GenreController {
 	@GetMapping
 	@Operation(summary = "Get all genres endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, List<GenreDto>>> getAllGenres(
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size,
@@ -76,11 +76,6 @@ public class GenreController {
 	@GetMapping("/{id}")
 	@Operation(summary = "Get a genre by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, GenreDto>> getGenreById(@PathVariable UUID id,
 			HttpServletRequest servletRequest) {
 		GenreDto genreDto = genreServices.findByID(id);
@@ -196,7 +191,7 @@ public class GenreController {
 			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
 			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 	})
-	public void exportToExcel(HttpServletResponse response) {
+	public ResponseEntity<?> exportToExcel(HttpServletResponse response) {
 		response.setContentType("application/octet-stream");
 		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 		String currentDateTime = dateFormatter.format(new Date());
@@ -206,5 +201,7 @@ public class GenreController {
 		response.setHeader(headerKey, headerValue);
 
 		genreServices.exportToExcel(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 }

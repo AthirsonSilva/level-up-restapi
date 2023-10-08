@@ -44,6 +44,11 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/developers")
 @RequiredArgsConstructor
 @Tag(name = "Developer", description = "Developer endpoints for creating, getting, updating and deleting developers")
+@SecurityRequirement(name = "JWT Authentication")
+@ApiResponses({
+		@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
+		@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
+})
 public class DeveloperController {
 	private final DeveloperServiceImpl developerServices;
 	private final LinkingService linkingService;
@@ -51,11 +56,6 @@ public class DeveloperController {
 	@PostMapping
 	@Operation(summary = "Create a new developer endpoint")
 	@ResponseStatus(HttpStatus.CREATED)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, DeveloperDto>> create(@Validated @RequestBody DeveloperDto request,
 			HttpServletRequest servletRequest) {
 		DeveloperDto creator = developerServices.create(request);
@@ -70,11 +70,6 @@ public class DeveloperController {
 	@GetMapping
 	@Operation(summary = "Get all developers endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, List<DeveloperDto>>> getAll(
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "10") int size,
@@ -96,11 +91,6 @@ public class DeveloperController {
 	@Operation(summary = "Get a developer by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, DeveloperDto>> get(@PathVariable UUID id,
 			HttpServletRequest servletRequest) {
 		DeveloperDto creator = developerServices.findByID(id);
@@ -115,11 +105,6 @@ public class DeveloperController {
 	@PatchMapping("/{id}")
 	@Operation(summary = "Update a developer by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, Object>> update(@PathVariable UUID id,
 			@Validated @RequestBody OptionalDeveloperDto request) {
 		DeveloperDto creator = developerServices.updateByID(id, request);
@@ -132,11 +117,6 @@ public class DeveloperController {
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete a developer by id endpoint")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<HashMap<String, Object>> delete(@PathVariable UUID id) {
 		developerServices.deleteByID(id);
 
@@ -150,11 +130,6 @@ public class DeveloperController {
 	@GetMapping("/search")
 	@Operation(summary = "Search a developer by name or description endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, List<DeveloperDto>>> getDevelopers(
 			@RequestParam(value = "query", defaultValue = "") String query,
 			@RequestParam(value = "page", defaultValue = "0") int page,
@@ -189,12 +164,7 @@ public class DeveloperController {
 	@ResponseBody
 	@Operation(summary = "Export all developers in the database to excel endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
-	public void exportToExcel(HttpServletResponse response) {
+	public ResponseEntity<?> exportToExcel(HttpServletResponse response) {
 		response.setContentType("application/octet-stream");
 		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 		String currentDateTime = dateFormatter.format(new Date());
@@ -204,5 +174,7 @@ public class DeveloperController {
 		response.setHeader(headerKey, headerValue);
 
 		developerServices.exportToExcel(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 }
