@@ -36,7 +36,7 @@ This is a simple game rental service API that I created using Spring Boot. The p
 | Spring Security with JWT                   | 🟢 Ready          |
 | User authentication and email verification | 🟢 Ready          |
 | Caching with Redis                         | 🔴 Not ready      |
-| Documentation with SwaggerUI               | 🟢 Ready          |
+| Documentation with SwaggerUI and Javadocs  | 🟢 Ready          |
 | Pagination and sorting                     | 🟢 Ready          |
 | Mailing service with JavaMail              | 🟢 Ready          |
 | Data generation with JavaFaker             | 🟢 Ready          |

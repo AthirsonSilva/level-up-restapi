@@ -14,10 +14,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.api.nextspring.dto.DeveloperDto;
-import com.api.nextspring.dto.GameDto;
-import com.api.nextspring.dto.GenreDto;
-import com.api.nextspring.dto.UserDto;
+import com.api.nextspring.dto.export.DeveloperExportDto;
+import com.api.nextspring.dto.export.GameExportDto;
+import com.api.nextspring.dto.export.GenreExportDto;
+import com.api.nextspring.dto.export.UserExportDto;
 import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.entity.GameEntity;
 import com.api.nextspring.entity.GenreEntity;
@@ -88,10 +88,10 @@ public class ExcelUtils {
 	 */
 	private Class<?> getEntityClassType(EntityOptions entity) {
 		return switch (entity) {
-			case GAME -> GameDto.class;
-			case GENRE -> GenreDto.class;
-			case DEVELOPER -> DeveloperDto.class;
-			case USER -> UserDto.class;
+			case GAME -> GameExportDto.class;
+			case GENRE -> GenreExportDto.class;
+			case DEVELOPER -> DeveloperExportDto.class;
+			case USER -> UserExportDto.class;
 			default -> throw new RestApiException(HttpStatus.BAD_REQUEST, "Invalid entity!");
 		};
 	}
@@ -145,9 +145,10 @@ public class ExcelUtils {
 	 * @param style      the style of the excel file cells
 	 * @throws IllegalAccessException if the entityList is inaccessible
 	 */
-	private <T> void populateGameDtoSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
+	private <T> void populateGameSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
 		int rowCount = 1;
-		List<GameDto> dtoList = entityList.stream().map(entity -> modelMapper.map(entity, GameDto.class)).toList();
+		List<GameExportDto> dtoList = entityList.stream().map(entity -> modelMapper.map(entity, GameExportDto.class))
+				.toList();
 
 		for (var entity : dtoList) {
 			Row row = sheet.createRow(rowCount++);
@@ -171,9 +172,10 @@ public class ExcelUtils {
 	 * @param style      the style of the excel file cells
 	 * @throws IllegalAccessException if the entityList is inaccessible
 	 */
-	private <T> void populateGenreDtoSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
+	private <T> void populateGenreSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
 		int rowCount = 1;
-		List<GenreDto> dtoList = entityList.stream().map(entity -> modelMapper.map(entity, GenreDto.class)).toList();
+		List<GenreExportDto> dtoList = entityList.stream().map(entity -> modelMapper.map(entity, GenreExportDto.class))
+				.toList();
 
 		for (var entity : dtoList) {
 			Row row = sheet.createRow(rowCount++);
@@ -197,9 +199,10 @@ public class ExcelUtils {
 	 * @param style      the style of the excel file cells
 	 * @throws IllegalAccessException if the entityList is inaccessible
 	 */
-	private <T> void populateDeveloperDtoSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
+	private <T> void populateDeveloperSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
 		int rowCount = 1;
-		List<DeveloperDto> dtoList = entityList.stream().map(entity -> modelMapper.map(entity, DeveloperDto.class))
+		List<DeveloperExportDto> dtoList = entityList.stream()
+				.map(entity -> modelMapper.map(entity, DeveloperExportDto.class))
 				.toList();
 
 		for (var entity : dtoList) {
@@ -224,9 +227,10 @@ public class ExcelUtils {
 	 * @param style      the style of the excel file cells
 	 * @throws IllegalAccessException if the entityList is inaccessible
 	 */
-	private <T> void populateUserDtoSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
+	private <T> void populateUserSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
 		int rowCount = 1;
-		List<UserDto> dtoList = entityList.stream().map(entity -> modelMapper.map(entity, UserDto.class)).toList();
+		List<UserExportDto> dtoList = entityList.stream().map(entity -> modelMapper.map(entity, UserExportDto.class))
+				.toList();
 
 		for (var entity : dtoList) {
 			Row row = sheet.createRow(rowCount++);
@@ -253,10 +257,10 @@ public class ExcelUtils {
 	@SuppressWarnings("unchecked")
 	private <T> void selectAndPopulateSheet(List<T> entityList, EntityOptions entity) throws IllegalAccessException {
 		switch (entity) {
-			case GAME -> populateGameDtoSheet((List<GameEntity>) entityList, writeDataLines());
-			case GENRE -> populateGenreDtoSheet((List<GenreEntity>) entityList, writeDataLines());
-			case DEVELOPER -> populateDeveloperDtoSheet((List<DeveloperEntity>) entityList, writeDataLines());
-			case USER -> populateUserDtoSheet((List<UserEntity>) entityList, writeDataLines());
+			case GAME -> populateGameSheet((List<GameEntity>) entityList, writeDataLines());
+			case GENRE -> populateGenreSheet((List<GenreEntity>) entityList, writeDataLines());
+			case DEVELOPER -> populateDeveloperSheet((List<DeveloperEntity>) entityList, writeDataLines());
+			case USER -> populateUserSheet((List<UserEntity>) entityList, writeDataLines());
 			default -> throw new RestApiException(HttpStatus.BAD_REQUEST, "Invalid entity!");
 		}
 	}

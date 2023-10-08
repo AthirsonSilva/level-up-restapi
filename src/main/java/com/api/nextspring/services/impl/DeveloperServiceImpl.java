@@ -1,5 +1,6 @@
 package com.api.nextspring.services.impl;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -12,16 +13,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.api.nextspring.dto.DeveloperDto;
+import com.api.nextspring.dto.export.DeveloperExportDto;
 import com.api.nextspring.dto.optionals.OptionalDeveloperDto;
 import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.enums.EntityOptions;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.services.DeveloperService;
+import com.api.nextspring.utils.CsvUtils;
 import com.api.nextspring.utils.ExcelUtils;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * This class implements the DeveloperService interface and provides the
@@ -36,10 +40,12 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class DeveloperServiceImpl implements DeveloperService {
 	private final DeveloperRepository developerRepository;
 	private final ModelMapper modelMapper;
 	private final ExcelUtils excelUtils;
+	private final CsvUtils csvUtils;
 
 	/**
 	 * Creates a new developer with the given name and description.
@@ -196,5 +202,41 @@ public class DeveloperServiceImpl implements DeveloperService {
 			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occurred while exporting data to Excel file: " + e.getMessage());
 		}
+	}
+
+	/**
+	 * Exports the data to a CSV file and sends it as a response to the client.
+	 *
+	 * @param response the HttpServletResponse object used to send the response to
+	 *                 the client
+	 */
+	@Override
+	public void exportToCSV(HttpServletResponse response) {
+		// Gets all the developers from the database
+		List<DeveloperEntity> entityList = developerRepository.findAll();
+
+		// Converts the entity list to a DTO list
+		Iterable<DeveloperExportDto> developerExportDtoList = entityList.stream()
+				.map(developerEntity -> modelMapper.map(developerEntity, DeveloperExportDto.class))
+				.collect(Collectors.toList());
+
+		// Gets the class of the DTO
+		Class<?> clazz = DeveloperExportDto.class;
+
+		// Gets the fields of the DTO
+		Field[] fieldsHeaders = clazz.getDeclaredFields();
+
+		// Creates an array of strings with the headers of the fields
+		String[] headers = new String[fieldsHeaders.length];
+
+		// Gets the name of the fields and adds them to the headers array
+		for (int i = 0; i < fieldsHeaders.length; i++) {
+			headers[i] = fieldsHeaders[i].getName();
+		}
+
+		// Copies the headers to the fields array
+		String[] fields = headers.clone();
+
+		csvUtils.export(response, developerExportDtoList, headers, fields);
 	}
 }
