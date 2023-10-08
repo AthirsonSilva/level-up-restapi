@@ -10,7 +10,6 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.api.nextspring.dto.export.DeveloperExportDto;
 import com.api.nextspring.exceptions.RestApiException;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,33 +22,6 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @Log4j2
 public class CsvUtils {
-
-	/**
-	 * Exports a list of DeveloperExportDto objects to a CSV file and writes the
-	 * file to the HttpServletResponse object.
-	 * 
-	 * @param response   the HttpServletResponse object to write the CSV file to
-	 * @param entityList the list of DeveloperExportDto objects to export to the CSV
-	 *                   file
-	 * @throws RestApiException if an error occurs while exporting the data to the
-	 *                          CSV file
-	 */
-	public void export(HttpServletResponse response, Iterable<DeveloperExportDto> entityList) {
-		try (CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT)) {
-			csvPrinter.printRecord("id", "name", "description", "createdAt", "updatedAt");
-
-			for (DeveloperExportDto entity : entityList) {
-				csvPrinter.printRecord(entity.getId(), entity.getName(), entity.getDescription(), entity.getCreatedAt(),
-						entity.getUpdatedAt());
-			}
-		} catch (IOException e) {
-			log.error("Error occurred while exporting data to CSV file: " + e.getMessage());
-
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred while exporting data to CSV file: " + e.getMessage());
-		}
-	}
-
 	/**
 	 * Exports a list of objects to a CSV file and writes the file to the
 	 * HttpServletResponse object.

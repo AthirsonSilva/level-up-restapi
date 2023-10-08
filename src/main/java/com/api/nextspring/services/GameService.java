@@ -98,4 +98,13 @@ public interface GameService {
 	 * @param response The HTTP response to write the Excel file to.
 	 */
 	public void exportToExcel(HttpServletResponse response);
+
+	/**
+	 * Exports the list of GenreDto objects to a CSV file and sends it as a
+	 * response.
+	 * 
+	 * @param response The HttpServletResponse object to send the file as a
+	 *                 response.
+	 */
+	public void exportToCSV(HttpServletResponse response);
 }

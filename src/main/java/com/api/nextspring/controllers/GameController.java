@@ -212,4 +212,22 @@ public class GameController {
 
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
+
+	@GetMapping(value = "/export/csv", produces = "application/csv")
+	@ResponseBody
+	@Operation(summary = "Export all games in the database to csv endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> exportToCSV(HttpServletResponse response) {
+		response.setContentType("application/csv");
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=games_" + currentDateTime + ".csv";
+		response.setHeader(headerKey, headerValue);
+
+		gameServices.exportToCSV(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
 }

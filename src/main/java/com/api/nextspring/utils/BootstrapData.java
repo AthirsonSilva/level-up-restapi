@@ -268,14 +268,12 @@ public class BootstrapData implements InitializingBean {
 	}
 
 	/**
-	 * checks if the genre already exists in the database
+	 * Returns whether or not there is at least one game in the database
 	 * 
-	 * @return whether or not there is at least one genre in the database
+	 * @return whether or not there is at least one game in the database
 	 */
-	private boolean checkIfGenreAlreadyExists() {
-		GenreEntity genre = genreRepository.findByName("No Genre").orElse(null);
-
-		return genre != null;
+	private boolean checkIfGameAlreadyExists() {
+		return gameRepository.count() > 0;
 	}
 
 	/**
@@ -284,18 +282,16 @@ public class BootstrapData implements InitializingBean {
 	 * @return whether or not there is at least one developer in the database
 	 */
 	private boolean checkIfDeveloperAlreadyExists() {
-		DeveloperEntity developer = developerRepository.findByName("No Developer").orElse(null);
-
-		return developer != null;
+		return developerRepository.count() > 0;
 	}
 
 	/**
-	 * Returns whether or not there is at least one game in the database
+	 * Returns whether or not there is at least one genre in the database
 	 * 
-	 * @return whether or not there is at least one game in the database
+	 * @return whether or not there is at least one genre in the database
 	 */
-	private boolean checkIfGameAlreadyExists() {
-		return gameRepository.count() > 0;
+	private boolean checkIfGenreAlreadyExists() {
+		return genreRepository.count() > 0;
 	}
 
 	/**

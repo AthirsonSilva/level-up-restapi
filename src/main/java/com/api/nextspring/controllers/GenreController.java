@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -90,11 +89,6 @@ public class GenreController {
 	@GetMapping("/search")
 	@Operation(summary = "Search a genre by name endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, List<GenreDto>>> searchGenresByQuery(
 			@RequestParam(value = "query", defaultValue = "") String query,
 			@RequestParam(value = "page", defaultValue = "0") int page,
@@ -129,11 +123,6 @@ public class GenreController {
 	@PostMapping
 	@Operation(summary = "Create a genre endpoint")
 	@ResponseStatus(HttpStatus.CREATED)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, GenreDto>> createGenre(@Validated @RequestBody GenreDto request,
 			HttpServletRequest servletRequest) {
 		GenreDto genreDto = genreServices.create(request);
@@ -148,11 +137,6 @@ public class GenreController {
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete a genre by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<HashMap<String, String>> deleteGenre(@PathVariable UUID id) {
 		genreServices.deleteByID(id);
 
@@ -166,11 +150,6 @@ public class GenreController {
 	@PatchMapping("/{id}")
 	@Operation(summary = "Update a genre by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<Response<String, GenreDto>> updateGenre(@Validated @RequestBody OptionalGenreDto request,
 			@PathVariable UUID id, HttpServletRequest servletRequest) {
 		GenreDto genreDto = genreServices.updateByID(id, request);
@@ -182,15 +161,10 @@ public class GenreController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/export/excel", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	@GetMapping(value = "/export/excel", produces = "application/octet-stream")
 	@ResponseBody
 	@Operation(summary = "Export all genres in the database to excel endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	@SecurityRequirement(name = "JWT Authentication")
-	@ApiResponses({
-			@ApiResponse(responseCode = "400", description = "Bad Request, the user did not send all required data", content = @Content(mediaType = "application/json")),
-			@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
-	})
 	public ResponseEntity<?> exportToExcel(HttpServletResponse response) {
 		response.setContentType("application/octet-stream");
 		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
@@ -204,4 +178,23 @@ public class GenreController {
 
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
+
+	@GetMapping(value = "/export/csv", produces = "application/csv")
+	@ResponseBody
+	@Operation(summary = "Export all genres in the database to csv endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> exportToCSV(HttpServletResponse response) {
+		response.setContentType("application/csv");
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=genres_" + currentDateTime + ".csv";
+		response.setHeader(headerKey, headerValue);
+
+		genreServices.exportToCSV(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+
 }
