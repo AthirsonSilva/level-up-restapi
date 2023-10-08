@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.api.nextspring.dto.ChangePasswordDto;
+import com.api.nextspring.dto.EmailDto;
 import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.dto.optionals.OptionalUserDto;
 import com.api.nextspring.entity.RoleEntity;
@@ -19,9 +21,11 @@ import com.api.nextspring.enums.EntityOptions;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
+import com.api.nextspring.services.EmailService;
 import com.api.nextspring.services.UserService;
 import com.api.nextspring.utils.EntityFileUtils;
 import com.api.nextspring.utils.ExcelUtils;
+import com.github.javafaker.Faker;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,8 @@ public class UserServiceImpl implements UserService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final ModelMapper modelMapper;
 	private final PasswordEncoder passwordEncoder;
+	private final EmailService emailService;
+	private final Faker faker;
 	private final ExcelUtils excelUtils;
 	private final EntityFileUtils fileUtils;
 
@@ -77,13 +83,6 @@ public class UserServiceImpl implements UserService {
 		return currentUser.getRoles();
 	}
 
-	private UserEntity getUserEntityFromToken(String token) {
-		String authentication = jwtTokenProvider.getUsernameFromJwtToken(token);
-
-		return userRepository.findByEmail(authentication)
-				.orElseThrow(() -> new RuntimeException("User not found"));
-	}
-
 	@Override
 	public void exportToExcel(HttpServletResponse response) {
 		List<UserEntity> entityList = userRepository.findAll();
@@ -111,20 +110,62 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDto uploadPhoto(UUID id, MultipartFile file) {
-		UserEntity entity = userRepository
-				.findById(id)
-				.orElseThrow(
-						() -> new RestApiException(
-								HttpStatus.NOT_FOUND, "User with given id was not found!"));
+	public UserDto uploadPhoto(String token, MultipartFile file) {
+		String authentication = jwtTokenProvider.getUsernameFromJwtToken(token);
 
-		String filePath = fileUtils.savePhoto(id, file);
+		UserEntity entity = userRepository.findByEmail(authentication)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+
+		String filePath = fileUtils.savePhoto(entity.getId(), file);
 
 		entity.setPhotoPath(filePath);
 
 		UserEntity save = userRepository.save(entity);
 
 		return modelMapper.map(save, UserDto.class);
+	}
+
+	@Override
+	public UserDto changeCurrentUserPassword(String token, ChangePasswordDto request) {
+		UserEntity currentUser = getUserEntityFromToken(token);
+
+		if (!passwordEncoder.matches(request.getCurrentPassword(), currentUser.getPassword()))
+			throw new RestApiException(HttpStatus.BAD_REQUEST, "Current password is incorrect!");
+
+		currentUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+		userRepository.save(currentUser);
+
+		return modelMapper.map(currentUser, UserDto.class);
+	}
+
+	private UserEntity getUserEntityFromToken(String token) {
+		String authentication = jwtTokenProvider.getUsernameFromJwtToken(token);
+
+		return userRepository.findByEmail(authentication)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+	}
+
+	@Override
+	public void resetCurrentUserPassword(String token) {
+		UserEntity currentUser = getUserEntityFromToken(token);
+
+		String newPass = faker.internet().password(8, 20);
+
+		currentUser.setPassword(passwordEncoder.encode(newPass));
+
+		userRepository.save(currentUser);
+
+		EmailDto email = EmailDto
+				.builder()
+				.username(currentUser.getName())
+				.destination("athirson.silva@proton.me")
+				.content("Your new password is: " + newPass)
+				.subject("Password reset")
+				.sender("athirsonarceus@gmail.com")
+				.build();
+
+		emailService.sendPasswordResetEmail(email);
 	}
 
 }

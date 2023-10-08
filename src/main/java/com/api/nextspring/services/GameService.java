@@ -25,7 +25,7 @@ public interface GameService {
 
 	public GameDto uploadPhoto(UUID id, MultipartFile file);
 
-	public void downloadPhotoByGame(UUID id);
+	public void downloadPhotoByGame(UUID id, HttpServletResponse response);
 
 	public void exportToExcel(HttpServletResponse response);
 }

@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.api.nextspring.exceptions.RestApiException;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -46,10 +47,15 @@ public class EntityFileUtils {
 		return path.toString();
 	}
 
-	public void getPhoto(String filePath) {
+	public void getPhoto(String filePath, HttpServletResponse response) {
 		Path path = Paths.get(filePath);
 
-		try (InputStream inputStream = Files.newInputStream(path);) {
+		if (!Files.exists(path))
+			throw new RestApiException(HttpStatus.NOT_FOUND, "File not found!");
+
+		File file = new File(filePath);
+
+		try (InputStream inputStream = file.toURI().toURL().openStream()) {
 			Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
 		} catch (Exception e) {
 			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while downloading the file!");

@@ -3,7 +3,11 @@ package com.api.nextspring.services;
 import com.api.nextspring.dto.EmailDto;
 
 public interface EmailService {
-	EmailDto sendEmail(EmailDto email);
+	EmailDto sendConfirmationEmail(EmailDto email);
 
-	String buildEmail(String name, String link);
+	EmailDto sendPasswordResetEmail(EmailDto email);
+
+	String buildPasswordResetEmail(String name, String content);
+
+	String buildConfirmationEmail(String name, String link);
 }

@@ -182,14 +182,14 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public void downloadPhotoByGame(UUID id) {
+	public void downloadPhotoByGame(UUID id, HttpServletResponse response) {
 		GameEntity entity = gameRepository
 				.findById(id)
 				.orElseThrow(
 						() -> new RestApiException(
 								HttpStatus.NOT_FOUND, "Game with given id was not found!"));
 
-		fileUtils.getPhoto(entity.getPhotoPath());
+		fileUtils.getPhoto(entity.getPhotoPath(), response);
 	}
 
 	@Override

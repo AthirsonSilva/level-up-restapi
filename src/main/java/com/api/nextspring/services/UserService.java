@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.api.nextspring.dto.ChangePasswordDto;
 import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.dto.optionals.OptionalUserDto;
 import com.api.nextspring.entity.RoleEntity;
@@ -19,11 +20,15 @@ public interface UserService {
 
 	public void deleteCurrentUser(String token);
 
+	public UserDto changeCurrentUserPassword(String token, ChangePasswordDto request);
+
 	public Set<RoleEntity> getUserRole(String token);
 
-	public UserDto uploadPhoto(UUID id, MultipartFile file);
+	public UserDto uploadPhoto(String token, MultipartFile file);
 
 	public InputStreamResource downloadPhotoByUser(UUID id);
 
 	public void exportToExcel(HttpServletResponse response);
+
+	public void resetCurrentUserPassword(String token);
 }

@@ -110,7 +110,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		log.info("Sending account confirmation email: {}", emailDto.toString());
 
-		emailService.sendEmail(emailDto);
+		emailService.sendConfirmationEmail(emailDto);
 
 		return modelMapper.map(user, UserDto.class);
 	}
