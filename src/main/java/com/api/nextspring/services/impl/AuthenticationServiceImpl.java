@@ -18,6 +18,7 @@ import com.api.nextspring.dto.EmailDto;
 import com.api.nextspring.dto.LoginDto;
 import com.api.nextspring.dto.RegisterDto;
 import com.api.nextspring.dto.UserDto;
+import com.api.nextspring.entity.AddressEntity;
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
 import com.api.nextspring.enums.UserRoles;
@@ -25,9 +26,11 @@ import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.RoleRepository;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
+import com.api.nextspring.services.AddressService;
 import com.api.nextspring.services.AuthenticationService;
 import com.api.nextspring.services.EmailService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -52,6 +55,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	// Dependencies
 	private final AuthenticationManager authenticationManager;
 	private final UserRepository userRepository;
+	private final AddressService addressService;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RoleRepository roleRepository;
@@ -100,29 +104,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	/**
 	 * Registers a new user.
 	 *
-	 * @param request The registration request containing the user's name, email,
-	 *                password, and admin status.
+	 * @param request        The registration request containing the user's name,
+	 *                       email,
+	 *                       password, and admin status.
+	 * @param servletRequest The servlet request containing the user's IP address
+	 *                       and host url
 	 * @return The registered user's information.
 	 * @throws RestApiException If a user with the given email already exists or the
 	 *                          user role is not found.
 	 */
-	public UserDto register(RegisterDto request) throws RestApiException {
+	public UserDto register(RegisterDto request, HttpServletRequest servletRequest) throws RestApiException {
 		log.info("Registering user: {}", request.toString());
 
 		// Check if user with email already exists
 		if (userRepository.existsByEmail(request.getEmail()))
 			throw new BadCredentialsException("A user with given email already exists");
 
+		// Checks if password and password confirmation match
+		if (!request.getPassword().equals(request.getPasswordConfirmation()))
+			throw new BadCredentialsException("Password and password confirmation do not match");
+
+		// Retrieve address by zip code
+		AddressEntity retrievedAddress = addressService.getByZipCode(request.getZipCode());
+
 		// Set user role
 		Set<RoleEntity> roles = new HashSet<>();
-		RoleEntity role;
-		if (request.isAdmin()) {
-			role = roleRepository.findByName(UserRoles.ADMIN.name())
-					.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Role not found"));
-		} else {
-			role = roleRepository.findByName(UserRoles.USER.name())
-					.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Role not found"));
-		}
+		RoleEntity role = roleRepository.findByName(UserRoles.USER.name())
+				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Role not found"));
 		roles.add(role);
 
 		// Create user entity
@@ -130,6 +138,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				.builder()
 				.name(request.getName())
 				.email(request.getEmail())
+				.address(retrievedAddress)
 				.enabled(false)
 				.locked(true)
 				.password(passwordEncoder.encode(request.getPassword()))
@@ -140,15 +149,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		log.info("Saving user: {}", user.toString());
 		userRepository.save(user);
 
+		// Get host url from servlet request header
+		String hostUrl = servletRequest.getHeader("host");
+		log.info("Host url: {}", hostUrl);
+
+		// Create account confirmation link
+		String confirmationLink = String.valueOf(hostUrl + "/api/v1/auth/confirm-account?token=" + user.getId());
+		log.info("Account confirmation link: {}", confirmationLink);
+
 		// Send account confirmation email
 		EmailDto emailDto = EmailDto.builder()
 				.username(user.getName())
 				.destination(user.getEmail())
 				.sender("athirsonarceus@gmail.com")
 				.subject("Account activation")
-				.content("http://localhost:8000/api/v1/auth/confirm-account?token=" + user.getId())
+				.content("http://localhost:8080/api/v1/auth/confirm-account?token=" + user.getId())
 				.build();
+
 		log.info("Sending account confirmation email: {}", emailDto.toString());
+
+		// Send email asynchronously
 		emailService.sendConfirmationEmail(emailDto);
 
 		// Return user DTO
@@ -175,15 +195,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				.findById(UUID.fromString(token))
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "User with given token was not found!"));
 
+		log.info("User found: {}", user.toString());
+
 		// Check if account is already activated
 		if (user.isEnabled())
 			throw new RestApiException(HttpStatus.BAD_REQUEST, "User account is already activated!");
 
 		// Activate account
+		log.info("Activating user account: {}", user.toString());
 		user.setEnabled(true);
 		user.setLocked(false);
-		log.info("Activating user account: {}", user.toString());
+
 		userRepository.save(user);
+
 		log.info("User account activated successfully!");
 	}
 }

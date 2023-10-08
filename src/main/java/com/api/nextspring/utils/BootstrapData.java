@@ -6,6 +6,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.api.nextspring.entity.AddressEntity;
 import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.entity.GameEntity;
 import com.api.nextspring.entity.GenreEntity;
@@ -13,6 +14,7 @@ import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
 import com.api.nextspring.enums.GameRatingOptions;
 import com.api.nextspring.enums.UserRoles;
+import com.api.nextspring.repositories.AddressRepository;
 import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.repositories.GameRepository;
 import com.api.nextspring.repositories.GenreRepository;
@@ -52,6 +54,7 @@ public class BootstrapData implements InitializingBean {
 	private final GenreRepository genreRepository;
 	private final DeveloperRepository developerRepository;
 	private final GameRepository gameRepository;
+	private final AddressRepository addressRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final Faker faker;
 
@@ -84,8 +87,6 @@ public class BootstrapData implements InitializingBean {
 
 		if (!checkIfGameAlreadyExists())
 			createGames();
-
-		System.out.println("\n------------ Application Bootstraped!!! ------------\n");
 	}
 
 	/**
@@ -97,6 +98,7 @@ public class BootstrapData implements InitializingBean {
 				.name("user")
 				.email("user@user.com")
 				.photoPath(faker.internet().avatar())
+				.address(createAddresses())
 				.password(passwordEncoder.encode("password"))
 				.roles(Set.of(
 						roleRepository.findByName(UserRoles.USER.name()).orElseThrow(
@@ -111,6 +113,7 @@ public class BootstrapData implements InitializingBean {
 					.name(faker.name().fullName())
 					.email(faker.internet().emailAddress())
 					.photoPath(faker.internet().avatar())
+					.address(createAddresses())
 					.password(passwordEncoder.encode("user"))
 					.roles(Set.of(
 							roleRepository.findByName(UserRoles.USER.name()).orElseThrow(
@@ -119,8 +122,6 @@ public class BootstrapData implements InitializingBean {
 					.locked(false)
 					.build());
 		}
-
-		System.out.println("\n------------ User created!!! ------------\n");
 	}
 
 	/**
@@ -132,6 +133,7 @@ public class BootstrapData implements InitializingBean {
 				.name("admin")
 				.email("admin@admin.com")
 				.photoPath(faker.internet().avatar())
+				.address(createAddresses())
 				.password(passwordEncoder.encode("password"))
 				.roles(Set.of(
 						roleRepository.findByName(UserRoles.ADMIN.name()).orElseThrow(
@@ -139,21 +141,13 @@ public class BootstrapData implements InitializingBean {
 				.enabled(true)
 				.locked(false)
 				.build());
-
-		System.out.println("\n------------ Admin created!!! ------------\n");
 	}
 
 	/**
 	 * creates 4 genres with random data and one genre with name "No Genre"
 	 */
 	private void createGenres() {
-		genreRepository.save(GenreEntity
-				.builder()
-				.name("No Genre")
-				.description("Games without genre")
-				.build());
-
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 5; i++) {
 			genreRepository.save(GenreEntity
 					.builder()
 					.name(faker.book().genre())
@@ -167,13 +161,7 @@ public class BootstrapData implements InitializingBean {
 	 * Developer"
 	 */
 	private void createDevelopers() {
-		developerRepository.save(DeveloperEntity
-				.builder()
-				.name("No Developer")
-				.description("Game without developer")
-				.build());
-
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 5; i++) {
 			developerRepository.save(DeveloperEntity
 					.builder()
 					.name(faker.company().name())
@@ -192,12 +180,47 @@ public class BootstrapData implements InitializingBean {
 					.name(faker.company().name())
 					.grade(GameRatingOptions.values()[faker.number().numberBetween(0, 4)].toString())
 					.description(faker.lorem().sentence())
-					.developer(getNoDeveloper())
-					.genre(getNoGenre())
+					.developer(getDeveloperByIndex(i))
+					.genre(getGenreByIndex(i))
 					.year(faker.number().numberBetween(1900, 2023))
-					.photoPath("https://avatars.dicebear.com/api/open-peeps/" + faker.name().firstName() + ".svg")
+					.photoPath(faker.internet().avatar())
 					.build());
 		}
+	}
+
+	/**
+	 * creates 5 addresses with random data
+	 */
+	private AddressEntity createAddresses() {
+		return addressRepository.save(AddressEntity
+				.builder()
+				.street(faker.address().streetName())
+				.complement(faker.address().secondaryAddress())
+				.neighborhood(faker.address().streetName())
+				.city(faker.address().city())
+				.state(faker.address().state())
+				.zipCode(faker.address().zipCode())
+				.build());
+	}
+
+	/**
+	 * creates the user role in the database
+	 */
+	private void createUserRole() {
+		roleRepository.save(RoleEntity
+				.builder()
+				.name(UserRoles.USER.name())
+				.build());
+	}
+
+	/**
+	 * creates the admin role in the database
+	 */
+	private void createAdminRole() {
+		roleRepository.save(RoleEntity
+				.builder()
+				.name(UserRoles.ADMIN.name())
+				.build());
 	}
 
 	/**
@@ -220,30 +243,6 @@ public class BootstrapData implements InitializingBean {
 		UserEntity user = userRepository.findByEmail("user@user.com").orElse(null);
 
 		return user != null;
-	}
-
-	/**
-	 * creates the user role in the database
-	 */
-	private void createUserRole() {
-		roleRepository.save(RoleEntity
-				.builder()
-				.name(UserRoles.USER.name())
-				.build());
-
-		System.out.println("\n------------ User role created!!! ------------\n");
-	}
-
-	/**
-	 * creates the admin role in the database
-	 */
-	private void createAdminRole() {
-		roleRepository.save(RoleEntity
-				.builder()
-				.name(UserRoles.ADMIN.name())
-				.build());
-
-		System.out.println("\n------------ Admin role created!!! ------------\n");
 	}
 
 	/**
@@ -299,27 +298,24 @@ public class BootstrapData implements InitializingBean {
 		return gameRepository.count() > 0;
 	}
 
-	private boolean checkIfAddressAlreadyExists() {
-		return false;
+	/**
+	 * Returns the DeveloperEntity object at the specified index from the list of
+	 * all developers.
+	 *
+	 * @param index the index of the DeveloperEntity object to be returned
+	 * @return the DeveloperEntity object at the specified index
+	 */
+	private DeveloperEntity getDeveloperByIndex(Integer index) {
+		return developerRepository.findAll().get(index);
 	}
 
 	/**
-	 * Returns the developer with name "No Developer" which is the default developer
-	 * 
-	 * @return the developer with name "No Developer" which is the default developer
+	 * Returns the genre entity at the specified index in the list of all genres.
+	 *
+	 * @param index the index of the genre entity to return
+	 * @return the genre entity at the specified index
 	 */
-	private DeveloperEntity getNoDeveloper() {
-		return developerRepository.findByName("No Developer").orElseThrow(
-				() -> new RuntimeException("No Developer not found!"));
-	}
-
-	/**
-	 * Returns the genre with name "No Genre" which is the default genre
-	 * 
-	 * @return the genre with name "No Genre" which is the default genre
-	 */
-	private GenreEntity getNoGenre() {
-		return genreRepository.findByName("No Genre").orElseThrow(
-				() -> new RuntimeException("No Genre not found!"));
+	private GenreEntity getGenreByIndex(Integer index) {
+		return genreRepository.findAll().get(index);
 	}
 }

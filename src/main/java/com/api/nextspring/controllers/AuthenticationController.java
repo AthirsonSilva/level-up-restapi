@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -54,8 +55,10 @@ public class AuthenticationController {
 	@PostMapping("/register")
 	@Operation(summary = "User register endpoint")
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<Response<String, Object>> userRegister(@Validated @RequestBody RegisterDto request) {
-		UserDto authenticationUserObject = authenticationServices.register(request);
+	public ResponseEntity<Response<String, Object>> userRegister(
+			@Validated @RequestBody RegisterDto request,
+			HttpServletRequest httpServletRequest) {
+		UserDto authenticationUserObject = authenticationServices.register(request, httpServletRequest);
 
 		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse(
 				"Registered in successfully! An email was sent to your email to confirm your account!",

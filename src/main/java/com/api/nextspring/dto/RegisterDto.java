@@ -31,5 +31,13 @@ public class RegisterDto {
 	@Size(min = 6, max = 60, message = "Password must be between 6 and 60 characters")
 	private String password;
 
-	private boolean isAdmin;
+	@NotEmpty(message = "Password confirmation is required")
+	@Length(min = 6, max = 60, message = "Password confirmation must be between 6 and 60 characters")
+	@Size(min = 6, max = 60, message = "Password confirmation must be between 6 and 60 characters")
+	private String passwordConfirmation;
+
+	@NotEmpty(message = "ZipCode is required")
+	@Length(min = 8, max = 8, message = "ZipCode must be 8 characters")
+	@Size(min = 8, max = 8, message = "ZipCode must be 8 characters")
+	private String zipCode;
 }

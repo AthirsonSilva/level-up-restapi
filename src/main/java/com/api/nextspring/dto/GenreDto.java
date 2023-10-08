@@ -1,6 +1,7 @@
 package com.api.nextspring.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.validator.constraints.Length;
@@ -31,6 +32,8 @@ public class GenreDto extends RepresentationModel<GenreDto> {
 	@Length(min = 3, message = "Description must be at least 3 characters")
 	@Size(min = 3, message = "Description must be at least 3 characters")
 	private String description;
+
+	private List<GameDto> games;
 
 	private LocalDateTime createdAt;
 

@@ -1,20 +1,22 @@
-# next-spring
-Game rental service API done with Spring Boot to test my knowledge of this framework
+# Next Spring
+
+This is a simple game rental service API that I created using Spring Boot. The purpose of this project was to test my knowledge of this framework and to learn how to use its features. The API allows users to create, update, delete and search for games, as well as to rent and return them. It also handles authentication and authorization using JWT tokens. The API follows the RESTful principles and uses a PostgreSQL container as its database. I used Spring Boot Starter Web, Spring Boot Starter Data JPA, Spring Boot Starter Security and Spring Boot Starter Test as dependencies. I also used Lombok to reduce boilerplate code and Swagger to document the API. The project is available on GitHub and can be run using Maven or Docker.
+
 
 ## Contents
 
-- [next-spring](#next-spring)
-  - [Contents](#contents)
-  - [Requirements](#requirements)
-  - [Architecture Layers](#architecture-layers)
-  - [Project Features](#project-features)
-      - [PRESENTATION LAYER](#presentation-layer)
-      - [BUSINESS LAYER](#business-layer)
-      - [PERSISTENCE LAYER](#persistence-layer)
-      - [DATABASE LAYER](#database-layer)
-  - [Software structure](#software-structure)
-  - [Getting Started](#getting-started)
-  - [Usage](#usage)
+- [Next Spring](#next-spring)
+	- [Contents](#contents)
+	- [Requirements](#requirements)
+	- [Architecture Layers](#architecture-layers)
+	- [Project Features](#project-features)
+			- [PRESENTATION LAYER](#presentation-layer)
+			- [BUSINESS LAYER](#business-layer)
+			- [PERSISTENCE LAYER](#persistence-layer)
+			- [DATABASE LAYER](#database-layer)
+	- [Software structure](#software-structure)
+	- [Getting Started](#getting-started)
+	- [Usage](#usage)
 
 ## Requirements
 
@@ -104,7 +106,9 @@ This layer is simply the actual database that is responsible for:
 ./mvnw spring-boot:run
 ```
 
-5. The application will start on http://localhost:8000
+5. The application will start on http://localhost:8080
+
+6. You can then test the API using Swagger UI or some HTTP client like curl or Postman
 
 ## Usage
 

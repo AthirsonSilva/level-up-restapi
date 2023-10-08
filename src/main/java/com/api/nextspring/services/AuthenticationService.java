@@ -4,6 +4,8 @@ import com.api.nextspring.dto.LoginDto;
 import com.api.nextspring.dto.RegisterDto;
 import com.api.nextspring.dto.UserDto;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 /**
  * This interface defines the methods for user authentication and registration.
  * 
@@ -14,10 +16,12 @@ public interface AuthenticationService {
 	/**
 	 * Registers a new user with the provided user data.
 	 * 
-	 * @param request the request containing the user data to be registered
+	 * @param request        the request containing the user data to be registered
+	 * @param servletRequest the servlet request containing the user IP address and
+	 *                       server host url
 	 * @return the user data registered
 	 */
-	public UserDto register(RegisterDto request);
+	public UserDto register(RegisterDto request, HttpServletRequest servletRequest);
 
 	/**
 	 * Logs in a user with the provided user data.
