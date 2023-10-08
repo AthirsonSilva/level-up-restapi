@@ -1,6 +1,21 @@
 # next-spring
 Game rental service API done with Spring Boot to test my knowledge of this framework
 
+## Contents
+
+- [next-spring](#next-spring)
+  - [Contents](#contents)
+  - [Requirements](#requirements)
+  - [Architecture Layers](#architecture-layers)
+  - [Project Features](#project-features)
+      - [PRESENTATION LAYER](#presentation-layer)
+      - [BUSINESS LAYER](#business-layer)
+      - [PERSISTENCE LAYER](#persistence-layer)
+      - [DATABASE LAYER](#database-layer)
+  - [Software structure](#software-structure)
+  - [Getting Started](#getting-started)
+  - [Usage](#usage)
+
 ## Requirements
 
 - [Java 21](https://adoptium.net/)
@@ -11,43 +26,27 @@ Game rental service API done with Spring Boot to test my knowledge of this frame
 
 ## Project Features
 
-✔️ Consistent API design
-
-✔️ Use of DTOs (Data Transfer Objects)
-
-✔️ Use of HATEOS (Hypertext as the Engine of Application State)
-
-✔️ Spring Security with JWT (Json Web Token)
-
-✔️ User authentication with email verification
-
-✔️ Caching with Redis (Coming soon)
-
-✔️ Documentation with SwaggerUI
-
-✔️ Pagination and sorting 
-
-✔️ Mailing service with JavaMail
-
-✔️ Data generation with JavaFaker
-
-✔️ Layered architecture
-
-✔️ Global Error Handling
-
-✔️ Testing with JUnit (In development)
-
-✔️ API versioning
-
-✔️ File upload and download (In development)
-
-✔️ Logging with Log4j2 (In development)
-
-✔️ Use rate limiting (Coming soon)
-
-✔️ Circuit breakers (Coming soon)
-
-✔️ CI/ CD with Docker and Railway
+| Feature                                    | Status           |
+| ------------------------------------------ | ---------------- |
+| Consistent API design                      | 🟢 Ready          |
+| Use of DTOs                                | 🟢 Ready          |
+| Use of HATEOAS                             | 🟢 Ready          |
+| Spring Security with JWT                   | 🟢 Ready          |
+| User authentication and email verification | 🟢 Ready          |
+| Caching with Redis                         | 🔴 Not ready      |
+| Documentation with SwaggerUI               | 🟢 Ready          |
+| Pagination and sorting                     | 🟢 Ready          |
+| Mailing service with JavaMail              | 🟢 Ready          |
+| Data generation with JavaFaker             | 🟢 Ready          |
+| Layered architecture                       | 🟢 Ready          |
+| Global Error Handling                      | 🟢 Ready          |
+| Testing with JUnit                         | 🟡 In development |
+| API versioning                             | 🟢 Ready          |
+| File upload and download                   | 🟡 In development |
+| Logging with Log4j2                        | 🟡 In development |
+| Use rate limiting                          | 🔴 Not ready      |
+| Circuit breakers                           | 🔴 Not ready      |
+| CI/ CD with Docker and Railway             | 🟢 Ready          |
 
 #### PRESENTATION LAYER
 
