@@ -22,6 +22,7 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @Log4j2
 public class CsvExporter {
+
 	/**
 	 * Exports a list of objects to a CSV file and writes the file to the
 	 * HttpServletResponse object.
@@ -34,17 +35,30 @@ public class CsvExporter {
 	 *                          CSV file
 	 */
 	public <T> void export(HttpServletResponse response, Iterable<T> entityList, String[] headers, String[] fields) {
+		// Create a CSV printer instance with default settings
 		try (CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT)) {
+			// Create CSV file header using the array of headers passed as parameter
 			csvPrinter.printRecord((Object[]) headers);
 
+			// Iterate over the list of entities passed as parameter
 			for (T entity : entityList) {
+				// Create a list of objects to write to the CSV file
 				List<Object> record = new ArrayList<>();
-				for (String field : fields) {
-					Field f = entity.getClass().getDeclaredField(field);
-					f.setAccessible(true);
 
-					record.add(f.get(entity));
+				// Iterate over the array of fields passed as parameter and get the value of the
+				// field for the current entity
+				for (String field : fields) {
+					// Get the declared field of the entity class
+					Field declaredField = entity.getClass().getDeclaredField(field);
+					declaredField.setAccessible(true);
+
+					log.info(declaredField.get(entity));
+
+					// Add the value of the field to the list of objects to write to the CSV file
+					record.add(declaredField.get(entity));
 				}
+
+				// Write the list of objects to the CSV file
 				csvPrinter.printRecord(record);
 			}
 		} catch (IOException | NoSuchFieldException | IllegalAccessException e) {

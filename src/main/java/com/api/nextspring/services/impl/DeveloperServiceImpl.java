@@ -1,5 +1,6 @@
 package com.api.nextspring.services.impl;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +24,7 @@ import com.api.nextspring.services.DeveloperService;
 import com.api.nextspring.utils.CsvExporter;
 import com.api.nextspring.utils.ExcelExporter;
 import com.api.nextspring.utils.PdfExporter;
-import com.itextpdf.text.DocumentException;
+import com.lowagie.text.DocumentException;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -262,11 +263,14 @@ public class DeveloperServiceImpl implements DeveloperService {
 		log.info("Exporting {} rows to PDF file...", dtoList.size());
 
 		try {
-			pdfExporter.export(dtoList);
+			pdfExporter.export(response, dtoList, EntityOptions.DEVELOPER);
 		} catch (IllegalArgumentException e) {
 			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occurred while exporting data to PDF file: " + e.getMessage());
 		} catch (DocumentException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while exporting data to PDF file: " + e.getMessage());
+		} catch (IOException e) {
 			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occurred while exporting data to PDF file: " + e.getMessage());
 		}

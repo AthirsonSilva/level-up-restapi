@@ -22,6 +22,7 @@ import com.api.nextspring.exceptions.RestApiException;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * This class provides utility methods for working with Excel files. It includes
@@ -41,6 +42,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author Athirson Silva
  */
 @Service
+@Log4j2
 public class ExcelExporter {
 	private XSSFWorkbook workbook;
 	private XSSFSheet sheet;
@@ -69,6 +71,8 @@ public class ExcelExporter {
 		Field[] fields = clazz.getDeclaredFields();
 
 		for (int i = 0; i < fields.length; i++) {
+			log.info(fields[i].getName());
+
 			createCell(row, i, fields[i].getName(), style);
 		}
 	}
@@ -153,6 +157,9 @@ public class ExcelExporter {
 
 			for (Field field : fields) {
 				field.setAccessible(true);
+
+				log.info(field.getName() + " - " + field.get(entity));
+
 				createCell(row, columnCount++, field.get(entity), style);
 			}
 		}
