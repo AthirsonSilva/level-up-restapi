@@ -10,7 +10,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +17,6 @@ import com.api.nextspring.dto.export.DeveloperExportDto;
 import com.api.nextspring.dto.export.GameExportDto;
 import com.api.nextspring.dto.export.GenreExportDto;
 import com.api.nextspring.dto.export.UserExportDto;
-import com.api.nextspring.entity.DeveloperEntity;
-import com.api.nextspring.entity.GameEntity;
-import com.api.nextspring.entity.GenreEntity;
-import com.api.nextspring.entity.UserEntity;
 import com.api.nextspring.enums.EntityOptions;
 import com.api.nextspring.exceptions.RestApiException;
 
@@ -49,12 +44,10 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ExcelUtils {
 	private XSSFWorkbook workbook;
 	private XSSFSheet sheet;
-	private final ModelMapper modelMapper;
 
-	public ExcelUtils(ModelMapper modelMapper) {
+	public ExcelUtils() {
 		this.workbook = new XSSFWorkbook();
-		this.sheet = workbook.createSheet("Users");
-		this.modelMapper = modelMapper;
+		this.sheet = workbook.createSheet("NextSpring");
 	}
 
 	/**
@@ -104,11 +97,14 @@ public class ExcelUtils {
 	 * @param value       the value of the excel file cell
 	 * @param style       the style of the excel file cells
 	 */
-	private void createCell(Row row, int columnCount, Object value, CellStyle style) {
+	private <T> void createCell(Row row, int columnCount, T value, CellStyle style) {
 		sheet.autoSizeColumn(columnCount);
 		Cell cell = row.createCell(columnCount);
 
-		if (value instanceof Integer)
+		if (value == null)
+			cell.setCellValue("N/A");
+
+		else if (value instanceof Integer)
 			cell.setCellValue((Integer) value);
 
 		else if (value instanceof Boolean)
@@ -138,19 +134,17 @@ public class ExcelUtils {
 	}
 
 	/**
-	 * Populates the sheet with the data of the game entities
+	 * Populates the sheet with the data of any entity
 	 * 
 	 * @param <T>        the generic type of the entity
 	 * @param entityList the list of entities that will be exported to excel
 	 * @param style      the style of the excel file cells
 	 * @throws IllegalAccessException if the entityList is inaccessible
 	 */
-	private <T> void populateGameSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
+	private <T> void populateSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
 		int rowCount = 1;
-		List<GameExportDto> dtoList = entityList.stream().map(entity -> modelMapper.map(entity, GameExportDto.class))
-				.toList();
 
-		for (var entity : dtoList) {
+		for (T entity : entityList) {
 			Row row = sheet.createRow(rowCount++);
 			int columnCount = 0;
 
@@ -161,107 +155,6 @@ public class ExcelUtils {
 				field.setAccessible(true);
 				createCell(row, columnCount++, field.get(entity), style);
 			}
-		}
-	}
-
-	/**
-	 * Populates the sheet with the data of the genre entities
-	 * 
-	 * @param <T>        the generic type of the entity
-	 * @param entityList the list of entities that will be exported to excel
-	 * @param style      the style of the excel file cells
-	 * @throws IllegalAccessException if the entityList is inaccessible
-	 */
-	private <T> void populateGenreSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
-		int rowCount = 1;
-		List<GenreExportDto> dtoList = entityList.stream().map(entity -> modelMapper.map(entity, GenreExportDto.class))
-				.toList();
-
-		for (var entity : dtoList) {
-			Row row = sheet.createRow(rowCount++);
-			int columnCount = 0;
-
-			Class<?> clazz = entity.getClass();
-			Field[] fields = clazz.getDeclaredFields();
-
-			for (Field field : fields) {
-				field.setAccessible(true);
-				createCell(row, columnCount++, field.get(entity), style);
-			}
-		}
-	}
-
-	/**
-	 * Populates the sheet with the data of the developer entities
-	 * 
-	 * @param <T>        the generic type of the entity
-	 * @param entityList the list of entities that will be exported to excel
-	 * @param style      the style of the excel file cells
-	 * @throws IllegalAccessException if the entityList is inaccessible
-	 */
-	private <T> void populateDeveloperSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
-		int rowCount = 1;
-		List<DeveloperExportDto> dtoList = entityList.stream()
-				.map(entity -> modelMapper.map(entity, DeveloperExportDto.class))
-				.toList();
-
-		for (var entity : dtoList) {
-			Row row = sheet.createRow(rowCount++);
-			int columnCount = 0;
-
-			Class<?> clazz = entity.getClass();
-			Field[] fields = clazz.getDeclaredFields();
-
-			for (Field field : fields) {
-				field.setAccessible(true);
-				createCell(row, columnCount++, field.get(entity), style);
-			}
-		}
-	}
-
-	/**
-	 * Populates the sheet with the data of the user entities
-	 * 
-	 * @param <T>        the generic type of the entity
-	 * @param entityList the list of entities that will be exported to excel
-	 * @param style      the style of the excel file cells
-	 * @throws IllegalAccessException if the entityList is inaccessible
-	 */
-	private <T> void populateUserSheet(List<T> entityList, CellStyle style) throws IllegalAccessException {
-		int rowCount = 1;
-		List<UserExportDto> dtoList = entityList.stream().map(entity -> modelMapper.map(entity, UserExportDto.class))
-				.toList();
-
-		for (var entity : dtoList) {
-			Row row = sheet.createRow(rowCount++);
-			int columnCount = 0;
-
-			Class<?> clazz = entity.getClass();
-			Field[] fields = clazz.getDeclaredFields();
-
-			for (Field field : fields) {
-				field.setAccessible(true);
-				createCell(row, columnCount++, field.get(entity), style);
-			}
-		}
-	}
-
-	/**
-	 * Selects the sheet that will be populated with the data of the entity
-	 * 
-	 * @param <T>        the generic type of the entity
-	 * @param entityList the list of entities that will be exported to excel
-	 * @param entity     the entity type that will be exported to excel
-	 * @throws IllegalAccessException if the entityList is inaccessible
-	 */
-	@SuppressWarnings("unchecked")
-	private <T> void selectAndPopulateSheet(List<T> entityList, EntityOptions entity) throws IllegalAccessException {
-		switch (entity) {
-			case GAME -> populateGameSheet((List<GameEntity>) entityList, writeDataLines());
-			case GENRE -> populateGenreSheet((List<GenreEntity>) entityList, writeDataLines());
-			case DEVELOPER -> populateDeveloperSheet((List<DeveloperEntity>) entityList, writeDataLines());
-			case USER -> populateUserSheet((List<UserEntity>) entityList, writeDataLines());
-			default -> throw new RestApiException(HttpStatus.BAD_REQUEST, "Invalid entity!");
 		}
 	}
 
@@ -279,12 +172,10 @@ public class ExcelUtils {
 	public <T> void export(HttpServletResponse response, List<T> entityList, EntityOptions entity)
 			throws IllegalArgumentException, IllegalAccessException {
 		writeHeaderLine(entity);
-		writeDataLines();
-		selectAndPopulateSheet(entityList, entity);
+		populateSheet(entityList, writeDataLines());
 
-		try (ServletOutputStream outputStream = response.getOutputStream();) {
+		try (ServletOutputStream outputStream = response.getOutputStream()) {
 			workbook.write(outputStream);
-			workbook.close();
 		} catch (IOException e) {
 			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occurred while exporting data to Excel file: " + e.getMessage());
