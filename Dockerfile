@@ -12,7 +12,7 @@ RUN mvn -f /home/app/pom.xml clean package -DskipTests
 #
 # Package stage
 #
-FROM openjdk:21-ea-21-slim
+FROM amazoncorretto:21
 
 COPY --from=build /home/app/target/*.jar /usr/local/lib/app.jar
 
