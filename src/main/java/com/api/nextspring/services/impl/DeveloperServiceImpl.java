@@ -20,8 +20,10 @@ import com.api.nextspring.enums.EntityOptions;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.services.DeveloperService;
-import com.api.nextspring.utils.CsvUtils;
-import com.api.nextspring.utils.ExcelUtils;
+import com.api.nextspring.utils.CsvExporter;
+import com.api.nextspring.utils.ExcelExporter;
+import com.api.nextspring.utils.PdfExporter;
+import com.itextpdf.text.DocumentException;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,7 @@ import lombok.extern.log4j.Log4j2;
  * related to developers. It uses DeveloperRepository to interact with the
  * database and ModelMapper to map between
  * DTOs and entities. It also provides an implementation for exporting developer
- * data to an Excel file using ExcelUtils.
+ * data to an Excel file using excelExporter.
  * 
  * @author Athirson Silva
  * @implNote This class implements the UserService interface and provides the
@@ -44,8 +46,9 @@ import lombok.extern.log4j.Log4j2;
 public class DeveloperServiceImpl implements DeveloperService {
 	private final DeveloperRepository developerRepository;
 	private final ModelMapper modelMapper;
-	private final ExcelUtils excelUtils;
-	private final CsvUtils csvUtils;
+	private final ExcelExporter excelExporter;
+	private final CsvExporter csvExporter;
+	private final PdfExporter pdfExporter;
 
 	/**
 	 * Creates a new developer with the given name and description.
@@ -193,8 +196,14 @@ public class DeveloperServiceImpl implements DeveloperService {
 	public void exportToExcel(HttpServletResponse response) {
 		List<DeveloperEntity> entityList = developerRepository.findAll();
 
+		List<DeveloperExportDto> dtoList = entityList.stream()
+				.map(developerEntity -> modelMapper.map(developerEntity, DeveloperExportDto.class))
+				.collect(Collectors.toList());
+
+		log.info("Exporting {} rows to Excel file...", dtoList.size());
+
 		try {
-			excelUtils.export(response, entityList, EntityOptions.DEVELOPER);
+			excelExporter.export(response, dtoList, EntityOptions.DEVELOPER);
 		} catch (IllegalArgumentException e) {
 			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occurred while exporting data to Excel file: " + e.getMessage());
@@ -237,6 +246,29 @@ public class DeveloperServiceImpl implements DeveloperService {
 		// Copies the headers to the fields array
 		String[] fields = headers.clone();
 
-		csvUtils.export(response, developerExportDtoList, headers, fields);
+		log.info("Exporting {} rows to CSV file...", developerExportDtoList.spliterator().getExactSizeIfKnown());
+
+		// Exports the data to a CSV file
+		csvExporter.export(response, developerExportDtoList, headers, fields);
+	}
+
+	public void exportToPDF(HttpServletResponse response) {
+		List<DeveloperEntity> entityList = developerRepository.findAll();
+
+		List<DeveloperExportDto> dtoList = entityList.stream()
+				.map(developerEntity -> modelMapper.map(developerEntity, DeveloperExportDto.class))
+				.collect(Collectors.toList());
+
+		log.info("Exporting {} rows to PDF file...", dtoList.size());
+
+		try {
+			pdfExporter.export(dtoList);
+		} catch (IllegalArgumentException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while exporting data to PDF file: " + e.getMessage());
+		} catch (DocumentException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while exporting data to PDF file: " + e.getMessage());
+		}
 	}
 }
