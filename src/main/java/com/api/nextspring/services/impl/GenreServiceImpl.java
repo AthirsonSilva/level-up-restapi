@@ -20,8 +20,8 @@ import com.api.nextspring.enums.EntityOptions;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.GenreRepository;
 import com.api.nextspring.services.GenreService;
-import com.api.nextspring.utils.CsvUtils;
-import com.api.nextspring.utils.ExcelUtils;
+import com.api.nextspring.utils.CsvExporter;
+import com.api.nextspring.utils.ExcelExporter;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * This class implements the GenreService interface and provides the
  * implementation for all its methods.
- * It uses GenreRepository, ModelMapper, and ExcelUtils to perform CRUD
+ * It uses GenreRepository, ModelMapper, and excelExporter to perform CRUD
  * operations on GenreEntity objects.
  * 
  * @author Athirson Silva
@@ -40,8 +40,8 @@ import lombok.RequiredArgsConstructor;
 public class GenreServiceImpl implements GenreService {
 	private final GenreRepository genreRepository;
 	private final ModelMapper modelMapper;
-	private final ExcelUtils excelUtils;
-	private final CsvUtils csvUtils;
+	private final ExcelExporter excelExporter;
+	private final CsvExporter csvExporter;
 
 	/**
 	 * Returns a list of all genres, sorted and paginated according to the given
@@ -171,8 +171,12 @@ public class GenreServiceImpl implements GenreService {
 	public void exportToExcel(HttpServletResponse response) {
 		List<GenreEntity> entityList = genreRepository.findAll();
 
+		List<GenreExportDto> dtoList = entityList.stream()
+				.map(developerEntity -> modelMapper.map(developerEntity, GenreExportDto.class))
+				.collect(Collectors.toList());
+
 		try {
-			excelUtils.export(response, entityList, EntityOptions.GENRE);
+			excelExporter.export(response, dtoList, EntityOptions.GENRE);
 		} catch (IllegalArgumentException e) {
 			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occurred while exporting data to Excel file: " + e.getMessage());
@@ -214,6 +218,6 @@ public class GenreServiceImpl implements GenreService {
 		// Copies the headers to the fields array
 		String[] fields = headers.clone();
 
-		csvUtils.export(response, dtoList, headers, fields);
+		csvExporter.export(response, dtoList, headers, fields);
 	}
 }

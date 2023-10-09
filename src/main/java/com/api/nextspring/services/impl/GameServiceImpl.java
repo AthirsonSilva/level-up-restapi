@@ -26,9 +26,9 @@ import com.api.nextspring.repositories.GameRepository;
 import com.api.nextspring.repositories.GenreRepository;
 import com.api.nextspring.repositories.custom.CustomGameRepository;
 import com.api.nextspring.services.GameService;
-import com.api.nextspring.utils.CsvUtils;
-import com.api.nextspring.utils.EntityFileUtils;
-import com.api.nextspring.utils.ExcelUtils;
+import com.api.nextspring.utils.CsvExporter;
+import com.api.nextspring.utils.ExcelExporter;
+import com.api.nextspring.utils.FileManager;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -54,9 +54,9 @@ public class GameServiceImpl implements GameService {
 	private final GenreRepository genreRepository;
 	private final DeveloperRepository developerRepository;
 	private final ModelMapper modelMapper;
-	private final ExcelUtils excelUtils;
-	private final CsvUtils csvUtils;
-	private final EntityFileUtils fileUtils;
+	private final ExcelExporter excelExporter;
+	private final CsvExporter csvExporter;
+	private final FileManager fileManager;
 
 	/**
 	 * Creates a new Game entity from the provided GameDto object.
@@ -232,10 +232,14 @@ public class GameServiceImpl implements GameService {
 	 */
 	@Override
 	public void exportToExcel(HttpServletResponse response) {
-		List<GameEntity> gameEntityList = gameRepository.findAll();
+		List<GameEntity> entityList = gameRepository.findAll();
+
+		List<GameExportDto> dtoList = entityList.stream()
+				.map(gameEntity -> modelMapper.map(gameEntity, GameExportDto.class))
+				.collect(Collectors.toList());
 
 		try {
-			excelUtils.export(response, gameEntityList, EntityOptions.GAME);
+			excelExporter.export(response, dtoList, EntityOptions.GAME);
 		} catch (IllegalArgumentException e) {
 			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occurred while exporting data to Excel file: " + e.getMessage());
@@ -261,7 +265,7 @@ public class GameServiceImpl implements GameService {
 						() -> new RestApiException(
 								HttpStatus.NOT_FOUND, "Game with given id was not found!"));
 
-		fileUtils.getPhoto(entity.getPhotoPath(), response);
+		fileManager.getPhoto(entity.getPhotoPath(), response);
 	}
 
 	@Override
@@ -272,7 +276,7 @@ public class GameServiceImpl implements GameService {
 						() -> new RestApiException(
 								HttpStatus.NOT_FOUND, "Game with given id was not found!"));
 
-		String filePath = fileUtils.savePhoto(id, file);
+		String filePath = fileManager.savePhoto(id, file);
 
 		entity.setPhotoPath(filePath);
 
@@ -329,7 +333,7 @@ public class GameServiceImpl implements GameService {
 		// Copies the headers to the fields array
 		String[] fields = headers.clone();
 
-		csvUtils.export(response, dtoList, headers, fields);
+		csvExporter.export(response, dtoList, headers, fields);
 	}
 
 }

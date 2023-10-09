@@ -31,7 +31,7 @@ import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.dto.optionals.OptionalUserDto;
 import com.api.nextspring.services.LinkingService;
 import com.api.nextspring.services.UserService;
-import com.api.nextspring.utils.JwtTokenUtils;
+import com.api.nextspring.utils.JwtTokenExtracter;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -54,7 +54,7 @@ import lombok.RequiredArgsConstructor;
 })
 public class UserController {
 	private final UserService userServices;
-	private final JwtTokenUtils jwtTokenUtils;
+	private final JwtTokenExtracter jwtTokenExtracter;
 	private final LinkingService linkingService;
 
 	@GetMapping
@@ -62,7 +62,7 @@ public class UserController {
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Response<String, UserDto>> getCurrentUser(@RequestHeader Map<String, String> headers,
 			HttpServletRequest servletRequest) {
-		String token = jwtTokenUtils.execute(headers);
+		String token = jwtTokenExtracter.execute(headers);
 
 		UserDto currentUser = userServices.getCurrentUser(token);
 
@@ -78,7 +78,7 @@ public class UserController {
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Response<String, UserDto>> updateCurrentUser(@RequestHeader Map<String, String> headers,
 			@RequestBody OptionalUserDto request) {
-		String token = jwtTokenUtils.execute(headers);
+		String token = jwtTokenExtracter.execute(headers);
 
 		UserDto updatedCurrentUser = userServices.updateCurrentUser(token, request);
 
@@ -93,7 +93,7 @@ public class UserController {
 	@Operation(summary = "Delete the current logged in user")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<HashMap<String, String>> deleteUser(@RequestHeader Map<String, String> headers) {
-		String token = jwtTokenUtils.execute(headers);
+		String token = jwtTokenExtracter.execute(headers);
 
 		userServices.deleteCurrentUser(token);
 
@@ -110,7 +110,7 @@ public class UserController {
 	public ResponseEntity<Response<String, UserDto>> changeCurrentUserPassword(
 			@RequestHeader Map<String, String> headers,
 			@RequestBody ChangePasswordDto request) {
-		String token = jwtTokenUtils.execute(headers);
+		String token = jwtTokenExtracter.execute(headers);
 
 		UserDto updatedCurrentUser = userServices.changeCurrentUserPassword(token, request);
 
@@ -125,7 +125,7 @@ public class UserController {
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Response<String, ?>> resetCurrentUserPassword(
 			@RequestHeader Map<String, String> headers) {
-		String token = jwtTokenUtils.execute(headers);
+		String token = jwtTokenExtracter.execute(headers);
 
 		userServices.resetCurrentUserPassword(token);
 
@@ -160,7 +160,7 @@ public class UserController {
 			@RequestParam(value = "file", required = true) MultipartFile file,
 			@RequestHeader Map<String, String> headers,
 			HttpServletRequest servletRequest) {
-		String token = jwtTokenUtils.execute(headers);
+		String token = jwtTokenExtracter.execute(headers);
 
 		UserDto userDto = userServices.uploadPhoto(token, file);
 

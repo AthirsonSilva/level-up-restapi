@@ -166,12 +166,13 @@ public class GenreController {
 	@Operation(summary = "Export all genres in the database to excel endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<?> exportToExcel(HttpServletResponse response) {
-		response.setContentType("application/octet-stream");
 		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 		String currentDateTime = dateFormatter.format(new Date());
 
 		String headerKey = "Content-Disposition";
 		String headerValue = "attachment; filename=genres_" + currentDateTime + ".xlsx";
+
+		response.setContentType("application/octet-stream");
 		response.setHeader(headerKey, headerValue);
 
 		genreServices.exportToExcel(response);
@@ -184,12 +185,13 @@ public class GenreController {
 	@Operation(summary = "Export all genres in the database to csv endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<?> exportToCSV(HttpServletResponse response) {
-		response.setContentType("application/csv");
 		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 		String currentDateTime = dateFormatter.format(new Date());
 
 		String headerKey = "Content-Disposition";
 		String headerValue = "attachment; filename=genres_" + currentDateTime + ".csv";
+
+		response.setContentType("application/csv");
 		response.setHeader(headerKey, headerValue);
 
 		genreServices.exportToCSV(response);

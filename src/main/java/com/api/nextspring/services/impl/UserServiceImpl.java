@@ -23,8 +23,8 @@ import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
 import com.api.nextspring.services.EmailService;
 import com.api.nextspring.services.UserService;
-import com.api.nextspring.utils.EntityFileUtils;
-import com.api.nextspring.utils.ExcelUtils;
+import com.api.nextspring.utils.ExcelExporter;
+import com.api.nextspring.utils.FileManager;
 import com.github.javafaker.Faker;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,7 +37,8 @@ import lombok.RequiredArgsConstructor;
  * handle authentication, ModelMapper to map
  * entities to DTOs, PasswordEncoder to encode passwords, EmailService to send
  * emails, Faker to generate fake data,
- * ExcelUtils to export data to Excel files, and EntityFileUtils to handle file
+ * excelExporter to export data to Excel files, and EntityfileManager to handle
+ * file
  * operations.
  * 
  * @author Athirson Silva
@@ -54,8 +55,8 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final EmailService emailService;
 	private final Faker faker;
-	private final ExcelUtils excelUtils;
-	private final EntityFileUtils fileUtils;
+	private final ExcelExporter excelExporter;
+	private final FileManager fileManager;
 
 	/**
 	 * Returns the current user based on the provided token.
@@ -132,7 +133,7 @@ public class UserServiceImpl implements UserService {
 		List<UserEntity> entityList = userRepository.findAll();
 
 		try {
-			excelUtils.export(response, entityList, EntityOptions.USER);
+			excelExporter.export(response, entityList, EntityOptions.USER);
 		} catch (IllegalArgumentException e) {
 			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occurred while exporting data to Excel file: " + e.getMessage());
@@ -167,7 +168,7 @@ public class UserServiceImpl implements UserService {
 		UserEntity entity = userRepository.findByEmail(authentication)
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
-		String filePath = fileUtils.savePhoto(entity.getId(), file);
+		String filePath = fileManager.savePhoto(entity.getId(), file);
 
 		entity.setPhotoPath(filePath);
 
