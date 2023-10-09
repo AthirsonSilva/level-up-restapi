@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.services.UserService;
-import com.api.nextspring.utils.JwtTokenUtils;
+import com.api.nextspring.utils.JwtTokenExtracter;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,8 +35,8 @@ import lombok.RequiredArgsConstructor;
 		@ApiResponse(responseCode = "403", description = "Forbidden, the user does not have access permition", content = @Content(mediaType = "application/json"))
 })
 public class AdminController {
+	private final JwtTokenExtracter getJwtFromRequest;
 	private final UserService userServices;
-	private final JwtTokenUtils getJwtFromRequest;
 
 	@GetMapping("/admin")
 	@Operation(summary = "Get the current logged in admin")
