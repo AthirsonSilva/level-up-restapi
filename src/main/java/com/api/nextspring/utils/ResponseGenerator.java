@@ -16,7 +16,7 @@ import com.api.nextspring.dto.Response;
  * @author Athirson Silva
  */
 @Service
-public class GenerateHashMapResponse<K, V> {
+public class ResponseGenerator<K, V> {
 
 	/**
 	 * Generates a response with the message and data passed as parameters in the

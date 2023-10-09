@@ -21,7 +21,7 @@ import lombok.extern.log4j.Log4j2;
  */
 @Service
 @Log4j2
-public class CsvUtils {
+public class CsvExporter {
 	/**
 	 * Exports a list of objects to a CSV file and writes the file to the
 	 * HttpServletResponse object.

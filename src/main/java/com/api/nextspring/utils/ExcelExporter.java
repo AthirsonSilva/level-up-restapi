@@ -41,11 +41,11 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author Athirson Silva
  */
 @Service
-public class ExcelUtils {
+public class ExcelExporter {
 	private XSSFWorkbook workbook;
 	private XSSFSheet sheet;
 
-	public ExcelUtils() {
+	public ExcelExporter() {
 		this.workbook = new XSSFWorkbook();
 		this.sheet = workbook.createSheet("NextSpring");
 	}

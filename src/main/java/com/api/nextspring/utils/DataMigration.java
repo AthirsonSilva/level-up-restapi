@@ -48,7 +48,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Component
 @RequiredArgsConstructor
-public class BootstrapData implements InitializingBean {
+public class DataMigration implements InitializingBean {
 	private final RoleRepository roleRepository;
 	private final UserRepository userRepository;
 	private final GenreRepository genreRepository;
