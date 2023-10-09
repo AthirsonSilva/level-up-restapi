@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
-public class EntityFileUtils {
+public class FileManager {
 
 	/**
 	 * Returns the path of the directory where the files will be saved

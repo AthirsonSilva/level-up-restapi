@@ -1,7 +1,9 @@
 package com.api.nextspring.services.impl;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.api.nextspring.dto.GameDto;
+import com.api.nextspring.dto.export.GameExportDto;
 import com.api.nextspring.dto.optionals.OptionalGameDto;
 import com.api.nextspring.entity.DeveloperEntity;
 import com.api.nextspring.entity.GameEntity;
@@ -23,8 +26,9 @@ import com.api.nextspring.repositories.GameRepository;
 import com.api.nextspring.repositories.GenreRepository;
 import com.api.nextspring.repositories.custom.CustomGameRepository;
 import com.api.nextspring.services.GameService;
-import com.api.nextspring.utils.EntityFileUtils;
-import com.api.nextspring.utils.ExcelUtils;
+import com.api.nextspring.utils.CsvExporter;
+import com.api.nextspring.utils.ExcelExporter;
+import com.api.nextspring.utils.FileManager;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -50,8 +54,9 @@ public class GameServiceImpl implements GameService {
 	private final GenreRepository genreRepository;
 	private final DeveloperRepository developerRepository;
 	private final ModelMapper modelMapper;
-	private final ExcelUtils excelUtils;
-	private final EntityFileUtils fileUtils;
+	private final ExcelExporter excelExporter;
+	private final CsvExporter csvExporter;
+	private final FileManager fileManager;
 
 	/**
 	 * Creates a new Game entity from the provided GameDto object.
@@ -218,28 +223,6 @@ public class GameServiceImpl implements GameService {
 	}
 
 	/**
-	 * Retrieves the "No Genre" GenreEntity object.
-	 * 
-	 * @return The "No Genre" GenreEntity object.
-	 */
-	private GenreEntity getNoGenreEntity() {
-		return genreRepository
-				.findByName("No Genre")
-				.orElse(GenreEntity.builder().name("No Genre").description("No Genre").build());
-	}
-
-	/**
-	 * Retrieves the "No Developer" DeveloperEntity object.
-	 * 
-	 * @return The "No Developer" DeveloperEntity object.
-	 */
-	private DeveloperEntity getNoDeveloperEntity() {
-		return developerRepository
-				.findByName("No Developer")
-				.orElse(DeveloperEntity.builder().name("No Developer").description("No Developer").build());
-	}
-
-	/**
 	 * Exports all Game entities to an Excel file and sends it as a response.
 	 * 
 	 * @param response The HttpServletResponse object to send the file as a
@@ -249,10 +232,14 @@ public class GameServiceImpl implements GameService {
 	 */
 	@Override
 	public void exportToExcel(HttpServletResponse response) {
-		List<GameEntity> gameEntityList = gameRepository.findAll();
+		List<GameEntity> entityList = gameRepository.findAll();
+
+		List<GameExportDto> dtoList = entityList.stream()
+				.map(gameEntity -> modelMapper.map(gameEntity, GameExportDto.class))
+				.collect(Collectors.toList());
 
 		try {
-			excelUtils.export(response, gameEntityList, EntityOptions.GAME);
+			excelExporter.export(response, dtoList, EntityOptions.GAME);
 		} catch (IllegalArgumentException e) {
 			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occurred while exporting data to Excel file: " + e.getMessage());
@@ -278,7 +265,7 @@ public class GameServiceImpl implements GameService {
 						() -> new RestApiException(
 								HttpStatus.NOT_FOUND, "Game with given id was not found!"));
 
-		fileUtils.getPhoto(entity.getPhotoPath(), response);
+		fileManager.getPhoto(entity.getPhotoPath(), response);
 	}
 
 	@Override
@@ -289,13 +276,64 @@ public class GameServiceImpl implements GameService {
 						() -> new RestApiException(
 								HttpStatus.NOT_FOUND, "Game with given id was not found!"));
 
-		String filePath = fileUtils.savePhoto(id, file);
+		String filePath = fileManager.savePhoto(id, file);
 
 		entity.setPhotoPath(filePath);
 
 		GameEntity save = gameRepository.save(entity);
 
 		return modelMapper.map(save, GameDto.class);
+	}
+
+	/**
+	 * Retrieves the "No Genre" GenreEntity object.
+	 * 
+	 * @return The "No Genre" GenreEntity object.
+	 */
+	private GenreEntity getNoGenreEntity() {
+		return genreRepository
+				.findByName("No Genre")
+				.orElse(GenreEntity.builder().name("No Genre").description("No Genre").build());
+	}
+
+	/**
+	 * Retrieves the "No Developer" DeveloperEntity object.
+	 * 
+	 * @return The "No Developer" DeveloperEntity object.
+	 */
+	private DeveloperEntity getNoDeveloperEntity() {
+		return developerRepository
+				.findByName("No Developer")
+				.orElse(DeveloperEntity.builder().name("No Developer").description("No Developer").build());
+	}
+
+	@Override
+	public void exportToCSV(HttpServletResponse response) {
+		List<GameEntity> entityList = gameRepository.findAll();
+
+		// Converts the entity list to a DTO list
+		Iterable<GameExportDto> dtoList = entityList.stream()
+				.map(developerEntity -> modelMapper.map(developerEntity, GameExportDto.class))
+				.collect(Collectors.toList());
+
+		// Gets the class of the DTO
+		Class<?> clazz = GameExportDto.class;
+
+		// Gets the fields of the DTO
+		Field[] fieldsHeaders = clazz.getDeclaredFields();
+
+		// Creates an array of strings with the headers of the fields
+		String[] headers = new String[fieldsHeaders.length];
+
+		// Gets the name of the fields and adds them to the headers array
+		for (int i = 0; i < fieldsHeaders.length; i++) {
+			headers[i] = fieldsHeaders[i].getName();
+		}
+
+		// Copies the headers to the fields array
+		String[] fields = headers.clone();
+
+		csvExporter.export(response, dtoList, headers, fields);
 	}
 
 }

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -160,7 +159,7 @@ public class DeveloperController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/export/excel", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	@GetMapping(value = "/export/excel", produces = "application/octet-stream")
 	@ResponseBody
 	@Operation(summary = "Export all developers in the database to excel endpoint")
 	@ResponseStatus(HttpStatus.OK)
@@ -174,6 +173,24 @@ public class DeveloperController {
 		response.setHeader(headerKey, headerValue);
 
 		developerServices.exportToExcel(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+
+	@GetMapping(value = "/export/csv", produces = "application/csv")
+	@ResponseBody
+	@Operation(summary = "Export all developers in the database to csv endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> exportToCSV(HttpServletResponse response) {
+		response.setContentType("application/csv");
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=developers_" + currentDateTime + ".csv";
+		response.setHeader(headerKey, headerValue);
+
+		developerServices.exportToCSV(response);
 
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}

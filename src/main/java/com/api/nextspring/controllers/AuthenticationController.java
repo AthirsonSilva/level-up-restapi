@@ -15,7 +15,7 @@ import com.api.nextspring.dto.RegisterDto;
 import com.api.nextspring.dto.Response;
 import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.services.impl.AuthenticationServiceImpl;
-import com.api.nextspring.utils.GenerateHashMapResponse;
+import com.api.nextspring.utils.ResponseGenerator;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -38,7 +38,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationController {
 
 	private final AuthenticationServiceImpl authenticationServices;
-	private final GenerateHashMapResponse<String, Object> generateHashMapResponse;
+	private final ResponseGenerator<String, Object> responseGenerator;
 
 	@PostMapping("/login")
 	@Operation(summary = "User login endpoint")
@@ -46,7 +46,7 @@ public class AuthenticationController {
 	public ResponseEntity<Response<String, Object>> userLogin(@Validated @RequestBody LoginDto request) {
 		String authenticationToken = authenticationServices.login(request);
 
-		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse("Logged in successfully!",
+		Response<String, Object> response = responseGenerator.responseGenerator("Logged in successfully!",
 				authenticationToken);
 
 		return ResponseEntity.ok(response);
@@ -60,7 +60,7 @@ public class AuthenticationController {
 			HttpServletRequest httpServletRequest) {
 		UserDto authenticationUserObject = authenticationServices.register(request, httpServletRequest);
 
-		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse(
+		Response<String, Object> response = responseGenerator.responseGenerator(
 				"Registered in successfully! An email was sent to your email to confirm your account!",
 				authenticationUserObject);
 
@@ -73,7 +73,7 @@ public class AuthenticationController {
 	public ResponseEntity<Response<String, Object>> userLogout() {
 		authenticationServices.logout();
 
-		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse("Logged out successfully!",
+		Response<String, Object> response = responseGenerator.responseGenerator("Logged out successfully!",
 				"Go to login page!");
 
 		return ResponseEntity.ok(response);
@@ -85,7 +85,7 @@ public class AuthenticationController {
 	public ResponseEntity<Response<String, Object>> confirmUserAccount(String token) {
 		authenticationServices.activateAccount(token);
 
-		Response<String, Object> response = generateHashMapResponse.generateHashMapResponse(
+		Response<String, Object> response = responseGenerator.responseGenerator(
 				"Account activated successfully!",
 				"Go to login page!");
 

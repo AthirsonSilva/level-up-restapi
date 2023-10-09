@@ -151,10 +151,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		// Get host url from servlet request header
 		String hostUrl = servletRequest.getHeader("host");
+
+		// Check wheter request was made from HTTPS or HTTP
+		if (servletRequest.isSecure())
+			hostUrl = "https://" + hostUrl;
+		else
+			hostUrl = "http://" + hostUrl;
+
 		log.info("Host url: {}", hostUrl);
 
 		// Create account confirmation link
-		String confirmationLink = String.valueOf(hostUrl + "/api/v1/auth/confirm-account?token=" + user.getId());
+		String confirmationLink = String
+				.valueOf(hostUrl + "/api/v1/auth/confirm-account?token=" + user.getId());
 		log.info("Account confirmation link: {}", confirmationLink);
 
 		// Send account confirmation email
@@ -163,7 +171,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				.destination(user.getEmail())
 				.sender("athirsonarceus@gmail.com")
 				.subject("Account activation")
-				.content("http://localhost:8080/api/v1/auth/confirm-account?token=" + user.getId())
+				.content(confirmationLink)
 				.build();
 
 		log.info("Sending account confirmation email: {}", emailDto.toString());

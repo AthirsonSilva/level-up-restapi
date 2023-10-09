@@ -1,7 +1,9 @@
 package com.api.nextspring.services.impl;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -11,13 +13,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.api.nextspring.dto.GenreDto;
+import com.api.nextspring.dto.export.GenreExportDto;
 import com.api.nextspring.dto.optionals.OptionalGenreDto;
 import com.api.nextspring.entity.GenreEntity;
 import com.api.nextspring.enums.EntityOptions;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.GenreRepository;
 import com.api.nextspring.services.GenreService;
-import com.api.nextspring.utils.ExcelUtils;
+import com.api.nextspring.utils.CsvExporter;
+import com.api.nextspring.utils.ExcelExporter;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * This class implements the GenreService interface and provides the
  * implementation for all its methods.
- * It uses GenreRepository, ModelMapper, and ExcelUtils to perform CRUD
+ * It uses GenreRepository, ModelMapper, and excelExporter to perform CRUD
  * operations on GenreEntity objects.
  * 
  * @author Athirson Silva
@@ -36,7 +40,8 @@ import lombok.RequiredArgsConstructor;
 public class GenreServiceImpl implements GenreService {
 	private final GenreRepository genreRepository;
 	private final ModelMapper modelMapper;
-	private final ExcelUtils excelUtils;
+	private final ExcelExporter excelExporter;
+	private final CsvExporter csvExporter;
 
 	/**
 	 * Returns a list of all genres, sorted and paginated according to the given
@@ -166,8 +171,12 @@ public class GenreServiceImpl implements GenreService {
 	public void exportToExcel(HttpServletResponse response) {
 		List<GenreEntity> entityList = genreRepository.findAll();
 
+		List<GenreExportDto> dtoList = entityList.stream()
+				.map(developerEntity -> modelMapper.map(developerEntity, GenreExportDto.class))
+				.collect(Collectors.toList());
+
 		try {
-			excelUtils.export(response, entityList, EntityOptions.GENRE);
+			excelExporter.export(response, dtoList, EntityOptions.GENRE);
 		} catch (IllegalArgumentException e) {
 			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occurred while exporting data to Excel file: " + e.getMessage());
@@ -175,5 +184,40 @@ public class GenreServiceImpl implements GenreService {
 			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occurred while exporting data to Excel file: " + e.getMessage());
 		}
+	}
+
+	/**
+	 * Exports all genres to a CSV file and sends it as a response to the client.
+	 *
+	 * @param response the HttpServletResponse object
+	 * @throws RestApiException if an error occurs while exporting the data
+	 */
+	@Override
+	public void exportToCSV(HttpServletResponse response) {
+		List<GenreEntity> entityList = genreRepository.findAll();
+
+		// Converts the entity list to a DTO list
+		Iterable<GenreExportDto> dtoList = entityList.stream()
+				.map(developerEntity -> modelMapper.map(developerEntity, GenreExportDto.class))
+				.collect(Collectors.toList());
+
+		// Gets the class of the DTO
+		Class<?> clazz = GenreExportDto.class;
+
+		// Gets the fields of the DTO
+		Field[] fieldsHeaders = clazz.getDeclaredFields();
+
+		// Creates an array of strings with the headers of the fields
+		String[] headers = new String[fieldsHeaders.length];
+
+		// Gets the name of the fields and adds them to the headers array
+		for (int i = 0; i < fieldsHeaders.length; i++) {
+			headers[i] = fieldsHeaders[i].getName();
+		}
+
+		// Copies the headers to the fields array
+		String[] fields = headers.clone();
+
+		csvExporter.export(response, dtoList, headers, fields);
 	}
 }

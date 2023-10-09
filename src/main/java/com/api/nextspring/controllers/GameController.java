@@ -200,15 +200,35 @@ public class GameController {
 	@Operation(summary = "Export all games in the database to excel endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<?> exportToExcel(HttpServletResponse response) {
-		response.setContentType("application/octet-stream");
 		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 		String currentDateTime = dateFormatter.format(new Date());
 
 		String headerKey = "Content-Disposition";
 		String headerValue = "attachment; filename=games_" + currentDateTime + ".xlsx";
+
+		response.setContentType("application/octet-stream");
 		response.setHeader(headerKey, headerValue);
 
 		gameServices.exportToExcel(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+
+	@GetMapping(value = "/export/csv", produces = "application/csv")
+	@ResponseBody
+	@Operation(summary = "Export all games in the database to csv endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> exportToCSV(HttpServletResponse response) {
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=games_" + currentDateTime + ".csv";
+
+		response.setContentType("application/csv");
+		response.setHeader(headerKey, headerValue);
+
+		gameServices.exportToCSV(response);
 
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}

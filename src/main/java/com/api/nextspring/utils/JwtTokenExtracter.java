@@ -22,7 +22,7 @@ import com.api.nextspring.exceptions.RestApiException;
  * @author Athirson Silva
  */
 @Service
-public class JwtTokenUtils {
+public class JwtTokenExtracter {
 
 	/**
 	 * Extracts the JWT token from the authorization header of a request.
