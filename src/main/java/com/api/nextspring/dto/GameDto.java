@@ -1,5 +1,6 @@
 package com.api.nextspring.dto;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.validator.constraints.Length;
@@ -50,4 +51,8 @@ public class GameDto extends RepresentationModel<GameExportDto> {
 
 	@NotNull(message = "Developer is required")
 	private UUID developerId;
+
+	private LocalDateTime createdAt;
+
+	private LocalDateTime updatedAt;
 }

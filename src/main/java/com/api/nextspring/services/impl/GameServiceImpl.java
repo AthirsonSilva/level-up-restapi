@@ -1,5 +1,6 @@
 package com.api.nextspring.services.impl;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
@@ -29,6 +30,8 @@ import com.api.nextspring.services.GameService;
 import com.api.nextspring.utils.CsvExporter;
 import com.api.nextspring.utils.ExcelExporter;
 import com.api.nextspring.utils.FileManager;
+import com.api.nextspring.utils.PdfExporter;
+import com.lowagie.text.DocumentException;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +59,7 @@ public class GameServiceImpl implements GameService {
 	private final ModelMapper modelMapper;
 	private final ExcelExporter excelExporter;
 	private final CsvExporter csvExporter;
+	private final PdfExporter pdfExporter;
 	private final FileManager fileManager;
 
 	/**
@@ -336,4 +340,26 @@ public class GameServiceImpl implements GameService {
 		csvExporter.export(response, dtoList, headers, fields);
 	}
 
+	public void exportToPDF(HttpServletResponse response) {
+		List<GameEntity> entityList = gameRepository.findAll();
+
+		List<GameExportDto> dtoList = entityList.stream()
+				.map(entity -> modelMapper.map(entity, GameExportDto.class))
+				.collect(Collectors.toList());
+
+		log.info("Exporting {} rows to PDF file...", dtoList.size());
+
+		try {
+			pdfExporter.export(response, dtoList, EntityOptions.GAME);
+		} catch (IllegalArgumentException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while exporting data to PDF file: " + e.getMessage());
+		} catch (DocumentException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while exporting data to PDF file: " + e.getMessage());
+		} catch (IOException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while exporting data to PDF file: " + e.getMessage());
+		}
+	}
 }

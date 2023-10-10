@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -199,4 +200,22 @@ public class GenreController {
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
+	@GetMapping(value = "/export/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+	@ResponseBody
+	@Operation(summary = "Export all genres in the database to pdf endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> exportToPDF(HttpServletResponse response) {
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=genres_" + currentDateTime + ".pdf";
+
+		response.setContentType("application/pdf");
+		response.setHeader(headerKey, headerValue);
+
+		genreServices.exportToPDF(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
 }

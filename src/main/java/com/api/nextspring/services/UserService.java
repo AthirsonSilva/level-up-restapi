@@ -11,8 +11,6 @@ import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.dto.optionals.OptionalUserDto;
 import com.api.nextspring.entity.RoleEntity;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 /**
  * This interface defines the methods that can be used to interact with the User
  * entity. It defines methods for retrieving, creating, updating and deleting
@@ -83,13 +81,6 @@ public interface UserService {
 	 * @return An InputStreamResource object representing the photo.
 	 */
 	public InputStreamResource downloadPhotoByUser(UUID id);
-
-	/**
-	 * Exports user data to an Excel file and sends it as a response.
-	 * 
-	 * @param response The HttpServletResponse object used to send the response.
-	 */
-	public void exportToExcel(HttpServletResponse response);
 
 	/**
 	 * Resets the current user's password to a default value based on the provided

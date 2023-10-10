@@ -49,4 +49,8 @@ public class GameExportDto extends RepresentationModel<GameExportDto> {
 
 	@NotNull(message = "Developer is required")
 	private UUID developerId;
+
+	private String createdAt;
+
+	private String updatedAt;
 }

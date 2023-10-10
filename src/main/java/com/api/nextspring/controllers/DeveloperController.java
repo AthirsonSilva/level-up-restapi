@@ -27,8 +27,8 @@ import com.api.nextspring.dto.DeveloperDto;
 import com.api.nextspring.dto.Response;
 import com.api.nextspring.dto.optionals.OptionalDeveloperDto;
 import com.api.nextspring.exceptions.RestApiException;
+import com.api.nextspring.services.DeveloperService;
 import com.api.nextspring.services.LinkingService;
-import com.api.nextspring.services.impl.DeveloperServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -50,7 +50,7 @@ import lombok.RequiredArgsConstructor;
 		@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 })
 public class DeveloperController {
-	private final DeveloperServiceImpl developerServices;
+	private final DeveloperService developerServices;
 	private final LinkingService linkingService;
 
 	@PostMapping

@@ -1,6 +1,5 @@
 package com.api.nextspring.dto.export;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.validator.constraints.Length;
@@ -53,7 +52,7 @@ public class UserExportDto extends RepresentationModel<UserExportDto> {
 
 	private String photoPath;
 
-	private LocalDateTime createdAt;
+	private String createdAt;
 
-	private LocalDateTime updatedAt;
+	private String updatedAt;
 }
