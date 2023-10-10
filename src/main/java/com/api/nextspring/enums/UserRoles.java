@@ -1,7 +1,9 @@
 package com.api.nextspring.enums;
 
 import static com.api.nextspring.enums.UserPermissions.DEVELOPER_READ;
+import static com.api.nextspring.enums.UserPermissions.DEVELOPER_WRITE;
 import static com.api.nextspring.enums.UserPermissions.GAME_READ;
+import static com.api.nextspring.enums.UserPermissions.GAME_WRITE;
 import static com.api.nextspring.enums.UserPermissions.GENRE_READ;
 import static com.api.nextspring.enums.UserPermissions.GENRE_WRITE;
 import static com.api.nextspring.enums.UserPermissions.USER_READ;
@@ -19,15 +21,17 @@ import com.google.common.collect.Sets;
  * Each role has a set of permissions associated with it.
  * 
  * @param ADMIN     The admin role, with all permissions.
- * @param USER      The user role, with permissions to read and write users,
+ * @param USER      The user role, with permissions to read and write
+ *                  users,
  *                  games, genres, and developers.
- * @param DEVELOPER The developer role, with permissions to read users, games,
+ * @param DEVELOPER The developer role, with permissions to read users,
+ *                  games,
  *                  genres, and developers.
  * 
  * @see {@link com.api.nextspring.entity.UserEntity} the User entity class
  * @see {@link com.api.nextspring.entity.UserEntity#getRoles()} the method that
  *      returns the user's roles
- * @see {@link com.api.nextspring.config.SecurityConfiguration} the class that
+ * @see {@link com.api.nextspring.security.SecurityManagement} the class that
  *      configures the security of the application
  * @see {@link UserPermissions} the enum representing the permissions that a
  *      user
@@ -38,24 +42,30 @@ import com.google.common.collect.Sets;
  * @author Athirson Silva
  */
 public enum UserRoles {
+
 	ADMIN(Sets.newHashSet(
 			USER_READ,
+			USER_WRITE,
 			GAME_READ,
+			GAME_WRITE,
 			DEVELOPER_READ,
+			DEVELOPER_WRITE,
 			GENRE_READ,
 			GENRE_WRITE)),
+
 	USER(Sets.newHashSet(
 			USER_READ,
 			USER_WRITE,
 			GAME_READ,
 			DEVELOPER_READ,
 			GENRE_READ)),
+
 	DEVELOPER(Sets.newHashSet(
-			USER_READ,
-			GAME_READ,
-			DEVELOPER_READ,
 			GENRE_READ,
-			GENRE_WRITE));
+			GAME_READ,
+			GAME_WRITE,
+			DEVELOPER_READ,
+			DEVELOPER_WRITE));
 
 	private final Set<UserPermissions> permissions;
 

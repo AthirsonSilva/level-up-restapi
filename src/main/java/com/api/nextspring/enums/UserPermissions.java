@@ -17,7 +17,7 @@ package com.api.nextspring.enums;
  * @see {@link com.api.nextspring.entity.UserEntity} the User entity class
  * @see {@link com.api.nextspring.entity.UserEntity#getPermissions()} the method
  *      that returns the user's permissions
- * @see {@link com.api.nextspring.config.SecurityConfiguration} the class that
+ * @see {@link com.api.nextspring.security.SecurityManagement} the class that
  *      configures the security of the application
  * 
  * @author Athirson Silva

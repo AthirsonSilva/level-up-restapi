@@ -27,6 +27,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * This class is responsible for filtering incoming requests and authenticating
@@ -43,7 +44,9 @@ import lombok.RequiredArgsConstructor;
  */
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserDetailsService userDetailsService;
 
@@ -65,6 +68,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		// get jwt token from request
 		String jwtToken = getTokenFromRequestHeaders(request);
 
+		log.info("doFilterInternal method called, received data: " + jwtToken);
+
 		// validate jwt token
 		if (StringUtils.hasText(jwtToken) && jwtTokenProvider.validateJwtToken(jwtToken)) {
 			// get username from jwt token
@@ -80,8 +85,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				// get claims from jwt token
 				Claims claims = jwtClaims.getBody();
 
+				log.info("User claims: " + claims);
+
 				// get username from claims
 				String usernameFromClaims = claims.getSubject();
+
+				log.info("User username: " + usernameFromClaims);
 
 				// get user details from username
 				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -102,8 +111,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 						usernameFromClaims,
 						simpleGrantedAuthorities);
 
+				log.info("User authentication: " + authentication);
+
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			} catch (JwtException e) {
+				log.error("Invalid JWT token" + jwtToken + " \n" + e.getMessage());
+
 				throw new RestApiException(HttpStatus.BAD_REQUEST, "Invalid JWT token" + jwtToken + " \n" + e.getMessage());
 			}
 		}
