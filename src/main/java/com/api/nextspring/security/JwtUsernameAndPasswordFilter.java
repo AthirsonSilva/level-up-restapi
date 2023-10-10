@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * This class extends the UsernamePasswordAuthenticationFilter class and
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
  * @author Athirson Silva
  */
 @RequiredArgsConstructor
+@Log4j2
 public class JwtUsernameAndPasswordFilter extends UsernamePasswordAuthenticationFilter {
 	private final JwtTokenProvider jwtTokenProvider;
 
@@ -48,6 +50,8 @@ public class JwtUsernameAndPasswordFilter extends UsernamePasswordAuthentication
 		response.addHeader("Authorization", "Bearer " + token);
 		response.addHeader("Access-Control-Expose-Headers", "Authorization");
 		response.addCookie(new Cookie("Authorization", "Bearer " + token));
+
+		log.info("Token generated to expire in: {}", Date.valueOf(LocalDate.now().plusWeeks(2)));
 
 		super.successfulAuthentication(request, response, filterChain, authenticationResult);
 	}

@@ -38,9 +38,10 @@ public class AdminController {
 	private final JwtTokenExtracter getJwtFromRequest;
 	private final UserService userServices;
 
-	@GetMapping("/admin")
+	@GetMapping("/current")
 	@Operation(summary = "Get the current logged in admin")
 	@ResponseStatus(HttpStatus.OK)
+	// @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
 	public ResponseEntity<HashMap<String, String>> helloAdmin(@RequestHeader Map<String, String> headers) {
 		HashMap<String, String> response = new HashMap<>();
 		String token = getJwtFromRequest.execute(headers);

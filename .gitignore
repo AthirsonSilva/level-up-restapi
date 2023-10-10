@@ -3,8 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-!**/src/main/**/*.png
 application-dev.properties
+/src/main/resources/static/images/*
 
 ### Terraform ###
 .terraform/

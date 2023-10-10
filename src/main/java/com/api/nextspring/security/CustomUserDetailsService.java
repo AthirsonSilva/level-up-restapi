@@ -15,6 +15,7 @@ import com.api.nextspring.enums.UserRoles;
 import com.api.nextspring.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * This class implements the UserDetailsService interface and provides a custom implementation for loading user details.
@@ -34,6 +35,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class CustomUserDetailsService implements UserDetailsService {
 	private final UserRepository userRepository;
 
@@ -61,15 +63,25 @@ public class CustomUserDetailsService implements UserDetailsService {
 						.orElse(null))
 				.getGrantedAuthorities();
 
+		grantedAuthorities.forEach(authority -> log.info("User authority: " + authority));
+
 		// convert the user roles to a string array
 		String[] userRoles = user.getRoles().stream().map(RoleEntity::getName).toArray(String[]::new);
 
+		for (String role : userRoles) {
+			log.info("User role: " + role);
+		}
+
 		// return a new user with the username, password, and authorities
-		return User
+		UserDetails userPrincipal = User
 				.withUsername(user.getEmail())
 				.password(user.getPassword())
 				.roles(userRoles)
 				.authorities(grantedAuthorities)
 				.build();
+
+		log.info("User principal: " + userPrincipal);
+
+		return userPrincipal;
 	}
 }

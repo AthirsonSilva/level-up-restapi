@@ -92,7 +92,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				exception.getMessage(),
 				request.getDescription(false));
 
-		return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(errorDetails, exception.getStatus());
 	}
 
 	/**
