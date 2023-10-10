@@ -1,6 +1,5 @@
 package com.api.nextspring.dto.export;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.validator.constraints.Length;
@@ -32,7 +31,7 @@ public class GenreExportDto extends RepresentationModel<GenreExportDto> {
 	@Size(min = 3, message = "Description must be at least 3 characters")
 	private String description;
 
-	private LocalDateTime createdAt;
+	private String createdAt;
 
-	private LocalDateTime updatedAt;
+	private String updatedAt;
 }

@@ -138,7 +138,10 @@ public class PdfExporter {
 			throws DocumentException, IOException {
 		log.info("Exporting data to PDF: {}", entityType);
 
-		Document document = new Document(PageSize.A4);
+		Document document = new Document(PageSize.A2);
+
+		log.info("Document size: {}", document.getPageSize());
+
 		PdfWriter.getInstance(document, (OutputStream) response.getOutputStream());
 
 		document.open();
@@ -154,9 +157,13 @@ public class PdfExporter {
 
 		document.add(paragraph);
 
-		PdfPTable table = new PdfPTable(5);
+		PdfPTable table = new PdfPTable(
+				getTableColumnsQuantity(entityType));
 		table.setWidthPercentage(100f);
-		table.setWidths(new float[] { 1.5f, 3.5f, 3.0f, 3.0f, 1.5f });
+
+		float[] widths = getColumnsWidth(entityType);
+
+		table.setWidths(widths);
 		table.setSpacingBefore(10);
 
 		writeTableHeader(table, entityType);
@@ -165,5 +172,39 @@ public class PdfExporter {
 		document.add(table);
 
 		document.close();
+	}
+
+	private float[] getColumnsWidth(EntityOptions entityType) {
+		switch (entityType) {
+			case GENRE, DEVELOPER -> {
+				return new float[] { 1.5f, 3.5f, 3.5f, 2f, 2f };
+			}
+			case GAME -> {
+				return new float[] { 1.5f, 3.5f, 3.5f, 2f, 2f, 2f, 2f, 2f, 2f, 2f };
+			}
+			case USER -> {
+				return new float[] { 1.5f, 3.5f, 3.5f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f };
+			}
+			default -> {
+				throw new RestApiException(HttpStatus.BAD_REQUEST, "Invalid entity!");
+			}
+		}
+	}
+
+	private int getTableColumnsQuantity(EntityOptions entityType) {
+		switch (entityType) {
+			case GENRE, DEVELOPER -> {
+				return 5;
+			}
+			case GAME -> {
+				return 10;
+			}
+			case USER -> {
+				return 13;
+			}
+			default -> {
+				throw new RestApiException(HttpStatus.BAD_REQUEST, "Invalid entity!");
+			}
+		}
 	}
 }

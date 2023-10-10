@@ -92,4 +92,12 @@ public interface GenreService {
 	 *                 response.
 	 */
 	public void exportToCSV(HttpServletResponse response);
+
+	/**
+	 * Exports the developers data to a PDF file
+	 * 
+	 * @param response the response object that will be used to download the file to
+	 *                 the user
+	 */
+	public void exportToPDF(HttpServletResponse response);
 }

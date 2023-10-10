@@ -230,7 +230,6 @@ public class DeveloperServiceImpl implements DeveloperService {
 				.map(developerEntity -> modelMapper.map(developerEntity, DeveloperExportDto.class))
 				.collect(Collectors.toList());
 
-		// Gets the class of the DTO
 		Class<?> clazz = DeveloperExportDto.class;
 
 		// Gets the fields of the DTO

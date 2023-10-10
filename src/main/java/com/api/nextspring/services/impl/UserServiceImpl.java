@@ -1,6 +1,5 @@
 package com.api.nextspring.services.impl;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -17,7 +16,6 @@ import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.dto.optionals.OptionalUserDto;
 import com.api.nextspring.entity.RoleEntity;
 import com.api.nextspring.entity.UserEntity;
-import com.api.nextspring.enums.EntityOptions;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
@@ -27,7 +25,6 @@ import com.api.nextspring.utils.ExcelExporter;
 import com.api.nextspring.utils.FileManager;
 import com.github.javafaker.Faker;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -121,26 +118,6 @@ public class UserServiceImpl implements UserService {
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
 		return currentUser.getRoles();
-	}
-
-	/**
-	 * Exports user data to an Excel file and sends it as a response.
-	 * 
-	 * @param response The HTTP response.
-	 */
-	@Override
-	public void exportToExcel(HttpServletResponse response) {
-		List<UserEntity> entityList = userRepository.findAll();
-
-		try {
-			excelExporter.export(response, entityList, EntityOptions.USER);
-		} catch (IllegalArgumentException e) {
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred while exporting data to Excel file: " + e.getMessage());
-		} catch (IllegalAccessException e) {
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred while exporting data to Excel file: " + e.getMessage());
-		}
 	}
 
 	/**

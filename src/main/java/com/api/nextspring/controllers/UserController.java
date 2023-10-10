@@ -1,8 +1,5 @@
 package com.api.nextspring.controllers;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -40,7 +37,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -133,24 +129,6 @@ public class UserController {
 				"The new password was sent to your email!");
 
 		return ResponseEntity.ok(response);
-	}
-
-	@GetMapping(value = "/export/excel", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	@ResponseBody
-	@Operation(summary = "Export all users in the database to excel endpoint")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> exportToExcel(HttpServletResponse response) {
-		response.setContentType("application/octet-stream");
-		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-		String currentDateTime = dateFormatter.format(new Date());
-
-		String headerKey = "Content-Disposition";
-		String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
-		response.setHeader(headerKey, headerValue);
-
-		userServices.exportToExcel(response);
-
-		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
 	@PostMapping("/uploadPhoto/{id}")

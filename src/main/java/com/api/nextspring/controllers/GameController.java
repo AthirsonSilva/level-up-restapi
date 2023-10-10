@@ -232,4 +232,23 @@ public class GameController {
 
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
+
+	@GetMapping(value = "/export/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+	@ResponseBody
+	@Operation(summary = "Export all games in the database to pdf endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> exportToPDF(HttpServletResponse response) {
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=games_" + currentDateTime + ".pdf";
+
+		response.setContentType("application/pdf");
+		response.setHeader(headerKey, headerValue);
+
+		gameServices.exportToPDF(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
 }

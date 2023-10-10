@@ -40,7 +40,7 @@ public class SwaggerConfiguration {
 		ArrayList<Server> servers = new ArrayList<Server>();
 
 		servers.add(new Server().url("https://next-spring.up.railway.app").description("Production"));
-		servers.add(new Server().url("http://localhost:8080").description("Development:8080"));
+		servers.add(new Server().url("http://localhost:8080").description("Development"));
 
 		openApi.setServers(servers);
 

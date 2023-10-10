@@ -44,6 +44,7 @@ This is a simple game rental service API that I created using Spring Boot. The p
 | Global Error Handling                      | 🟢 Ready          |
 | Testing with JUnit                         | 🟡 In development |
 | API versioning                             | 🟢 Ready          |
+| Excel, CSV and PDF exporting               | 🟢 Ready          |
 | File upload and download                   | 🟡 In development |
 | Logging with Log4j2                        | 🟡 In development |
 | Use rate limiting                          | 🔴 Not ready      |
