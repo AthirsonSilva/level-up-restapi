@@ -15,11 +15,28 @@ import com.api.nextspring.dto.export.GenreExportDto;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * This class is responsible for mapping objects to their corresponding DTOs for
+ * export.
+ * 
+ * @see DeveloperExportDto
+ * @see GameExportDto
+ * @see GenreExportDto
+ * @see ModelMapper
+ * 
+ * @author Athirson Silva
+ */
 @Service
 @RequiredArgsConstructor
 public class ExporterDtoMapper {
 	private final ModelMapper modelMapper;
 
+	/**
+	 * Maps a Developer object to a DeveloperExportDto object.
+	 * 
+	 * @param object The Developer object to be mapped.
+	 * @return The corresponding DeveloperExportDto object.
+	 */
 	public <T> DeveloperExportDto toDeveloperExportDto(T object) {
 		DeveloperDto formattedDto = modelMapper.map(object, DeveloperDto.class);
 
@@ -35,6 +52,12 @@ public class ExporterDtoMapper {
 				.build();
 	}
 
+	/**
+	 * Maps a Game object to a GameExportDto object.
+	 * 
+	 * @param object The Game object to be mapped.
+	 * @return The corresponding GameExportDto object.
+	 */
 	public <T> GameExportDto toGameExportDto(T object) {
 		GameDto formattedDto = modelMapper.map(object, GameDto.class);
 
@@ -50,6 +73,12 @@ public class ExporterDtoMapper {
 				.build();
 	}
 
+	/**
+	 * Maps a Genre object to a GenreExportDto object.
+	 * 
+	 * @param object The Genre object to be mapped.
+	 * @return The corresponding GenreExportDto object.
+	 */
 	public <T> GenreExportDto toGenreExportDto(T object) {
 		GenreDto formattedDto = modelMapper.map(object, GenreDto.class);
 
@@ -65,6 +94,12 @@ public class ExporterDtoMapper {
 				.build();
 	}
 
+	/**
+	 * Formats a LocalDateTime object to a string in the format "dd/MM/yyyy".
+	 * 
+	 * @param dateTime The LocalDateTime object to be formatted.
+	 * @return The formatted date string.
+	 */
 	private String getFormattedDateTime(LocalDateTime dateTime) {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
