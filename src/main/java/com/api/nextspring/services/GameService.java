@@ -3,6 +3,7 @@ package com.api.nextspring.services;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.api.nextspring.dto.GameDto;
@@ -38,7 +39,7 @@ public interface GameService {
 	 * @param direction The direction to sort the results in.
 	 * @return A list of games that match the search query.
 	 */
-	public List<GameDto> searchByKeyword(String query, Integer page, Integer size, String sort, String direction);
+	public List<GameDto> searchByKeyword(String query, Pageable pageable);
 
 	/**
 	 * Returns all games.
@@ -49,7 +50,7 @@ public interface GameService {
 	 * @param direction The direction to sort the results in.
 	 * @return A list of all games.
 	 */
-	public List<GameDto> findAll(Integer page, Integer size, String sort, String direction);
+	public List<GameDto> findAll(Pageable pageable);
 
 	/**
 	 * Updates the game with the given ID with the given data.

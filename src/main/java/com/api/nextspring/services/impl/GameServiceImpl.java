@@ -1,15 +1,12 @@
 package com.api.nextspring.services.impl;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,7 +28,6 @@ import com.api.nextspring.utils.CsvExporter;
 import com.api.nextspring.utils.ExcelExporter;
 import com.api.nextspring.utils.FileManager;
 import com.api.nextspring.utils.PdfExporter;
-import com.lowagie.text.DocumentException;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -119,12 +115,11 @@ public class GameServiceImpl implements GameService {
 	 * @throws RestApiException If no games are found with the given keyword.
 	 */
 	@Override
-	public List<GameDto> searchByKeyword(String query, Integer page, Integer size, String sort, String direction) {
-		Pageable pageable = PageRequest
-				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
+	public List<GameDto> searchByKeyword(String query, Pageable pageable) {
+		log.info("Pageable object received: " + pageable.toString() + ".");
 
-		List<GameEntity> gameEntityList = customGameRepository
-				.findAllByFilter(query, pageable)
+		List<GameEntity> gameEntityList = gameRepository
+				.searchGameEntities(query, pageable)
 				.toList();
 
 		if (gameEntityList.isEmpty())
@@ -144,11 +139,10 @@ public class GameServiceImpl implements GameService {
 	 * @throws RestApiException If no games are found.
 	 */
 	@Override
-	public List<GameDto> findAll(Integer page, Integer size, String sort, String direction) {
-		Pageable pageable = PageRequest
-				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
+	public List<GameDto> findAll(Pageable pageable) {
+		log.info("Pageable object received: " + pageable.toString() + ".");
 
-		List<GameEntity> gameEntityList = customGameRepository.findAll(pageable).toList();
+		List<GameEntity> gameEntityList = gameRepository.findAll(pageable).toList();
 
 		if (gameEntityList.isEmpty())
 			throw new RestApiException(HttpStatus.NOT_FOUND, "No games found!");
@@ -349,17 +343,6 @@ public class GameServiceImpl implements GameService {
 
 		log.info("Exporting {} rows to PDF file...", dtoList.size());
 
-		try {
-			pdfExporter.export(response, dtoList, EntityOptions.GAME);
-		} catch (IllegalArgumentException e) {
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred while exporting data to PDF file: " + e.getMessage());
-		} catch (DocumentException e) {
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred while exporting data to PDF file: " + e.getMessage());
-		} catch (IOException e) {
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred while exporting data to PDF file: " + e.getMessage());
-		}
+		pdfExporter.export(response, dtoList, EntityOptions.GAME);
 	}
 }

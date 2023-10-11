@@ -73,7 +73,7 @@ public class ExcelExporter {
 		for (int i = 0; i < fields.length; i++) {
 			log.info(fields[i].getName());
 
-			createCell(row, i, fields[i].getName(), style);
+			writeDataCell(row, i, fields[i].getName(), style);
 		}
 	}
 
@@ -101,11 +101,11 @@ public class ExcelExporter {
 	 * @param value       the value of the excel file cell
 	 * @param style       the style of the excel file cells
 	 */
-	private <T> void createCell(Row row, int columnCount, T value, CellStyle style) {
+	private <T> void writeDataCell(Row row, int columnCount, T value, CellStyle style) {
 		sheet.autoSizeColumn(columnCount);
 		Cell cell = row.createCell(columnCount);
 
-		if (value == null)
+		if (value == null || value.toString().isEmpty())
 			cell.setCellValue("N/A");
 
 		else if (value instanceof Integer)
@@ -128,7 +128,7 @@ public class ExcelExporter {
 	 * @throws IllegalArgumentException if the entityList is null
 	 * @throws IllegalAccessException   if the entityList is inaccessible
 	 */
-	private CellStyle writeDataLines() throws IllegalArgumentException, IllegalAccessException {
+	private CellStyle getCellStyle() throws IllegalArgumentException, IllegalAccessException {
 		CellStyle style = workbook.createCellStyle();
 		XSSFFont font = workbook.createFont();
 		font.setFontHeight(12);
@@ -160,7 +160,7 @@ public class ExcelExporter {
 
 				log.info(field.getName() + " - " + field.get(entity));
 
-				createCell(row, columnCount++, field.get(entity), style);
+				writeDataCell(row, columnCount++, field.get(entity), style);
 			}
 		}
 	}
@@ -179,7 +179,7 @@ public class ExcelExporter {
 	public <T> void export(HttpServletResponse response, List<T> entityList, EntityOptions entity)
 			throws IllegalArgumentException, IllegalAccessException {
 		writeHeaderLine(entity);
-		populateSheet(entityList, writeDataLines());
+		populateSheet(entityList, getCellStyle());
 
 		try (ServletOutputStream outputStream = response.getOutputStream()) {
 			workbook.write(outputStream);

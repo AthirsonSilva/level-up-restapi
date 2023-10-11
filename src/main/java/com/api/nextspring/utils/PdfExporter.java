@@ -71,16 +71,20 @@ public class PdfExporter {
 	 * @param entityType the type of entity to write the header for
 	 */
 	private void writeTableHeader(PdfPTable table, EntityOptions entityType) {
+		// Creates a PDF cell
 		PdfPCell cell = new PdfPCell();
 		cell.setBackgroundColor(Color.DARK_GRAY);
 		cell.setPadding(5);
 
+		// Creates a font for the table header
 		Font font = FontFactory.getFont(FontFactory.HELVETICA);
 		font.setColor(Color.WHITE);
 
+		// Gets the class type of the entity
 		Class<?> entityClass = getEntityClassType(entityType);
 		Field[] fields = entityClass.getDeclaredFields();
 
+		// Writes the header for each field of the entity
 		for (Field field : fields) {
 			field.setAccessible(true);
 
@@ -99,16 +103,20 @@ public class PdfExporter {
 	 */
 	private <T> void writeTableData(PdfPTable table, List<T> entityList) {
 		for (T entity : entityList) {
+			// Gets the class type of the entity
 			Class<? extends Object> entityClass = entity.getClass();
 			Field[] fields = entityClass.getDeclaredFields();
 
+			// Writes the data for each field of the entity
 			for (Field field : fields) {
 				field.setAccessible(true);
 
 				try {
+					// Gets the value of the field
 					Object value = field.get(entity);
 
-					if (value == null) {
+					// If the value is null, set it to N/A
+					if (value == null || value.toString().isEmpty()) {
 						value = "N/A";
 					}
 
@@ -116,7 +124,7 @@ public class PdfExporter {
 
 					table.addCell(value.toString());
 				} catch (IllegalArgumentException | IllegalAccessException e) {
-					e.printStackTrace();
+					log.error("Error while exporting data to PDF: {}", e.getMessage());
 
 					throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while exporting data to PDF");
 				}
@@ -134,77 +142,67 @@ public class PdfExporter {
 	 * @throws IOException       if there is an error writing the PDF file to the
 	 *                           response
 	 */
-	public <T> void export(HttpServletResponse response, List<T> entityList, EntityOptions entityType)
-			throws DocumentException, IOException {
-		log.info("Exporting data to PDF: {}", entityType);
+	public <T> void export(HttpServletResponse response, List<T> entityList, EntityOptions entityType) {
+		try {
 
-		Document document = new Document(PageSize.A2);
+			log.info("Exporting data to PDF: {}", entityType);
 
-		log.info("Document size: {}", document.getPageSize());
+			// Creates a PDF document with A2 size
+			Document document = new Document(PageSize.A2);
 
-		PdfWriter.getInstance(document, (OutputStream) response.getOutputStream());
+			log.info("Document size: {}", document.getPageSize());
 
-		document.open();
+			// Writes the PDF document to the response
+			PdfWriter.getInstance(document, (OutputStream) response.getOutputStream());
 
-		Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
-		font.setSize(18);
-		font.setColor(Color.DARK_GRAY);
+			document.open();
 
-		String tableTitle = String.format("List of %ss", entityType.name().toLowerCase());
+			// Creates a font for the table title
+			Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+			font.setSize(18);
+			font.setColor(Color.DARK_GRAY);
 
-		Paragraph paragraph = new Paragraph(tableTitle, font);
-		paragraph.setAlignment(Paragraph.ALIGN_CENTER);
+			// Creates the table title
+			String tableTitle = String.format("List of %ss", entityType.name().toLowerCase());
 
-		document.add(paragraph);
+			// Creates a paragraph with the table title
+			Paragraph paragraph = new Paragraph(tableTitle, font);
+			paragraph.setAlignment(Paragraph.ALIGN_CENTER);
 
-		PdfPTable table = new PdfPTable(
-				getTableColumnsQuantity(entityType));
-		table.setWidthPercentage(100f);
+			// Adds the paragraph to the document
+			document.add(paragraph);
 
-		float[] widths = getColumnsWidth(entityType);
+			// Gets the class type of the entity
+			Class<? extends Object> entityClass = getEntityClassType(entityType);
+			Field[] fields = entityClass.getDeclaredFields();
 
-		table.setWidths(widths);
-		table.setSpacingBefore(10);
+			// Creates a PDF table with the number of fields of the entity
+			PdfPTable table = new PdfPTable(fields.length);
 
-		writeTableHeader(table, entityType);
-		writeTableData(table, entityList);
+			// Sets the table width to 100% of the page
+			table.setWidthPercentage(100f);
 
-		document.add(table);
+			// Sets the widths of the table columns
+			float[] widths = new float[fields.length];
 
-		document.close();
-	}
-
-	private float[] getColumnsWidth(EntityOptions entityType) {
-		switch (entityType) {
-			case GENRE, DEVELOPER -> {
-				return new float[] { 1.5f, 3.5f, 3.5f, 2f, 2f };
+			for (int i = 0; i < fields.length; i++) {
+				widths[i] = 2f;
 			}
-			case GAME -> {
-				return new float[] { 1.5f, 3.5f, 3.5f, 2f, 2f, 2f, 2f, 2f, 2f, 2f };
-			}
-			case USER -> {
-				return new float[] { 1.5f, 3.5f, 3.5f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f };
-			}
-			default -> {
-				throw new RestApiException(HttpStatus.BAD_REQUEST, "Invalid entity!");
-			}
-		}
-	}
 
-	private int getTableColumnsQuantity(EntityOptions entityType) {
-		switch (entityType) {
-			case GENRE, DEVELOPER -> {
-				return 5;
-			}
-			case GAME -> {
-				return 10;
-			}
-			case USER -> {
-				return 13;
-			}
-			default -> {
-				throw new RestApiException(HttpStatus.BAD_REQUEST, "Invalid entity!");
-			}
+			table.setWidths(widths);
+			table.setSpacingBefore(10);
+
+			// Writes the table header and data
+			writeTableHeader(table, entityType);
+			writeTableData(table, entityList);
+
+			// Adds the table to the document
+			document.add(table);
+
+			document.close();
+		} catch (IOException | DocumentException | IllegalArgumentException e) {
+			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occurred while writing PDF file to response: " + e.getMessage());
 		}
 	}
 }

@@ -1,6 +1,5 @@
 package com.api.nextspring.services.impl;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +24,6 @@ import com.api.nextspring.utils.CsvExporter;
 import com.api.nextspring.utils.ExcelExporter;
 import com.api.nextspring.utils.ExporterDtoMapper;
 import com.api.nextspring.utils.PdfExporter;
-import com.lowagie.text.DocumentException;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -156,10 +154,7 @@ public class GenreServiceImpl implements GenreService {
 	 * @return a list of GenreDto objects
 	 * @throws RestApiException if no genres are found
 	 */
-	public List<GenreDto> searchByKeyword(String query, Integer page, Integer size, String sort, String direction) {
-		Pageable pageable = PageRequest
-				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
-
+	public List<GenreDto> searchByKeyword(String query, Pageable pageable) {
 		List<GenreEntity> genreEntities = genreRepository.searchGenreEntities(query, pageable).toList();
 
 		if (genreEntities.isEmpty())
@@ -238,17 +233,6 @@ public class GenreServiceImpl implements GenreService {
 
 		log.info("Exporting {} rows to PDF file...", dtoList.size());
 
-		try {
-			pdfExporter.export(response, dtoList, EntityOptions.GENRE);
-		} catch (IllegalArgumentException e) {
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred while exporting data to PDF file: " + e.getMessage());
-		} catch (DocumentException e) {
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred while exporting data to PDF file: " + e.getMessage());
-		} catch (IOException e) {
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred while exporting data to PDF file: " + e.getMessage());
-		}
+		pdfExporter.export(response, dtoList, EntityOptions.GENRE);
 	}
 }

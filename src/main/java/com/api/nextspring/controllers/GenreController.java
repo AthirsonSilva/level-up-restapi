@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -92,17 +94,14 @@ public class GenreController {
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Response<String, List<GenreDto>>> searchGenresByQuery(
 			@RequestParam(value = "query", defaultValue = "") String query,
-			@RequestParam(value = "page", defaultValue = "0") int page,
-			@RequestParam(value = "size", defaultValue = "10") int size,
-			@RequestParam(value = "sort", defaultValue = "name") String sort,
-			@RequestParam(value = "direction", defaultValue = "asc") String direction,
+			@ParameterObject Pageable pageable,
 			HttpServletRequest servletRequest) {
 		if (query.isEmpty() || query.isBlank()) {
 			throw new RestApiException(HttpStatus.BAD_REQUEST,
 					"Query parameter with the genre information is required!");
 		}
 
-		List<GenreDto> genreDtoList = genreServices.searchByKeyword(query, page, size, sort, direction);
+		List<GenreDto> genreDtoList = genreServices.searchByKeyword(query, pageable);
 
 		if (genreDtoList.size() == 0) {
 			Response<String, List<GenreDto>> response = new Response<>("No genre found with given information's!",

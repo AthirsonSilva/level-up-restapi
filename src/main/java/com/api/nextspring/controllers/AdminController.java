@@ -1,20 +1,19 @@
 package com.api.nextspring.controllers;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.api.nextspring.entity.RoleEntity;
-import com.api.nextspring.services.UserService;
-import com.api.nextspring.utils.JwtTokenExtracter;
+import com.api.nextspring.services.AdminService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -35,24 +35,69 @@ import lombok.RequiredArgsConstructor;
 		@ApiResponse(responseCode = "403", description = "Forbidden, the user does not have access permition", content = @Content(mediaType = "application/json"))
 })
 public class AdminController {
-	private final JwtTokenExtracter getJwtFromRequest;
-	private final UserService userServices;
 
-	@GetMapping("/current")
-	@Operation(summary = "Get the current logged in admin")
+	private final AdminService adminService;
+
+	@GetMapping("/check")
+	@Operation(summary = "Checks if the current logged in user is an admin")
 	@ResponseStatus(HttpStatus.OK)
-	// @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
-	public ResponseEntity<HashMap<String, String>> helloAdmin(@RequestHeader Map<String, String> headers) {
-		HashMap<String, String> response = new HashMap<>();
-		String token = getJwtFromRequest.execute(headers);
+	public ResponseEntity<String> checkAdmin() {
+		return new ResponseEntity<>("You are an admin.", HttpStatus.OK);
+	}
 
-		Set<RoleEntity> userRoles = userServices.getUserRole(token);
+	@GetMapping(value = "/export/excel", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	@ResponseBody
+	@Operation(summary = "Export all users in the database to excel endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> exportToExcel(HttpServletResponse response) {
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
 
-		RoleEntity role = userRoles.stream().findFirst().orElseThrow(() -> new RuntimeException("User not found"));
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
 
-		response.put("message", "Hello Admin!");
-		response.put("role", role.getName());
+		response.setContentType("application/octet-stream");
+		response.setHeader(headerKey, headerValue);
 
-		return ResponseEntity.ok(response);
+		adminService.exportToExcel(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+
+	@GetMapping("/export/csv")
+	@Operation(summary = "Exports the users database's data to a CSV file")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<String> exportToCSV(HttpServletResponse response) {
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=users_" + currentDateTime + ".csv";
+
+		response.setContentType("application/csv");
+		response.setHeader(headerKey, headerValue);
+
+		adminService.exportToCSV(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+
+	@GetMapping(value = "/export/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+	@ResponseBody
+	@Operation(summary = "Export all users in the database to pdf endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> exportToPDF(HttpServletResponse response) {
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=users_" + currentDateTime + ".pdf";
+
+		response.setContentType("application/pdf");
+		response.setHeader(headerKey, headerValue);
+
+		adminService.exportToPDF(response);
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 }

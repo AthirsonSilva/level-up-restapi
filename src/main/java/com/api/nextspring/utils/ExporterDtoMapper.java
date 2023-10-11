@@ -9,11 +9,14 @@ import org.springframework.stereotype.Service;
 import com.api.nextspring.dto.DeveloperDto;
 import com.api.nextspring.dto.GameDto;
 import com.api.nextspring.dto.GenreDto;
+import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.dto.export.DeveloperExportDto;
 import com.api.nextspring.dto.export.GameExportDto;
 import com.api.nextspring.dto.export.GenreExportDto;
+import com.api.nextspring.dto.export.UserExportDto;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * This class is responsible for mapping objects to their corresponding DTOs for
@@ -28,7 +31,9 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class ExporterDtoMapper {
+
 	private final ModelMapper modelMapper;
 
 	/**
@@ -43,13 +48,19 @@ public class ExporterDtoMapper {
 		String createdAt = getFormattedDateTime(formattedDto.getCreatedAt());
 		String updatedAt = getFormattedDateTime(formattedDto.getUpdatedAt());
 
-		return DeveloperExportDto.builder()
+		log.info("Formatted DTO: {}", formattedDto);
+
+		DeveloperExportDto exportDto = DeveloperExportDto.builder()
 				.id(formattedDto.getId())
 				.name(formattedDto.getName())
 				.description(formattedDto.getDescription())
 				.createdAt(createdAt)
 				.updatedAt(updatedAt)
 				.build();
+
+		log.info("Formatted DTO: {}", exportDto);
+
+		return exportDto;
 	}
 
 	/**
@@ -64,13 +75,19 @@ public class ExporterDtoMapper {
 		String createdAt = getFormattedDateTime(formattedDto.getCreatedAt());
 		String updatedAt = getFormattedDateTime(formattedDto.getUpdatedAt());
 
-		return GameExportDto.builder()
+		log.info("Formatted DTO: {}", formattedDto);
+
+		GameExportDto exportDto = GameExportDto.builder()
 				.id(formattedDto.getId())
 				.name(formattedDto.getName())
 				.description(formattedDto.getDescription())
 				.createdAt(createdAt)
 				.updatedAt(updatedAt)
 				.build();
+
+		log.info("Formatted DTO: {}", exportDto);
+
+		return exportDto;
 	}
 
 	/**
@@ -85,13 +102,53 @@ public class ExporterDtoMapper {
 		String createdAt = getFormattedDateTime(formattedDto.getCreatedAt());
 		String updatedAt = getFormattedDateTime(formattedDto.getUpdatedAt());
 
-		return GenreExportDto.builder()
+		log.info("Formatted DTO: {}", formattedDto);
+
+		GenreExportDto exportDto = GenreExportDto.builder()
 				.id(formattedDto.getId())
 				.name(formattedDto.getName())
 				.description(formattedDto.getDescription())
 				.createdAt(createdAt)
 				.updatedAt(updatedAt)
 				.build();
+
+		log.info("Formatted DTO: {}", exportDto);
+
+		return exportDto;
+	}
+
+	/**
+	 * Maps a User object to a UserExportDto object.
+	 * 
+	 * @param object The User object to be mapped.
+	 * @return The corresponding UserExportDto object.
+	 */
+	public <T> UserExportDto toUserExportDto(T object) {
+		UserDto formattedDto = modelMapper.map(object, UserDto.class);
+
+		String createdAt = getFormattedDateTime(formattedDto.getCreatedAt());
+		String updatedAt = getFormattedDateTime(formattedDto.getUpdatedAt());
+
+		log.info("Formatted DTO: {}", formattedDto);
+
+		UserExportDto exportDto = UserExportDto.builder()
+				.id(formattedDto.getId())
+				.name(formattedDto.getName())
+				.email(formattedDto.getEmail())
+				.photoPath(formattedDto.getPhotoPath())
+				.zipCode(formattedDto.getAddress().getZipCode())
+				.street(formattedDto.getAddress().getStreet())
+				.complement(formattedDto.getAddress().getComplement())
+				.neighborhood(formattedDto.getAddress().getNeighborhood())
+				.city(formattedDto.getAddress().getCity())
+				.state(formattedDto.getAddress().getState())
+				.createdAt(createdAt)
+				.updatedAt(updatedAt)
+				.build();
+
+		log.info("Formatted DTO: {}", exportDto);
+
+		return exportDto;
 	}
 
 	/**
