@@ -6,7 +6,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +38,6 @@ import lombok.extern.log4j.Log4j2;
 public class AddressServiceImpl implements AddressService {
 
 	private final AddressRepository addressRepository;
-	private final ModelMapper modelMapper;
 	private final ObjectMapper objectMapper;
 
 	/**

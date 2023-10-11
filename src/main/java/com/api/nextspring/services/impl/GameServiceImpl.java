@@ -22,7 +22,6 @@ import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.repositories.DeveloperRepository;
 import com.api.nextspring.repositories.GameRepository;
 import com.api.nextspring.repositories.GenreRepository;
-import com.api.nextspring.repositories.custom.CustomGameRepository;
 import com.api.nextspring.services.GameService;
 import com.api.nextspring.utils.CsvExporter;
 import com.api.nextspring.utils.ExcelExporter;
@@ -49,7 +48,6 @@ public class GameServiceImpl implements GameService {
 
 	// Dependencies
 	private final GameRepository gameRepository;
-	private final CustomGameRepository customGameRepository;
 	private final GenreRepository genreRepository;
 	private final DeveloperRepository developerRepository;
 	private final ModelMapper modelMapper;
