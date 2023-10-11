@@ -1,15 +1,12 @@
 package com.api.nextspring.services.impl;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +21,6 @@ import com.api.nextspring.services.DeveloperService;
 import com.api.nextspring.utils.CsvExporter;
 import com.api.nextspring.utils.ExcelExporter;
 import com.api.nextspring.utils.PdfExporter;
-import com.lowagie.text.DocumentException;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -85,10 +81,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 *         the database.
 	 * @throws RestApiException if no developers are found in the database.
 	 */
-	public List<DeveloperDto> findAll(Integer page, Integer size, String sort, String direction) {
-		Pageable pageable = PageRequest
-				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
-
+	public List<DeveloperDto> findAll(Pageable pageable) {
 		List<DeveloperEntity> developerEntities = developerRepository.findAll(pageable).toList();
 
 		if (developerEntities.isEmpty())
@@ -168,10 +161,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 *                          given keyword.
 	 */
 	@Override
-	public List<DeveloperDto> search(String query, Integer page, Integer size, String sort, String direction) {
-		Pageable pageable = PageRequest
-				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
-
+	public List<DeveloperDto> search(String query, Pageable pageable) {
 		List<DeveloperEntity> developerEntities = developerRepository
 				.searchDeveloperEntities(query, pageable)
 				.toList();
@@ -198,7 +188,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 		List<DeveloperEntity> entityList = developerRepository.findAll();
 
 		List<DeveloperExportDto> dtoList = entityList.stream()
-				.map(developerEntity -> modelMapper.map(developerEntity, DeveloperExportDto.class))
+				.map(entity -> modelMapper.map(entity, DeveloperExportDto.class))
 				.collect(Collectors.toList());
 
 		log.info("Exporting {} rows to Excel file...", dtoList.size());
@@ -252,26 +242,21 @@ public class DeveloperServiceImpl implements DeveloperService {
 		csvExporter.export(response, developerExportDtoList, headers, fields);
 	}
 
+	/**
+	 * Exports all developers to a PDF file and sends it as a response to the
+	 * client.
+	 *
+	 * @param response the HTTP servlet response to send the PDF file to
+	 */
 	public void exportToPDF(HttpServletResponse response) {
 		List<DeveloperEntity> entityList = developerRepository.findAll();
 
 		List<DeveloperExportDto> dtoList = entityList.stream()
-				.map(developerEntity -> modelMapper.map(developerEntity, DeveloperExportDto.class))
+				.map(entity -> modelMapper.map(entity, DeveloperExportDto.class))
 				.collect(Collectors.toList());
 
 		log.info("Exporting {} rows to PDF file...", dtoList.size());
 
-		try {
-			pdfExporter.export(response, dtoList, EntityOptions.DEVELOPER);
-		} catch (IllegalArgumentException e) {
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred while exporting data to PDF file: " + e.getMessage());
-		} catch (DocumentException e) {
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred while exporting data to PDF file: " + e.getMessage());
-		} catch (IOException e) {
-			throw new RestApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occurred while exporting data to PDF file: " + e.getMessage());
-		}
+		pdfExporter.export(response, dtoList, EntityOptions.DEVELOPER);
 	}
 }

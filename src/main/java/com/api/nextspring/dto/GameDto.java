@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.RepresentationModel;
 
-import com.api.nextspring.dto.export.GameExportDto;
 import com.api.nextspring.enums.GameRatingOptions;
 
 import jakarta.validation.constraints.Min;
@@ -24,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GameDto extends RepresentationModel<GameExportDto> {
+public class GameDto extends RepresentationModel<GameDto> {
 	private UUID id;
 
 	@NotEmpty(message = "Name is required")

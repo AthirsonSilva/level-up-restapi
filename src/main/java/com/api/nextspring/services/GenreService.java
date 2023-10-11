@@ -3,6 +3,8 @@ package com.api.nextspring.services;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Pageable;
+
 import com.api.nextspring.dto.GenreDto;
 import com.api.nextspring.dto.optionals.OptionalGenreDto;
 
@@ -73,7 +75,7 @@ public interface GenreService {
 	 * @param direction The direction to sort by (ASC or DESC).
 	 * @return A list of GenreDto objects.
 	 */
-	public List<GenreDto> searchByKeyword(String query, Integer page, Integer size, String sort, String direction);
+	public List<GenreDto> searchByKeyword(String query, Pageable pageable);
 
 	/**
 	 * Exports the list of GenreDto objects to an Excel file and sends it as a

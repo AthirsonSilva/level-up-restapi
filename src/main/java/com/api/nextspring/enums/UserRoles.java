@@ -58,14 +58,7 @@ public enum UserRoles {
 			USER_WRITE,
 			GAME_READ,
 			DEVELOPER_READ,
-			GENRE_READ)),
-
-	DEVELOPER(Sets.newHashSet(
-			GENRE_READ,
-			GAME_READ,
-			GAME_WRITE,
-			DEVELOPER_READ,
-			DEVELOPER_WRITE));
+			GENRE_READ));
 
 	private final Set<UserPermissions> permissions;
 

@@ -52,10 +52,16 @@ public class CsvExporter {
 					Field declaredField = entity.getClass().getDeclaredField(field);
 					declaredField.setAccessible(true);
 
-					log.info(declaredField.get(entity));
+					Object value = declaredField.get(entity);
+
+					if (value == null || value.toString().isEmpty()) {
+						value = "N/A";
+					}
+
+					log.info("Cell value: {}", value.toString());
 
 					// Add the value of the field to the list of objects to write to the CSV file
-					record.add(declaredField.get(entity));
+					record.add(value);
 				}
 
 				// Write the list of objects to the CSV file

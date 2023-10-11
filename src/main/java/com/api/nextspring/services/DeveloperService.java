@@ -3,6 +3,8 @@ package com.api.nextspring.services;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Pageable;
+
 import com.api.nextspring.dto.DeveloperDto;
 import com.api.nextspring.dto.optionals.OptionalDeveloperDto;
 
@@ -35,7 +37,7 @@ public interface DeveloperService {
 	 * @param direction the direction of the sort
 	 * @return a list of developers data sorted and paginated
 	 */
-	public List<DeveloperDto> findAll(Integer page, Integer size, String sort, String direction);
+	public List<DeveloperDto> findAll(Pageable pageable);
 
 	/**
 	 * Finds a developer in the database by id and returns a dto containing the
@@ -74,7 +76,7 @@ public interface DeveloperService {
 	 * @param direction the direction of the sort
 	 * @return a list of developers data sorted and paginated
 	 */
-	public List<DeveloperDto> search(String query, Integer page, Integer size, String sort, String direction);
+	public List<DeveloperDto> search(String query, Pageable pageable);
 
 	/**
 	 * Exports the developers data to an Excel file

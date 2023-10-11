@@ -21,7 +21,6 @@ import com.api.nextspring.repositories.UserRepository;
 import com.api.nextspring.security.JwtTokenProvider;
 import com.api.nextspring.services.EmailService;
 import com.api.nextspring.services.UserService;
-import com.api.nextspring.utils.ExcelExporter;
 import com.api.nextspring.utils.FileManager;
 import com.github.javafaker.Faker;
 
@@ -52,7 +51,6 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final EmailService emailService;
 	private final Faker faker;
-	private final ExcelExporter excelExporter;
 	private final FileManager fileManager;
 
 	/**

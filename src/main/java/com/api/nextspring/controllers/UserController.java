@@ -28,7 +28,7 @@ import com.api.nextspring.dto.UserDto;
 import com.api.nextspring.dto.optionals.OptionalUserDto;
 import com.api.nextspring.services.LinkingService;
 import com.api.nextspring.services.UserService;
-import com.api.nextspring.utils.JwtTokenExtracter;
+import com.api.nextspring.utils.JwtTokenExtractor;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -50,7 +50,7 @@ import lombok.RequiredArgsConstructor;
 })
 public class UserController {
 	private final UserService userServices;
-	private final JwtTokenExtracter jwtTokenExtracter;
+	private final JwtTokenExtractor jwtTokenExtracter;
 	private final LinkingService linkingService;
 
 	@GetMapping

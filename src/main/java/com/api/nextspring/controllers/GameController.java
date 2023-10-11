@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -73,16 +75,13 @@ public class GameController {
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Response<String, List<GameDto>>> searchGameByQuery(
 			@RequestParam(value = "query", defaultValue = "") String query,
-			@RequestParam(value = "page", defaultValue = "0") int page,
-			@RequestParam(value = "size", defaultValue = "10") int size,
-			@RequestParam(value = "sort", defaultValue = "name") String sort,
-			@RequestParam(value = "direction", defaultValue = "asc") String direction,
+			@ParameterObject Pageable pageable,
 			HttpServletRequest servletRequest) {
 		if (query.isEmpty() || query.isBlank()) {
 			throw new RestApiException(HttpStatus.BAD_REQUEST, "Query parameter with the game information is required!");
 		}
 
-		List<GameDto> gameList = gameServices.searchByKeyword(query, page, size, sort, direction);
+		List<GameDto> gameList = gameServices.searchByKeyword(query, pageable);
 
 		if (gameList.size() == 0) {
 			Response<String, List<GameDto>> response = new Response<>("No game found with given information's!",
@@ -104,12 +103,9 @@ public class GameController {
 	@Operation(summary = "Get all games endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Response<String, List<GameDto>>> getAllGames(
-			@RequestParam(value = "page", defaultValue = "0") int page,
-			@RequestParam(value = "size", defaultValue = "10") int size,
-			@RequestParam(value = "sort", defaultValue = "name") String sort,
-			@RequestParam(value = "direction", defaultValue = "asc") String direction,
+			@ParameterObject Pageable pageable,
 			HttpServletRequest servletRequest) {
-		List<GameDto> gameList = gameServices.findAll(page, size, sort, direction);
+		List<GameDto> gameList = gameServices.findAll(pageable);
 
 		for (GameDto gameDto : gameList) {
 			gameDto = linkingService.addHateoasLinksToClass(servletRequest, "games", gameDto);
@@ -167,7 +163,8 @@ public class GameController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Response<String, GameDto>> uploadGamePhoto(
 			@PathVariable(value = "id", required = true) UUID id,
-			@RequestParam(value = "file", required = true) MultipartFile file, HttpServletRequest servletRequest) {
+			@RequestParam(value = "file", required = true) MultipartFile file,
+			HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.uploadPhoto(id, file);
 
 		gameDto = linkingService.addHateoasLinksToClass(servletRequest, "games", gameDto);
