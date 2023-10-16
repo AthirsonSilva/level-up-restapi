@@ -27,10 +27,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.api.nextspring.dto.GameDto;
 import com.api.nextspring.dto.Response;
+import com.api.nextspring.dto.StripeChargeRequest;
+import com.api.nextspring.dto.StripeChargeResponse;
+import com.api.nextspring.dto.StripeTokenRequest;
+import com.api.nextspring.dto.StripeTokenResponse;
 import com.api.nextspring.dto.optionals.OptionalGameDto;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.services.GameService;
 import com.api.nextspring.services.LinkingService;
+import com.api.nextspring.services.StripeService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -53,8 +58,10 @@ import lombok.RequiredArgsConstructor;
 		@ApiResponse(responseCode = "401", description = "Unauthorized, the user is not logged in or does not have access permition", content = @Content(mediaType = "application/json"))
 })
 public class GameController {
+
 	private final GameService gameServices;
 	private final LinkingService linkingService;
+	private final StripeService stripeService;
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
@@ -248,4 +255,31 @@ public class GameController {
 
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
+
+	@PostMapping("/payment/token")
+	@ResponseBody
+	@Operation(summary = "Create a stripe card token endpoint")
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<Response<String, StripeTokenResponse>> createCardToken(
+			@Valid @RequestBody StripeTokenRequest request) {
+		StripeTokenResponse tokenDto = stripeService.createCardToken(request);
+
+		Response<String, StripeTokenResponse> response = new Response<>("Card token created successfully!", tokenDto);
+
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
+	}
+
+	@PostMapping("/payment/charge")
+	@ResponseBody
+	@Operation(summary = "Charge a stripe card token endpoint")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<Response<String, StripeChargeResponse>> chargeCard(
+			@Valid @RequestBody StripeChargeRequest request) {
+		StripeChargeResponse chargeDto = stripeService.createCharge(request);
+
+		Response<String, StripeChargeResponse> response = new Response<>("Card charged successfully!", chargeDto);
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 }
