@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -60,6 +61,8 @@ public class GenreServiceImpl implements GenreService {
 	 * @return a list of GenreDto objects
 	 * @throws RestApiException if no genres are found
 	 */
+	@Override
+	@Cacheable(value = "genres")
 	public List<GenreDto> findAll(Integer page, Integer size, String sort, String direction) {
 		Pageable pageable = PageRequest
 				.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
@@ -80,6 +83,7 @@ public class GenreServiceImpl implements GenreService {
 	 * @return a GenreDto object
 	 * @throws RestApiException if the genre is not found
 	 */
+	@Override
 	public GenreDto findByID(UUID id) {
 		GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(
 				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!"));
@@ -94,6 +98,7 @@ public class GenreServiceImpl implements GenreService {
 	 * @return the created GenreDto object
 	 * @throws RestApiException if a genre with the same name already exists
 	 */
+	@Override
 	public GenreDto create(GenreDto request) {
 		if (genreRepository.existsByName(request.getName()))
 			throw new RestApiException(HttpStatus.BAD_REQUEST, "Genre already exists!");
@@ -113,6 +118,7 @@ public class GenreServiceImpl implements GenreService {
 	 * @param id the genre ID
 	 * @throws RestApiException if the genre is not found
 	 */
+	@Override
 	public void deleteByID(UUID id) {
 		GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(
 				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!"));
@@ -129,6 +135,7 @@ public class GenreServiceImpl implements GenreService {
 	 * @return the updated GenreDto object
 	 * @throws RestApiException if the genre is not found
 	 */
+	@Override
 	public GenreDto updateByID(UUID id, OptionalGenreDto request) {
 		GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(
 				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!"));
@@ -154,6 +161,8 @@ public class GenreServiceImpl implements GenreService {
 	 * @return a list of GenreDto objects
 	 * @throws RestApiException if no genres are found
 	 */
+	@Override
+	@Cacheable(value = "genres", key = "#query")
 	public List<GenreDto> searchByKeyword(String query, Pageable pageable) {
 		List<GenreEntity> genreEntities = genreRepository.searchGenreEntities(query, pageable).toList();
 
@@ -224,6 +233,11 @@ public class GenreServiceImpl implements GenreService {
 		csvExporter.export(response, dtoList, headers, fields);
 	}
 
+	/**
+	 * Exports all genres to a PDF file and sends it as a response to the client.
+	 *
+	 * @param response the HTTP servlet response to send the PDF file to
+	 */
 	public void exportToPDF(HttpServletResponse response) {
 		List<GenreEntity> entityList = genreRepository.findAll();
 

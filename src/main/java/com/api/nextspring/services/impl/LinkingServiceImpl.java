@@ -47,6 +47,7 @@ public class LinkingServiceImpl implements LinkingService {
 	 *
 	 * @return The complete server address.
 	 */
+	@Override
 	public String getServerCompleteAddress() {
 		String localAddress = new String();
 
@@ -67,6 +68,7 @@ public class LinkingServiceImpl implements LinkingService {
 	 *
 	 * @return The application host.
 	 */
+	@Override
 	public String getApplicationHost() {
 		String host = new String();
 
@@ -90,6 +92,7 @@ public class LinkingServiceImpl implements LinkingService {
 	 * @param resource The resource name.
 	 * @return The request URL for the given resource.
 	 */
+	@Override
 	public String getControllersRequestUrl(HttpServletRequest request, String resource) {
 		return request.getHeader("host") + "/api/v1/" + resource;
 	}
@@ -102,6 +105,7 @@ public class LinkingServiceImpl implements LinkingService {
 	 * @param model    The GameDto object.
 	 * @return The GameDto object with HATEOAS links added.
 	 */
+	@Override
 	public GameDto addHateoasLinksToClass(HttpServletRequest request, String resource,
 			GameDto model) {
 		model.add(
