@@ -1,13 +1,29 @@
 {
-  "properties": [
-    {
-      "name": "app.jwt-secret",
-      "type": "java.lang.String",
-      "description": "Description for app.jwt-secret."
-    },
-    {
-      "name": "app.jwt-expiration-milliseconds",
-      "type": "java.lang.String",
-      "description": "Description for app.jwt-expiration-milliseconds."
-    }
-  ] }
+	"properties": [
+		{
+			"name": "app.jwt-secret",
+			"type": "java.lang.String",
+			"description": "Secret key for signing JWT tokens"
+		},
+		{
+			"name": "app.jwt-expiration-milliseconds",
+			"type": "java.lang.String",
+			"description": "Expiration time for JWT tokens in milliseconds."
+		},
+		{
+			"name": "stripe.api.key.secret",
+			"type": "java.lang.String",
+			"description": "Secret API key for Stripe API can be used in server side"
+		},
+		{
+			"name": "stripe.api.key.publish",
+			"type": "java.lang.String",
+			"description": "Publishable API key for Stripe API can be used in client side"
+		},
+		{
+			"name": "Stripe.apiKey",
+			"type": "java.lang.String",
+			"description": "Secret key for Stripe API"
+		}
+	]
+}
