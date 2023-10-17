@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 * @return the DeveloperDto object representing the newly created developer.
 	 * @throws RestApiException if a developer with the given name already exists.
 	 */
+	@Override
 	public DeveloperDto create(DeveloperDto request) {
 		if (developerRepository.existsByName(request.getName())) {
 			throw new RestApiException(HttpStatus.NOT_FOUND, "Developer with given name already exists");
@@ -81,6 +83,8 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 *         the database.
 	 * @throws RestApiException if no developers are found in the database.
 	 */
+	@Override
+	@Cacheable(value = "developers")
 	public List<DeveloperDto> findAll(Pageable pageable) {
 		List<DeveloperEntity> developerEntities = developerRepository.findAll(pageable).toList();
 
@@ -101,6 +105,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 * @throws RestApiException if no developer with the given ID is found in the
 	 *                          database.
 	 */
+	@Override
 	public DeveloperDto findByID(UUID id) {
 		DeveloperEntity developerEntity = developerRepository.findById(id)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given name not found"));
@@ -119,6 +124,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 * @throws RestApiException if no developer with the given ID is found in the
 	 *                          database.
 	 */
+	@Override
 	public DeveloperDto updateByID(UUID id, OptionalDeveloperDto request) {
 		DeveloperEntity developerEntity = developerRepository.findById(id)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given id not found"));
@@ -139,6 +145,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 * @throws RestApiException if no developer with the given ID is found in the
 	 *                          database.
 	 */
+	@Override
 	public void deleteByID(UUID id) {
 		DeveloperEntity developerEntity = developerRepository.findById(id)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given name not found"));
@@ -161,6 +168,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 *                          given keyword.
 	 */
 	@Override
+	@Cacheable(value = "developers", key = "#query")
 	public List<DeveloperDto> search(String query, Pageable pageable) {
 		List<DeveloperEntity> developerEntities = developerRepository
 				.searchDeveloperEntities(query, pageable)
@@ -248,6 +256,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 *
 	 * @param response the HTTP servlet response to send the PDF file to
 	 */
+	@Override
 	public void exportToPDF(HttpServletResponse response) {
 		List<DeveloperEntity> entityList = developerRepository.findAll();
 

@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -113,6 +114,7 @@ public class GameServiceImpl implements GameService {
 	 * @throws RestApiException If no games are found with the given keyword.
 	 */
 	@Override
+	@Cacheable(value = "games", key = "#query")
 	public List<GameDto> searchByKeyword(String query, Pageable pageable) {
 		log.info("Pageable object received: " + pageable.toString() + ".");
 
@@ -137,6 +139,7 @@ public class GameServiceImpl implements GameService {
 	 * @throws RestApiException If no games are found.
 	 */
 	@Override
+	@Cacheable(value = "games")
 	public List<GameDto> findAll(Pageable pageable) {
 		log.info("Pageable object received: " + pageable.toString() + ".");
 
