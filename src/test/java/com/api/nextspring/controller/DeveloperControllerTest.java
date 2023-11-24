@@ -1,60 +1,58 @@
 package com.api.nextspring.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.servlet.MockMvc;
-
 import com.api.nextspring.controllers.DeveloperController;
 import com.api.nextspring.dto.DeveloperDto;
-import com.api.nextspring.dto.Response;
 import com.api.nextspring.repositories.DeveloperRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.javafaker.Faker;
+import com.api.nextspring.services.DeveloperService;
+import com.api.nextspring.services.LinkingService;
+import com.api.nextspring.util.ObjectCreationUtils;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 
-@ExtendWith(MockitoExtension.class)
-@AutoConfigureMockMvc
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest
+import java.util.UUID;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(DeveloperController.class)
+@ActiveProfiles("dev")
 public class DeveloperControllerTest {
 
-	@Mock
-	private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-	@Mock
-	private DeveloperRepository developerRepository;
+    @MockBean
+    private DeveloperRepository developerRepository;
 
-	@Mock
-	private DeveloperController developerController;
+    @MockBean
+    private DeveloperService developerService;
 
-	@Mock
-	private ObjectMapper objectMapper;
+    @MockBean
+    private LinkingService linkingService;
 
-	@Test
-	public void shouldSaveAndRetrieveDeveloper() throws Exception {
-		// given a new developer
-		DeveloperDto developer = getDeveloperDto();
+    @Test
+    @DisplayName("Given a new developer, when save, then return a developer with id")
+    public void testCreateDeveloper_whenSaveDeveloper_thenReturnDeveloperWithId() throws Exception {
+        // given a new developer
+        DeveloperDto developerDto = ObjectCreationUtils.getDeveloperDto();
+        developerDto.setId(UUID.randomUUID());
 
-		// when the developer is retrieved
-		ResponseEntity<Response<String, DeveloperDto>> response = developerController.create(developer, null);
+        Mockito.when(developerService.findByID(developerDto.getId())).thenReturn(developerDto);
 
-		// then - assertion
-		assertThat(response.getBody().getData()).isEqualTo(developer);
-	}
+        // when the developer is retrieved
+        mockMvc.perform(get("/api/v1/developers")
+                        .param("id", developerDto.getId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andReturn();
+    }
 
-	private DeveloperDto getDeveloperDto() {
-		Faker faker = new Faker();
-
-		return DeveloperDto.builder()
-				.name(faker.company().name())
-				.description(faker.lorem().paragraph())
-				.build();
-	}
 }

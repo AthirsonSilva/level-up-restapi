@@ -2,9 +2,11 @@ package com.api.nextspring.config;
 
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
+import org.springframework.context.annotation.Profile;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -24,7 +26,11 @@ import io.swagger.v3.oas.models.servers.Server;
  * @author Athirson Silva
  */
 @Configuration
+@Profile("dev")
 public class SwaggerConfiguration {
+
+	@Value("${spring.profiles.active}")
+	private String activeProfile;
 
 	/**
 	 * This method returns a custom OpenAPI specification version 3.0.3 object with
@@ -39,8 +45,11 @@ public class SwaggerConfiguration {
 
 		ArrayList<Server> servers = new ArrayList<Server>();
 
-		servers.add(new Server().url("https://next-spring.up.railway.app").description("Production"));
-		servers.add(new Server().url("http://localhost:8080").description("Development"));
+		if (activeProfile.equals("prod"))
+			servers.add(new Server().url("https://next-spring.up.railway.app").description("Production"));
+
+		else
+			servers.add(new Server().url("http://localhost:8080").description("Development"));
 
 		openApi.setServers(servers);
 

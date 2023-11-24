@@ -26,8 +26,7 @@ public class VirtualThreadsConfig {
 	 */
 	@Bean
 	TomcatProtocolHandlerCustomizer<?> tomcatProtocolHandlerCustomizer() {
-		return protocolHandler -> {
-			protocolHandler.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
-		};
+		return protocolHandler -> protocolHandler.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
+
 	}
 }

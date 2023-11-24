@@ -4,9 +4,6 @@ import com.api.nextspring.dto.AddressDto;
 import com.api.nextspring.entity.AddressEntity;
 
 /**
- * This interface defines the methods for managing addresses.
- */
-/**
  * This interface defines the methods to be implemented by a service that
  * handles address-related operations.
  */
