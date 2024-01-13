@@ -1,4 +1,4 @@
-package com.api.levelup.dto;
+package com.api.levelup.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChangePasswordDto {
+public class ChangePasswordRequestDto {
 
 	@NotBlank(message = "Current password is required")
 	@Size(min = 6, max = 20, message = "Current password must be between 8 and 20 characters")

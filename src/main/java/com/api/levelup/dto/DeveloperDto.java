@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.hateoas.RepresentationModel;
 
+import com.api.levelup.dto.request.GameRequestDto;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -29,7 +31,7 @@ public class DeveloperDto extends RepresentationModel<DeveloperDto> {
 	@Size(min = 3, max = 50, message = "Founded must be between 3 and 50 characters")
 	private String description;
 
-	private List<GameDto> games;
+	private List<GameRequestDto> games;
 
 	private LocalDateTime createdAt;
 

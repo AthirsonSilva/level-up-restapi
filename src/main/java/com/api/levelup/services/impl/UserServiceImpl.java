@@ -9,10 +9,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.api.levelup.dto.ChangePasswordDto;
 import com.api.levelup.dto.EmailDto;
 import com.api.levelup.dto.UserDto;
 import com.api.levelup.dto.optionals.OptionalUserDto;
+import com.api.levelup.dto.request.ChangePasswordRequestDto;
 import com.api.levelup.entity.RoleEntity;
 import com.api.levelup.entity.UserEntity;
 import com.api.levelup.exceptions.RestApiException;
@@ -160,7 +160,7 @@ public class UserServiceImpl implements UserService {
 	 * @return The updated user.
 	 */
 	@Override
-	public UserDto changeCurrentUserPassword(String token, ChangePasswordDto request) {
+	public UserDto changeCurrentUserPassword(String token, ChangePasswordRequestDto request) {
 		UserEntity currentUser = getUserEntityFromToken(token);
 
 		if (!passwordEncoder.matches(request.getCurrentPassword(), currentUser.getPassword()))

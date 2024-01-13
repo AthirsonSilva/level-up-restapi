@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.api.levelup.dto.ChangePasswordDto;
 import com.api.levelup.dto.Response;
 import com.api.levelup.dto.UserDto;
 import com.api.levelup.dto.optionals.OptionalUserDto;
+import com.api.levelup.dto.request.ChangePasswordRequestDto;
 import com.api.levelup.services.LinkingService;
 import com.api.levelup.services.UserService;
 import com.api.levelup.utils.JwtTokenExtractor;
@@ -104,7 +104,7 @@ public class UserController {
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Response<String, UserDto>> changeCurrentUserPassword(
 			@RequestHeader Map<String, String> headers,
-			@RequestBody ChangePasswordDto request) {
+			@RequestBody ChangePasswordRequestDto request) {
 		String token = jwtTokenExtracter.execute(headers);
 
 		UserDto updatedCurrentUser = userServices.changeCurrentUserPassword(token, request);

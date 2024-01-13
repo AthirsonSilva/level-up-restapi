@@ -24,13 +24,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.api.levelup.dto.GameBuyingRequest;
 import com.api.levelup.dto.GameBuyingResponse;
 import com.api.levelup.dto.GameDto;
 import com.api.levelup.dto.Response;
-import com.api.levelup.dto.StripeChargeRequest;
 import com.api.levelup.dto.StripeTokenResponse;
 import com.api.levelup.dto.optionals.OptionalGameDto;
+import com.api.levelup.dto.request.GameBuyingRequest;
+import com.api.levelup.dto.request.GameRequestDto;
+import com.api.levelup.dto.request.StripeChargeRequest;
 import com.api.levelup.exceptions.RestApiException;
 import com.api.levelup.services.GameService;
 import com.api.levelup.services.LinkingService;
@@ -65,7 +66,7 @@ public class GameController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "Create a new game endpoint")
-	public ResponseEntity<Response<String, GameDto>> createGame(@Valid @RequestBody GameDto request,
+	public ResponseEntity<Response<String, GameDto>> createGame(@Valid @RequestBody GameRequestDto request,
 			HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.create(request);
 
@@ -101,7 +102,8 @@ public class GameController {
 			gameDto = linkingService.addHateoasLinksToClass(servletRequest, "games", gameDto);
 		}
 
-		Response<String, List<GameDto>> response = new Response<>("Games found with given information's!", gameList);
+		Response<String, List<GameDto>> response = new Response<>("Games found with given information's!",
+				gameList);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -140,7 +142,8 @@ public class GameController {
 	@PatchMapping("/{id}")
 	@Operation(summary = "Update a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Response<String, GameDto>> updateGame(@PathVariable(value = "id", required = true) String id,
+	public ResponseEntity<Response<String, GameDto>> updateGame(
+			@PathVariable(value = "id", required = true) String id,
 			@RequestBody OptionalGameDto request, HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.updateById(id, request);
 

@@ -1,6 +1,7 @@
 package com.api.levelup.services.impl;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.api.levelup.dto.GenreDto;
 import com.api.levelup.dto.export.GenreExportDto;
 import com.api.levelup.dto.optionals.OptionalGenreDto;
+import com.api.levelup.dto.request.GenreRequestDto;
 import com.api.levelup.entity.GenreEntity;
 import com.api.levelup.enums.EntityOptions;
 import com.api.levelup.exceptions.RestApiException;
@@ -98,7 +100,7 @@ public class GenreServiceImpl implements GenreService {
 	 * @throws RestApiException if a genre with the same name already exists
 	 */
 	@Override
-	public GenreDto create(GenreDto request) {
+	public GenreDto create(GenreRequestDto request) {
 		if (genreRepository.existsByName(request.getName()))
 			throw new RestApiException(HttpStatus.BAD_REQUEST, "Genre already exists!");
 
@@ -106,6 +108,7 @@ public class GenreServiceImpl implements GenreService {
 				.builder()
 				.name(request.getName())
 				.description(request.getDescription())
+				.games(Collections.emptyList())
 				.build();
 
 		return modelMapper.map(genreRepository.save(genreEntity), GenreDto.class);

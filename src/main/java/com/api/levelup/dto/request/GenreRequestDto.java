@@ -1,11 +1,4 @@
-package com.api.levelup.dto;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.springframework.hateoas.RepresentationModel;
-
-import com.api.levelup.dto.request.GameRequestDto;
+package com.api.levelup.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -20,9 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class GenreDto extends RepresentationModel<GenreDto> {
-	private String id;;
-
+public class GenreRequestDto {
 	@NotBlank(message = "Name is required")
 	@Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
 	private String name;
@@ -30,10 +21,4 @@ public class GenreDto extends RepresentationModel<GenreDto> {
 	@NotBlank(message = "Description is required")
 	@Size(min = 3, message = "Description must be at least 3 characters")
 	private String description;
-
-	private List<GameRequestDto> games;
-
-	private LocalDateTime createdAt;
-
-	private LocalDateTime updatedAt;
 }

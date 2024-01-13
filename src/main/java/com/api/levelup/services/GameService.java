@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.api.levelup.dto.GameDto;
 import com.api.levelup.dto.optionals.OptionalGameDto;
+import com.api.levelup.dto.request.GameRequestDto;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -26,7 +27,7 @@ public interface GameService {
 	 * @param gameDto The data for the new game.
 	 * @return The created game.
 	 */
-	public GameDto create(GameDto gameDto);
+	public GameDto create(GameRequestDto gameDto);
 
 	/**
 	 * Searches for games that match the given query.
