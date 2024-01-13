@@ -1,4 +1,4 @@
-# Next Spring
+# Level UP!
 
 This is a simple game rental service API that I created using Spring Boot. The purpose of this project was to test my
 knowledge of this framework and to learn how to use its features. The API allows users to create, update, delete and
@@ -10,7 +10,7 @@ using Maven or Docker.
 
 ## Contents
 
-- [Next Spring](#next-spring)
+- [Level UP!](#level-up)
     - [Contents](#contents)
     - [Requirements](#requirements)
     - [Architecture Layers](#architecture-layers)
@@ -38,20 +38,17 @@ using Maven or Docker.
 | Use of HATEOAS                             | 🟢 Ready          |
 | Spring Security with JWT                   | 🟢 Ready          |
 | User authentication and email verification | 🟢 Ready          |
-| Caching with Redis                         | 🔴 Not ready      |
+| Caching with Redis                         | 🟡 In development |
 | Documentation with SwaggerUI and Javadocs  | 🟢 Ready          |
 | Pagination and sorting                     | 🟢 Ready          |
 | Mailing service with JavaMail              | 🟢 Ready          |
 | Data generation with JavaFaker             | 🟢 Ready          |
 | Layered architecture                       | 🟢 Ready          |
 | Global Error Handling                      | 🟢 Ready          |
-| Testing with JUnit                         | 🟡 In development |
 | API versioning                             | 🟢 Ready          |
 | Excel, CSV and PDF exporting               | 🟢 Ready          |
 | File upload and download                   | 🟡 In development |
-| Logging with Log4j2                        | 🟡 In development |
-| Use rate limiting                          | 🔴 Not ready      |
-| Circuit breakers                           | 🔴 Not ready      |
+| Logging with Log4j2                        | 🟢 Ready          |
 | CI/ CD with Docker and Railway             | 🟢 Ready          |
 
 ## Architecture Layers
@@ -94,7 +91,7 @@ This layer is simply the actual database that is responsible for:
 
 ## Software structure
 
-![image](https://github.com/AthirsonSilva/blog-api/assets/84593887/046588ab-6449-43f3-b68b-ed5c580146d9)
+![image](./architecture.png)
 
 ## Getting Started
 

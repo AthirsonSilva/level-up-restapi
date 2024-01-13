@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for next-spring on 2023-05-25T10:12:17-03:00
+# fly.toml app configuration file generated for level-up on 2023-05-25T10:12:17-03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "next-spring"
+app = "level-up"
 primary_region = "gru"
 
 [http_service]

@@ -1,16 +1,13 @@
 version: "3.8"
 
 services:
-  next-api:
-    container_name: next-api
-    image: next-api:latest
+  rest-api:
+    container_name: rest-api
+    image: rest-api:latest
     build:
       context: ./
       dockerfile: Dockerfile
     environment:
-      - DATABASE_URL=jdbc:postgresql://next-db:5432/postgres
-      - PGUSER=postgres
-      - PGPASSWORD=postgres
       - REDIS_URL=redis://redis:6379
       - PORT=8080
     ports:
@@ -24,23 +21,19 @@ services:
       restart_policy:
         condition: on-failure
     depends_on:
-      - next-db
+      - database
       - redis-server
     networks:
-      - next-network
+      - local-network
       
-  next-db:
-    container_name: next-db
-    image: postgres:latest
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - TZ=America/Sao_Paulo
+  database:
+    container_name: database
+    image: mongodb:latest
     ports:
-      - "5432:5432"
+      - "27017:27017"
     restart: on-failure
     networks:
-      - next-network
+      - local-network
 
   redis-server:
     container_name: redis-server
@@ -49,9 +42,9 @@ services:
       - "6379:6379"
     restart: on-failure
     networks:
-      - next-network
+      - local-network
 
 networks:
-  next-network:
-    name: next-network
+  local-network:
+    name: local-network
     driver: bridge
