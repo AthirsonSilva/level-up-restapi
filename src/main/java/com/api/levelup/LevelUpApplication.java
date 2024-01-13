@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @SpringBootApplication
 @EnableMongoAuditing
 @EnableMongoRepositories
-public class NextSpringApplication {
+public class LevelUpApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(NextSpringApplication.class, args);
+		SpringApplication.run(LevelUpApplication.class, args);
 	}
 }
