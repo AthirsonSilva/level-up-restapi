@@ -13,10 +13,10 @@
 	</parent>
 
 	<groupId>com.api</groupId>
-	<artifactId>next-spring</artifactId>
+	<artifactId>level-up</artifactId>
 	<version>2.0.0</version>
-	<name>next-spring</name>
-	<description>next-spring</description>
+	<name>level-up</name>
+	<description>level-up</description>
 
 	<properties>
 		<java.version>21</java.version>
