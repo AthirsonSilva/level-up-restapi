@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -78,7 +77,7 @@ public class GenreController {
 	@GetMapping("/{id}")
 	@Operation(summary = "Get a genre by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Response<String, GenreDto>> getGenreById(@PathVariable UUID id,
+	public ResponseEntity<Response<String, GenreDto>> getGenreById(@PathVariable String id,
 			HttpServletRequest servletRequest) {
 		GenreDto genreDto = genreServices.findByID(id);
 
@@ -114,7 +113,8 @@ public class GenreController {
 			genre = linkingService.addHateoasLinksToClass(servletRequest, "genres", genre);
 		}
 
-		Response<String, List<GenreDto>> response = new Response<>("Genres with given information fetched successfully!",
+		Response<String, List<GenreDto>> response = new Response<>(
+				"Genres with given information fetched successfully!",
 				genreDtoList);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
@@ -137,7 +137,7 @@ public class GenreController {
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete a genre by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<HashMap<String, String>> deleteGenre(@PathVariable UUID id) {
+	public ResponseEntity<HashMap<String, String>> deleteGenre(@PathVariable String id) {
 		genreServices.deleteByID(id);
 
 		HashMap<String, String> response = new HashMap<>();
@@ -151,7 +151,7 @@ public class GenreController {
 	@Operation(summary = "Update a genre by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Response<String, GenreDto>> updateGenre(@Validated @RequestBody OptionalGenreDto request,
-			@PathVariable UUID id, HttpServletRequest servletRequest) {
+			@PathVariable String id, HttpServletRequest servletRequest) {
 		GenreDto genreDto = genreServices.updateByID(id, request);
 
 		genreDto = linkingService.addHateoasLinksToClass(servletRequest, "genres", genreDto);

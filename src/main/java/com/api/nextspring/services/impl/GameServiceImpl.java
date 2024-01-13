@@ -2,7 +2,6 @@ package com.api.nextspring.services.impl;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -160,7 +159,7 @@ public class GameServiceImpl implements GameService {
 	 * @throws RestApiException If no game is found with the provided ID.
 	 */
 	@Override
-	public GameDto findByID(UUID id) {
+	public GameDto findByID(String id) {
 		GameEntity gameEntity = gameRepository
 				.findById(id)
 				.orElseThrow(
@@ -177,7 +176,7 @@ public class GameServiceImpl implements GameService {
 	 * @throws RestApiException If no game is found with the provided ID.
 	 */
 	@Override
-	public void deleteById(UUID id) {
+	public void deleteById(String id) {
 		if (gameRepository.existsById(id)) {
 			gameRepository.deleteById(id);
 		}
@@ -194,7 +193,7 @@ public class GameServiceImpl implements GameService {
 	 * @throws RestApiException If no game is found with the provided ID.
 	 */
 	@Override
-	public GameDto updateById(UUID id, OptionalGameDto request) {
+	public GameDto updateById(String id, OptionalGameDto request) {
 		GameEntity gameEntity = gameRepository
 				.findById(id)
 				.orElseThrow(
@@ -257,7 +256,7 @@ public class GameServiceImpl implements GameService {
 	 * @throws RestApiException If no game is found with the provided ID.
 	 */
 	@Override
-	public void downloadPhotoByGame(UUID id, HttpServletResponse response) {
+	public void downloadPhotoByGame(String id, HttpServletResponse response) {
 		GameEntity entity = gameRepository
 				.findById(id)
 				.orElseThrow(
@@ -268,7 +267,7 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public GameDto uploadPhoto(UUID id, MultipartFile file) {
+	public GameDto uploadPhoto(String id, MultipartFile file) {
 		GameEntity entity = gameRepository
 				.findById(id)
 				.orElseThrow(

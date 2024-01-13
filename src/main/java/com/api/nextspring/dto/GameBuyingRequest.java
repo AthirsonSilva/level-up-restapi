@@ -1,5 +1,8 @@
 package com.api.nextspring.dto;
 
+import java.util.HashMap;
+
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -9,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StripeTokenRequest {
+public class GameBuyingRequest {
 
 	@NotBlank(message = "Card number is required")
 	@Size(min = 16, max = 16, message = "Card number must be 16 digits")
@@ -30,4 +33,14 @@ public class StripeTokenRequest {
 	@NotBlank(message = "Username is required")
 	@Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
 	private String username;
+
+	@NotBlank(message = "Amount is required")
+	@Min(value = 1, message = "Amount must be greater than 0")
+	private Double amount;
+
+	@NotBlank(message = "Game to buy is required")
+	private String gameId;
+
+	private HashMap<String, String> metadata;
+
 }

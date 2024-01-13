@@ -1,8 +1,8 @@
 package com.api.nextspring.services;
 
+import com.api.nextspring.dto.GameBuyingRequest;
+import com.api.nextspring.dto.GameBuyingResponse;
 import com.api.nextspring.dto.StripeChargeRequest;
-import com.api.nextspring.dto.StripeChargeResponse;
-import com.api.nextspring.dto.StripeTokenRequest;
 import com.api.nextspring.dto.StripeTokenResponse;
 
 /**
@@ -22,7 +22,7 @@ public interface StripeService {
 	 * @param tokenDto The StripeTokenDto containing the card information.
 	 * @return The StripeTokenDto containing the token information.
 	 */
-	StripeTokenResponse createCardToken(StripeTokenRequest tokenDto);
+	StripeTokenResponse createCardToken(GameBuyingRequest tokenDto);
 
 	/**
 	 * Charges a Stripe account using the provided StripeChargeDto.
@@ -30,5 +30,5 @@ public interface StripeService {
 	 * @param chargeRequest The StripeChargeDto containing the charge information.
 	 * @return The StripeChargeDto containing the charge result information.
 	 */
-	StripeChargeResponse createCharge(StripeChargeRequest chargeRequest);
+	GameBuyingResponse createCharge(StripeChargeRequest chargeRequest);
 }

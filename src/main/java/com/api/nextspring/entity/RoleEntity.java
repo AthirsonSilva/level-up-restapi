@@ -1,19 +1,12 @@
 package com.api.nextspring.entity;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,23 +16,17 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "roles")
+@Document(collection = "role")
 public class RoleEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private UUID id;
 
-	@Column(nullable = false, unique = true)
+	@Id
+	private String id;;
+
 	private String name;
 
-	@CreationTimestamp
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "created_at")
+	@CreatedDate
 	private LocalDateTime createdAt;
 
-	@UpdateTimestamp
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "updated_at")
+	@LastModifiedDate
 	private LocalDateTime updatedAt;
 }

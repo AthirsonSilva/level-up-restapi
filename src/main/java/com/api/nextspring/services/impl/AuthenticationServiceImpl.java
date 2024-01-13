@@ -2,7 +2,6 @@ package com.api.nextspring.services.impl;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -200,7 +199,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	public void activateAccount(String token) throws RestApiException {
 		// Find user by token
 		UserEntity user = userRepository
-				.findById(UUID.fromString(token))
+				.findById(token)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "User with given token was not found!"));
 
 		log.info("User found: {}", user.toString());

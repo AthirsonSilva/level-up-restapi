@@ -1,24 +1,26 @@
 package com.api.nextspring.repositories;
 
-import java.util.UUID;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
+import com.api.nextspring.config.RedisConfiguration;
 import com.api.nextspring.entity.EmailEntity;
 
 /**
  * This interface represents the repository for EmailEntity objects. It extends
- * the JpaRepository interface
+ * the MongoRepository interface
  * and inherits its methods for basic CRUD operations.
  * 
- * @see JpaRepository
+ * @see MongoRepository
  * @see EmailEntity
  * 
  * @implNote This interface represents the repository for EmailEntity objects.
- *           It extends the JpaRepository interface
+ *           It extends the MongoRepository interface
  * 
  * @author Athirson Silva
  */
-public interface EmailRepository extends JpaRepository<EmailEntity, UUID> {
+@ImportAutoConfiguration(classes = { RedisConfiguration.class, CacheAutoConfiguration.class })
+public interface EmailRepository extends MongoRepository<EmailEntity, String> {
 
 }

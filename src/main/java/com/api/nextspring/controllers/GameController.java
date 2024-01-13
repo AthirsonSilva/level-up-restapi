@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -25,11 +24,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.api.nextspring.dto.GameBuyingRequest;
+import com.api.nextspring.dto.GameBuyingResponse;
 import com.api.nextspring.dto.GameDto;
 import com.api.nextspring.dto.Response;
 import com.api.nextspring.dto.StripeChargeRequest;
-import com.api.nextspring.dto.StripeChargeResponse;
-import com.api.nextspring.dto.StripeTokenRequest;
 import com.api.nextspring.dto.StripeTokenResponse;
 import com.api.nextspring.dto.optionals.OptionalGameDto;
 import com.api.nextspring.exceptions.RestApiException;
@@ -85,7 +84,8 @@ public class GameController {
 			@ParameterObject Pageable pageable,
 			HttpServletRequest servletRequest) {
 		if (query.isEmpty() || query.isBlank()) {
-			throw new RestApiException(HttpStatus.BAD_REQUEST, "Query parameter with the game information is required!");
+			throw new RestApiException(HttpStatus.BAD_REQUEST,
+					"Query parameter with the game information is required!");
 		}
 
 		List<GameDto> gameList = gameServices.searchByKeyword(query, pageable);
@@ -126,7 +126,7 @@ public class GameController {
 	@GetMapping("/{id}")
 	@Operation(summary = "Get a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Response<String, GameDto>> getGameById(@PathVariable(value = "id") UUID id,
+	public ResponseEntity<Response<String, GameDto>> getGameById(@PathVariable(value = "id") String id,
 			HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.findByID(id);
 
@@ -140,7 +140,7 @@ public class GameController {
 	@PatchMapping("/{id}")
 	@Operation(summary = "Update a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Response<String, GameDto>> updateGame(@PathVariable(value = "id", required = true) UUID id,
+	public ResponseEntity<Response<String, GameDto>> updateGame(@PathVariable(value = "id", required = true) String id,
 			@RequestBody OptionalGameDto request, HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.updateById(id, request);
 
@@ -154,7 +154,7 @@ public class GameController {
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<HashMap<String, String>> deleteGame(@PathVariable(value = "id", required = true) UUID id,
+	public ResponseEntity<HashMap<String, String>> deleteGame(@PathVariable(value = "id", required = true) String id,
 			HttpServletRequest request) {
 		gameServices.deleteById(id);
 
@@ -169,7 +169,7 @@ public class GameController {
 	@Operation(summary = "Upload a game photo by id endpoint")
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Response<String, GameDto>> uploadGamePhoto(
-			@PathVariable(value = "id", required = true) UUID id,
+			@PathVariable(value = "id", required = true) String id,
 			@RequestParam(value = "file", required = true) MultipartFile file,
 			HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.uploadPhoto(id, file);
@@ -185,7 +185,7 @@ public class GameController {
 	@ResponseBody
 	@Operation(summary = "Download a game photo by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> downloadGameImage(@PathVariable("id") UUID id,
+	public ResponseEntity<?> downloadGameImage(@PathVariable("id") String id,
 			HttpServletResponse response) {
 		response.setContentType(MediaType.IMAGE_PNG_VALUE);
 
@@ -256,28 +256,24 @@ public class GameController {
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
-	@PostMapping("/payment/token")
+	@PostMapping("/buy")
 	@ResponseBody
-	@Operation(summary = "Create a stripe card token endpoint")
-	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<Response<String, StripeTokenResponse>> createCardToken(
-			@Valid @RequestBody StripeTokenRequest request) {
-		StripeTokenResponse tokenDto = stripeService.createCardToken(request);
-
-		Response<String, StripeTokenResponse> response = new Response<>("Card token created successfully!", tokenDto);
-
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
-	}
-
-	@PostMapping("/payment/charge")
-	@ResponseBody
-	@Operation(summary = "Charge a stripe card token endpoint")
+	@Operation(summary = "Buy a game endpoint", description = "This endpoint will create a token for the credit card and then will charge the user for the game")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Response<String, StripeChargeResponse>> chargeCard(
-			@Valid @RequestBody StripeChargeRequest request) {
-		StripeChargeResponse chargeDto = stripeService.createCharge(request);
+	public ResponseEntity<Response<String, GameBuyingResponse>> createCardToken(
+			@Valid @RequestBody GameBuyingRequest request) {
+		StripeTokenResponse tokenDto = stripeService.createCardToken(request);
+		StripeChargeRequest chargeRequest = StripeChargeRequest.builder()
+				.token(tokenDto.getToken())
+				.username(request.getUsername())
+				.amount(request.getAmount())
+				.metadata(request.getMetadata())
+				.build();
 
-		Response<String, StripeChargeResponse> response = new Response<>("Card charged successfully!", chargeDto);
+		GameBuyingResponse paymentResponse = stripeService.createCharge(chargeRequest);
+
+		Response<String, GameBuyingResponse> response = new Response<>("The game was bought successfully!",
+				paymentResponse);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}

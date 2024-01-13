@@ -1,7 +1,6 @@
 package com.api.nextspring.services;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,14 +58,14 @@ public interface GameService {
 	 * @param gameDto The data to update the game with.
 	 * @return The updated game.
 	 */
-	public GameDto updateById(UUID id, OptionalGameDto gameDto);
+	public GameDto updateById(String id, OptionalGameDto gameDto);
 
 	/**
 	 * Deletes the game with the given ID.
 	 * 
 	 * @param id The ID of the game to delete.
 	 */
-	public void deleteById(UUID id);
+	public void deleteById(String id);
 
 	/**
 	 * Returns the game with the given ID.
@@ -74,7 +73,7 @@ public interface GameService {
 	 * @param id The ID of the game to retrieve.
 	 * @return The game with the given ID.
 	 */
-	public GameDto findByID(UUID id);
+	public GameDto findByID(String id);
 
 	/**
 	 * Uploads a photo for the game with the given ID.
@@ -83,7 +82,7 @@ public interface GameService {
 	 * @param file The photo file to upload.
 	 * @return The updated game with the new photo.
 	 */
-	public GameDto uploadPhoto(UUID id, MultipartFile file);
+	public GameDto uploadPhoto(String id, MultipartFile file);
 
 	/**
 	 * Downloads the photo for the game with the given ID.
@@ -91,7 +90,7 @@ public interface GameService {
 	 * @param id       The ID of the game to download the photo for.
 	 * @param response The HTTP response to write the photo data to.
 	 */
-	public void downloadPhotoByGame(UUID id, HttpServletResponse response);
+	public void downloadPhotoByGame(String id, HttpServletResponse response);
 
 	/**
 	 * Exports all games to an Excel file and writes it to the given HTTP response.

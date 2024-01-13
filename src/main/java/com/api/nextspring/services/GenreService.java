@@ -1,7 +1,6 @@
 package com.api.nextspring.services;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
 
@@ -38,7 +37,7 @@ public interface GenreService {
 	 * @param id The ID of the GenreDto object to retrieve.
 	 * @return A GenreDto object.
 	 */
-	public GenreDto findByID(UUID id);
+	public GenreDto findByID(String id);
 
 	/**
 	 * Creates a new GenreDto object.
@@ -53,7 +52,7 @@ public interface GenreService {
 	 * 
 	 * @param id The ID of the GenreDto object to delete.
 	 */
-	public void deleteByID(UUID id);
+	public void deleteByID(String id);
 
 	/**
 	 * Updates a GenreDto object with the provided ID.
@@ -62,7 +61,7 @@ public interface GenreService {
 	 * @param request The updated GenreDto object.
 	 * @return The updated GenreDto object.
 	 */
-	public GenreDto updateByID(UUID id, OptionalGenreDto request);
+	public GenreDto updateByID(String id, OptionalGenreDto request);
 
 	/**
 	 * Searches for GenreDto objects based on the provided keyword and pagination,

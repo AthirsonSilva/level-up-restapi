@@ -1,25 +1,25 @@
 package com.api.nextspring.repositories;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import com.api.nextspring.config.RedisConfiguration;
 import com.api.nextspring.entity.DeveloperEntity;
 
 /**
  * This interface represents the repository for DeveloperEntity objects.
- * It extends JpaRepository to inherit basic CRUD operations and adds additional
+ * It extends MongoRepository to inherit basic CRUD operations and adds
+ * additional
  * methods for caching and searching.
  * 
- * @see JpaRepository
+ * @see MongoRepository
  * @see DeveloperEntity
  * @see RedisConfiguration
  * @see CacheAutoConfiguration
@@ -31,7 +31,7 @@ import com.api.nextspring.entity.DeveloperEntity;
  * @author Athirson Silva
  */
 @ImportAutoConfiguration(classes = { RedisConfiguration.class, CacheAutoConfiguration.class })
-public interface DeveloperRepository extends JpaRepository<DeveloperEntity, UUID> {
+public interface DeveloperRepository extends MongoRepository<DeveloperEntity, String> {
 
 	/**
 	 * Retrieves a DeveloperEntity object from the cache by name.
@@ -63,9 +63,7 @@ public interface DeveloperRepository extends JpaRepository<DeveloperEntity, UUID
 	 * @param pageable the pagination information for the search results
 	 * @return a Page containing the search results
 	 */
-	@Query("SELECT g FROM DeveloperEntity g WHERE " +
-			"LOWER(g.name) LIKE LOWER(CONCAT('%', :query, '%'))" +
-			"OR LOWER(g.description) LIKE LOWER(CONCAT('%', :query, '%'))")
+	@Query("{$or:[{'name': {$regex: ?0, $options: 'i'}}, {'description': {$regex: ?0, $options: 'i'}}]}")
 	@Cacheable(value = "developer", key = "#query")
 	Page<DeveloperEntity> searchDeveloperEntities(String query, Pageable pageable);
 
