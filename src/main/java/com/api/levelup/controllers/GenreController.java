@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.levelup.dto.GenreDto;
 import com.api.levelup.dto.Response;
 import com.api.levelup.dto.optionals.OptionalGenreDto;
+import com.api.levelup.dto.request.GenreRequestDto;
 import com.api.levelup.exceptions.RestApiException;
 import com.api.levelup.services.LinkingService;
 import com.api.levelup.services.impl.GenreServiceImpl;
@@ -123,7 +124,7 @@ public class GenreController {
 	@PostMapping
 	@Operation(summary = "Create a genre endpoint")
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<Response<String, GenreDto>> createGenre(@Validated @RequestBody GenreDto request,
+	public ResponseEntity<Response<String, GenreDto>> createGenre(@Validated @RequestBody GenreRequestDto request,
 			HttpServletRequest servletRequest) {
 		GenreDto genreDto = genreServices.create(request);
 

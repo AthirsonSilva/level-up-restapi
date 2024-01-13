@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.levelup.dto.DeveloperDto;
 import com.api.levelup.dto.Response;
 import com.api.levelup.dto.optionals.OptionalDeveloperDto;
+import com.api.levelup.dto.request.DeveloperRequestDto;
 import com.api.levelup.exceptions.RestApiException;
 import com.api.levelup.services.DeveloperService;
 import com.api.levelup.services.LinkingService;
@@ -57,7 +58,7 @@ public class DeveloperController {
 	@PostMapping
 	@Operation(summary = "Create a new developer endpoint")
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<Response<String, DeveloperDto>> create(@Validated @RequestBody DeveloperDto request,
+	public ResponseEntity<Response<String, DeveloperDto>> create(@Validated @RequestBody DeveloperRequestDto request,
 			HttpServletRequest servletRequest) {
 		DeveloperDto creator = developerService.create(request);
 

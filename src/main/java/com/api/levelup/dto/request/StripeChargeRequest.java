@@ -1,4 +1,4 @@
-package com.api.levelup.dto;
+package com.api.levelup.dto.request;
 
 import java.util.HashMap;
 

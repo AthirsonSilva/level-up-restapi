@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.api.levelup.dto.GameDto;
 import com.api.levelup.dto.export.GameExportDto;
 import com.api.levelup.dto.optionals.OptionalGameDto;
+import com.api.levelup.dto.request.GameRequestDto;
 import com.api.levelup.entity.DeveloperEntity;
 import com.api.levelup.entity.GameEntity;
 import com.api.levelup.entity.GenreEntity;
@@ -65,7 +66,7 @@ public class GameServiceImpl implements GameService {
 	 *                          the genre or developer ID is invalid.
 	 */
 	@Override
-	public GameDto create(GameDto gameDto) {
+	public GameDto create(GameRequestDto gameDto) {
 		log.info("Game object received: " + gameDto.toString());
 
 		if (gameDto.getGenreId() == null || !genreRepository.existsById(gameDto.getGenreId())) {

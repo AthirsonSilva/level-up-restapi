@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.api.levelup.dto.GameBuyingRequest;
 import com.api.levelup.dto.GameBuyingResponse;
-import com.api.levelup.dto.StripeChargeRequest;
 import com.api.levelup.dto.StripeTokenResponse;
+import com.api.levelup.dto.request.GameBuyingRequest;
+import com.api.levelup.dto.request.StripeChargeRequest;
 import com.api.levelup.exceptions.RestApiException;
 import com.api.levelup.services.StripeService;
 import com.stripe.model.Charge;

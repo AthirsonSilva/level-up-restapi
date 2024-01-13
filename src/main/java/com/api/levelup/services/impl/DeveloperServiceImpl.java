@@ -1,6 +1,7 @@
 package com.api.levelup.services.impl;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.api.levelup.dto.DeveloperDto;
 import com.api.levelup.dto.export.DeveloperExportDto;
 import com.api.levelup.dto.optionals.OptionalDeveloperDto;
+import com.api.levelup.dto.request.DeveloperRequestDto;
 import com.api.levelup.entity.DeveloperEntity;
 import com.api.levelup.enums.EntityOptions;
 import com.api.levelup.exceptions.RestApiException;
@@ -56,7 +58,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 * @throws RestApiException if a developer with the given name already exists.
 	 */
 	@Override
-	public DeveloperDto create(DeveloperDto request) {
+	public DeveloperDto create(DeveloperRequestDto request) {
 		if (developerRepository.existsByName(request.getName())) {
 			throw new RestApiException(HttpStatus.NOT_FOUND, "Developer with given name already exists");
 		}
@@ -65,6 +67,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 				.builder()
 				.name(request.getName())
 				.description(request.getDescription())
+				.games(Collections.emptyList())
 				.build();
 
 		return modelMapper.map(developerRepository.save(developerEntity), DeveloperDto.class);

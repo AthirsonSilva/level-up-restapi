@@ -1,9 +1,9 @@
 package com.api.levelup.services;
 
-import com.api.levelup.dto.GameBuyingRequest;
 import com.api.levelup.dto.GameBuyingResponse;
-import com.api.levelup.dto.StripeChargeRequest;
 import com.api.levelup.dto.StripeTokenResponse;
+import com.api.levelup.dto.request.GameBuyingRequest;
+import com.api.levelup.dto.request.StripeChargeRequest;
 
 /**
  * This interface provides methods for creating a Stripe card token and charging

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.api.levelup.dto.GenreDto;
 import com.api.levelup.dto.optionals.OptionalGenreDto;
+import com.api.levelup.dto.request.GenreRequestDto;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -45,7 +46,7 @@ public interface GenreService {
 	 * @param request The GenreDto object to create.
 	 * @return The created GenreDto object.
 	 */
-	public GenreDto create(GenreDto request);
+	public GenreDto create(GenreRequestDto request);
 
 	/**
 	 * Deletes a GenreDto object with the provided ID.

@@ -5,9 +5,9 @@ import java.util.Set;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.api.levelup.dto.ChangePasswordDto;
 import com.api.levelup.dto.UserDto;
 import com.api.levelup.dto.optionals.OptionalUserDto;
+import com.api.levelup.dto.request.ChangePasswordRequestDto;
 import com.api.levelup.entity.RoleEntity;
 
 /**
@@ -52,7 +52,7 @@ public interface UserService {
 	 * @param request A ChangePasswordDto object containing the new password.
 	 * @return A UserDto object representing the updated user.
 	 */
-	public UserDto changeCurrentUserPassword(String token, ChangePasswordDto request);
+	public UserDto changeCurrentUserPassword(String token, ChangePasswordRequestDto request);
 
 	/**
 	 * Returns the roles associated with the current user based on the provided

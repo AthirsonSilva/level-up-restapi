@@ -1,5 +1,7 @@
 package com.api.levelup.utils;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -105,6 +107,8 @@ public class DataMigration implements InitializingBean {
 								() -> new RuntimeException("User role not found!"))))
 				.enabled(true)
 				.locked(false)
+				.createdAt(LocalDateTime.now())
+				.updatedAt(LocalDateTime.now())
 				.build());
 
 		for (int i = 0; i < 4; i++) {
@@ -120,6 +124,8 @@ public class DataMigration implements InitializingBean {
 									() -> new RuntimeException("User role not found!"))))
 					.enabled(true)
 					.locked(false)
+					.createdAt(LocalDateTime.now())
+					.updatedAt(LocalDateTime.now())
 					.build());
 		}
 	}
@@ -140,6 +146,8 @@ public class DataMigration implements InitializingBean {
 								() -> new RuntimeException("Admin role not found!"))))
 				.enabled(true)
 				.locked(false)
+				.createdAt(LocalDateTime.now())
+				.updatedAt(LocalDateTime.now())
 				.build());
 	}
 
@@ -152,6 +160,9 @@ public class DataMigration implements InitializingBean {
 					.builder()
 					.name(faker.book().genre())
 					.description(faker.lorem().sentence())
+					.games(Collections.emptyList())
+					.createdAt(LocalDateTime.now())
+					.updatedAt(LocalDateTime.now())
 					.build());
 		}
 	}
@@ -166,6 +177,9 @@ public class DataMigration implements InitializingBean {
 					.builder()
 					.name(faker.company().name())
 					.description(faker.lorem().sentence())
+					.games(Collections.emptyList())
+					.createdAt(LocalDateTime.now())
+					.updatedAt(LocalDateTime.now())
 					.build());
 		}
 	}
@@ -184,6 +198,8 @@ public class DataMigration implements InitializingBean {
 					.genre(getGenreByIndex(i))
 					.year(faker.number().numberBetween(1900, 2023))
 					.photoPath(faker.internet().avatar())
+					.createdAt(LocalDateTime.now())
+					.updatedAt(LocalDateTime.now())
 					.build());
 		}
 	}
@@ -200,6 +216,8 @@ public class DataMigration implements InitializingBean {
 				.city(faker.address().city())
 				.state(faker.address().state())
 				.zipCode(faker.address().zipCode())
+				.createdAt(LocalDateTime.now())
+				.updatedAt(LocalDateTime.now())
 				.build());
 	}
 

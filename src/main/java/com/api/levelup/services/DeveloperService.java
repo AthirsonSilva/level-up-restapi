@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.api.levelup.dto.DeveloperDto;
 import com.api.levelup.dto.optionals.OptionalDeveloperDto;
+import com.api.levelup.dto.request.DeveloperRequestDto;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -24,7 +25,7 @@ public interface DeveloperService {
 	 * @param developerDto the developer data to be created in the database
 	 * @return a dto containing the developer data created
 	 */
-	public DeveloperDto create(DeveloperDto developerDto);
+	public DeveloperDto create(DeveloperRequestDto developerDto);
 
 	/**
 	 * Finds all developers in the database and returns a list of developers data

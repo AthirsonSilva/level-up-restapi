@@ -1,10 +1,5 @@
-package com.api.levelup.dto;
+package com.api.levelup.dto.request;
 
-import java.time.LocalDateTime;
-
-import org.springframework.hateoas.RepresentationModel;
-
-import com.api.levelup.dto.request.GameRequestDto;
 import com.api.levelup.enums.GameRatingOptions;
 
 import jakarta.validation.constraints.Min;
@@ -22,9 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class GameDto extends RepresentationModel<GameDto> {
-	private String id;;
-
+public class GameRequestDto {
 	@NotBlank(message = "Name is required")
 	@Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
 	private String name;
@@ -32,8 +25,6 @@ public class GameDto extends RepresentationModel<GameDto> {
 	@NotBlank(message = "Description is required")
 	@Size(min = 3, max = 50, message = "Description must be between 3 and 50 characters")
 	private String description;
-
-	private String photoPath;
 
 	@NotNull(message = "Year is required")
 	@Min(value = 1900, message = "Year must be greater than 1900")
@@ -47,8 +38,4 @@ public class GameDto extends RepresentationModel<GameDto> {
 
 	@NotNull(message = "Developer is required")
 	private String developerId;
-
-	private LocalDateTime createdAt;
-
-	private LocalDateTime updatedAt;
 }
