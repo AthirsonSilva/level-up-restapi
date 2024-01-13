@@ -1,7 +1,5 @@
 package com.api.nextspring.dto.export;
 
-import java.util.UUID;
-
 import com.api.nextspring.enums.GameRatingOptions;
 
 import lombok.AllArgsConstructor;
@@ -14,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameExportDto {
-	private UUID id;
+	private String id;;
 
 	private String name;
 
@@ -26,9 +24,9 @@ public class GameExportDto {
 
 	private GameRatingOptions grade;
 
-	private UUID genreId;
+	private String genreId;
 
-	private UUID developerId;
+	private String developerId;
 
 	private String createdAt;
 

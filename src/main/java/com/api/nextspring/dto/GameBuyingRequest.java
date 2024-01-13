@@ -1,7 +1,6 @@
 package com.api.nextspring.dto;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -40,7 +39,7 @@ public class GameBuyingRequest {
 	private Double amount;
 
 	@NotBlank(message = "Game to buy is required")
-	private UUID gameId;
+	private String gameId;
 
 	private HashMap<String, String> metadata;
 

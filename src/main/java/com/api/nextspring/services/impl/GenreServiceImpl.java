@@ -2,7 +2,6 @@ package com.api.nextspring.services.impl;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -84,7 +83,7 @@ public class GenreServiceImpl implements GenreService {
 	 * @throws RestApiException if the genre is not found
 	 */
 	@Override
-	public GenreDto findByID(UUID id) {
+	public GenreDto findByID(String id) {
 		GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(
 				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!"));
 
@@ -119,7 +118,7 @@ public class GenreServiceImpl implements GenreService {
 	 * @throws RestApiException if the genre is not found
 	 */
 	@Override
-	public void deleteByID(UUID id) {
+	public void deleteByID(String id) {
 		GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(
 				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!"));
 
@@ -136,7 +135,7 @@ public class GenreServiceImpl implements GenreService {
 	 * @throws RestApiException if the genre is not found
 	 */
 	@Override
-	public GenreDto updateByID(UUID id, OptionalGenreDto request) {
+	public GenreDto updateByID(String id, OptionalGenreDto request) {
 		GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(
 				() -> new RestApiException(HttpStatus.BAD_REQUEST, "Genre not found!"));
 

@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -90,7 +89,7 @@ public class DeveloperController {
 	@Operation(summary = "Get a developer by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
-	public ResponseEntity<Response<String, DeveloperDto>> get(@PathVariable UUID id,
+	public ResponseEntity<Response<String, DeveloperDto>> get(@PathVariable String id,
 			HttpServletRequest servletRequest) {
 		DeveloperDto creator = developerService.findByID(id);
 
@@ -104,7 +103,7 @@ public class DeveloperController {
 	@PatchMapping("/{id}")
 	@Operation(summary = "Update a developer by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Response<String, Object>> update(@PathVariable UUID id,
+	public ResponseEntity<Response<String, Object>> update(@PathVariable String id,
 			@Validated @RequestBody OptionalDeveloperDto request) {
 		DeveloperDto creator = developerService.updateByID(id, request);
 
@@ -116,7 +115,7 @@ public class DeveloperController {
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete a developer by id endpoint")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public ResponseEntity<HashMap<String, Object>> delete(@PathVariable UUID id) {
+	public ResponseEntity<HashMap<String, Object>> delete(@PathVariable String id) {
 		developerService.deleteByID(id);
 
 		HashMap<String, Object> response = new HashMap<>();
@@ -134,13 +133,15 @@ public class DeveloperController {
 			@ParameterObject Pageable pageable,
 			HttpServletRequest servletRequest) {
 		if (query.isEmpty() || query.isBlank()) {
-			throw new RestApiException(HttpStatus.BAD_REQUEST, "Query parameter with the developer information is required!");
+			throw new RestApiException(HttpStatus.BAD_REQUEST,
+					"Query parameter with the developer information is required!");
 		}
 
 		List<DeveloperDto> developerList = developerService.search(query, pageable);
 
 		if (developerList.size() == 0) {
-			Response<String, List<DeveloperDto>> response = new Response<>("No developer found with given information's!",
+			Response<String, List<DeveloperDto>> response = new Response<>(
+					"No developer found with given information's!",
 					developerList);
 
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);

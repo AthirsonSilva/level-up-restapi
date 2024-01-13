@@ -1,24 +1,21 @@
 package com.api.nextspring.repositories;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.api.nextspring.config.RedisConfiguration;
 import com.api.nextspring.entity.UserEntity;
 
 /**
  * This interface represents a repository for managing user entities.
- * It extends the JpaRepository interface and provides additional methods for
+ * It extends the MongoRepository interface and provides additional methods for
  * caching and modifying user data.
  * 
- * @see JpaRepository
+ * @see MongoRepository
  * @see UserEntity
  * @see RedisConfiguration
  * @see CacheAutoConfiguration
@@ -29,7 +26,7 @@ import com.api.nextspring.entity.UserEntity;
  * @author
  */
 @ImportAutoConfiguration(classes = { RedisConfiguration.class, CacheAutoConfiguration.class })
-public interface UserRepository extends JpaRepository<UserEntity, UUID> {
+public interface UserRepository extends MongoRepository<UserEntity, String> {
 
 	/**
 	 * Retrieves a user entity from the cache by email.
@@ -48,16 +45,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 	 */
 	@Cacheable(value = "user", key = "#email")
 	Boolean existsByEmail(String email);
-
-	/**
-	 * Enables a user by ID.
-	 * 
-	 * @param id the ID of the user to enable
-	 * @return the number of rows affected by the update
-	 */
-	@Modifying
-	@Query(value = "update users set enabled = true, locked = false where id = ?1", nativeQuery = true)
-	Integer enableUser(UUID id);
 
 	/**
 	 * Checks if a user entity exists in the database by email and password.

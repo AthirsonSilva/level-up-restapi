@@ -2,7 +2,6 @@ package com.api.nextspring.controllers;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
@@ -153,7 +152,7 @@ public class UserController {
 	@ResponseBody
 	@Operation(summary = "Download a user photo by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<InputStreamResource> getImageDynamicType(@PathVariable("id") UUID id) {
+	public ResponseEntity<InputStreamResource> getImageDynamicType(@PathVariable("id") String id) {
 		InputStreamResource image = userServices.downloadPhotoByUser(id);
 
 		return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(image);

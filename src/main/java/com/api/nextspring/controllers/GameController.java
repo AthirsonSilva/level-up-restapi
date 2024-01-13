@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -127,7 +126,7 @@ public class GameController {
 	@GetMapping("/{id}")
 	@Operation(summary = "Get a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Response<String, GameDto>> getGameById(@PathVariable(value = "id") UUID id,
+	public ResponseEntity<Response<String, GameDto>> getGameById(@PathVariable(value = "id") String id,
 			HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.findByID(id);
 
@@ -141,7 +140,7 @@ public class GameController {
 	@PatchMapping("/{id}")
 	@Operation(summary = "Update a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Response<String, GameDto>> updateGame(@PathVariable(value = "id", required = true) UUID id,
+	public ResponseEntity<Response<String, GameDto>> updateGame(@PathVariable(value = "id", required = true) String id,
 			@RequestBody OptionalGameDto request, HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.updateById(id, request);
 
@@ -155,7 +154,7 @@ public class GameController {
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete a game by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<HashMap<String, String>> deleteGame(@PathVariable(value = "id", required = true) UUID id,
+	public ResponseEntity<HashMap<String, String>> deleteGame(@PathVariable(value = "id", required = true) String id,
 			HttpServletRequest request) {
 		gameServices.deleteById(id);
 
@@ -170,7 +169,7 @@ public class GameController {
 	@Operation(summary = "Upload a game photo by id endpoint")
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Response<String, GameDto>> uploadGamePhoto(
-			@PathVariable(value = "id", required = true) UUID id,
+			@PathVariable(value = "id", required = true) String id,
 			@RequestParam(value = "file", required = true) MultipartFile file,
 			HttpServletRequest servletRequest) {
 		GameDto gameDto = gameServices.uploadPhoto(id, file);
@@ -186,7 +185,7 @@ public class GameController {
 	@ResponseBody
 	@Operation(summary = "Download a game photo by id endpoint")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> downloadGameImage(@PathVariable("id") UUID id,
+	public ResponseEntity<?> downloadGameImage(@PathVariable("id") String id,
 			HttpServletResponse response) {
 		response.setContentType(MediaType.IMAGE_PNG_VALUE);
 

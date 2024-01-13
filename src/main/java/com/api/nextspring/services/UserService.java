@@ -1,7 +1,6 @@
 package com.api.nextspring.services;
 
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,10 +76,10 @@ public interface UserService {
 	/**
 	 * Downloads the photo associated with the provided user ID.
 	 * 
-	 * @param id The UUID of the user whose photo is to be downloaded.
+	 * @param id The String of the user whose photo is to be downloaded.
 	 * @return An InputStreamResource object representing the photo.
 	 */
-	public InputStreamResource downloadPhotoByUser(UUID id);
+	public InputStreamResource downloadPhotoByUser(String id);
 
 	/**
 	 * Resets the current user's password to a default value based on the provided

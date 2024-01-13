@@ -1,7 +1,6 @@
 package com.api.nextspring.services.impl;
 
 import java.util.Set;
-import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.InputStreamResource;
@@ -125,7 +124,7 @@ public class UserServiceImpl implements UserService {
 	 * @return The input stream resource of the photo.
 	 */
 	@Override
-	public InputStreamResource downloadPhotoByUser(UUID id) {
+	public InputStreamResource downloadPhotoByUser(String id) {
 		return null;
 	}
 

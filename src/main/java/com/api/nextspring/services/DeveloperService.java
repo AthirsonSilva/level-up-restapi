@@ -1,7 +1,6 @@
 package com.api.nextspring.services;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
 
@@ -46,7 +45,7 @@ public interface DeveloperService {
 	 * @param id the id of the developer to be returned
 	 * @return a dto containing the developer data found
 	 */
-	public DeveloperDto findByID(UUID id);
+	public DeveloperDto findByID(String id);
 
 	/**
 	 * Find and update a developer in the database by id and returns a dto
@@ -56,14 +55,14 @@ public interface DeveloperService {
 	 * @param developerDto the developer data to be updated
 	 * @return a dto containing the developer data updated
 	 */
-	public DeveloperDto updateByID(UUID id, OptionalDeveloperDto developerDto);
+	public DeveloperDto updateByID(String id, OptionalDeveloperDto developerDto);
 
 	/**
 	 * Find and delete a developer in the database by id
 	 * 
 	 * @param id the id of the developer to be deleted
 	 */
-	public void deleteByID(UUID id);
+	public void deleteByID(String id);
 
 	/**
 	 * Searches for developers in the database by keyword and returns a list

@@ -2,7 +2,6 @@ package com.api.nextspring.services.impl;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -106,7 +105,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 *                          database.
 	 */
 	@Override
-	public DeveloperDto findByID(UUID id) {
+	public DeveloperDto findByID(String id) {
 		DeveloperEntity developerEntity = developerRepository.findById(id)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given name not found"));
 
@@ -125,7 +124,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 *                          database.
 	 */
 	@Override
-	public DeveloperDto updateByID(UUID id, OptionalDeveloperDto request) {
+	public DeveloperDto updateByID(String id, OptionalDeveloperDto request) {
 		DeveloperEntity developerEntity = developerRepository.findById(id)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given id not found"));
 
@@ -146,7 +145,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 	 *                          database.
 	 */
 	@Override
-	public void deleteByID(UUID id) {
+	public void deleteByID(String id) {
 		DeveloperEntity developerEntity = developerRepository.findById(id)
 				.orElseThrow(() -> new RestApiException(HttpStatus.NOT_FOUND, "Developer with given name not found"));
 

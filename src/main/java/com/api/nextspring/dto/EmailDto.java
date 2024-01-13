@@ -1,7 +1,5 @@
 package com.api.nextspring.dto;
 
-import java.util.UUID;
-
 import org.hibernate.validator.constraints.Length;
 
 import jakarta.validation.constraints.NotBlank;
@@ -16,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class EmailDto {
-	private UUID id;
+	private String id;;
 
 	@Size(min = 1, max = 255, message = "The 'sender' field must be between 1 and 255 characters")
 	@Length(min = 1, max = 255, message = "The 'sender' field must be between 1 and 255 characters")

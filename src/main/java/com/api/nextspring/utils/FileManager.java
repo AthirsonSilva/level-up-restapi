@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
-import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -48,7 +47,7 @@ public class FileManager {
 	 * @param file the file that will be saved to the server
 	 * @return the path of the file that was saved
 	 */
-	public String savePhoto(UUID id, MultipartFile file) {
+	public String savePhoto(String id, MultipartFile file) {
 		if (file.isEmpty())
 			throw new RestApiException(HttpStatus.BAD_REQUEST, "File is empty!");
 

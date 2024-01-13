@@ -1,7 +1,5 @@
 package com.api.nextspring.dto.export;
 
-import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GenreExportDto {
-	private UUID id;
+	private String id;;
 
 	private String name;
 
