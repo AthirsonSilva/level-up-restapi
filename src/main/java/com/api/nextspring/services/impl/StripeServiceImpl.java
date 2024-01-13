@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.api.nextspring.dto.GameBuyingRequest;
+import com.api.nextspring.dto.GameBuyingResponse;
 import com.api.nextspring.dto.StripeChargeRequest;
-import com.api.nextspring.dto.StripeChargeResponse;
-import com.api.nextspring.dto.StripeTokenRequest;
 import com.api.nextspring.dto.StripeTokenResponse;
 import com.api.nextspring.exceptions.RestApiException;
 import com.api.nextspring.services.StripeService;
@@ -56,7 +56,7 @@ public class StripeServiceImpl implements StripeService {
 	 * @throws RestApiException if there is an error creating the token
 	 */
 	@Override
-	public StripeTokenResponse createCardToken(StripeTokenRequest tokenRequest) {
+	public StripeTokenResponse createCardToken(GameBuyingRequest tokenRequest) {
 		try {
 			StripeTokenResponse tokenResponse = modelMapper.map(tokenRequest, StripeTokenResponse.class);
 
@@ -99,9 +99,9 @@ public class StripeServiceImpl implements StripeService {
 	 * @throws RestApiException if there is an error charging the card
 	 */
 	@Override
-	public StripeChargeResponse createCharge(StripeChargeRequest chargeRequest) {
+	public GameBuyingResponse createCharge(StripeChargeRequest chargeRequest) {
 		try {
-			StripeChargeResponse chargeResponse = modelMapper.map(chargeRequest, StripeChargeResponse.class);
+			GameBuyingResponse chargeResponse = modelMapper.map(chargeRequest, GameBuyingResponse.class);
 
 			chargeResponse.setSuccess(false);
 

@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StripeChargeResponse {
+public class GameBuyingResponse {
 
 	@NotBlank(message = "Username is required")
 	private String token;

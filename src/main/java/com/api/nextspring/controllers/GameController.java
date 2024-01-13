@@ -25,11 +25,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.api.nextspring.dto.GameBuyingRequest;
+import com.api.nextspring.dto.GameBuyingResponse;
 import com.api.nextspring.dto.GameDto;
 import com.api.nextspring.dto.Response;
 import com.api.nextspring.dto.StripeChargeRequest;
-import com.api.nextspring.dto.StripeChargeResponse;
-import com.api.nextspring.dto.StripeTokenRequest;
 import com.api.nextspring.dto.StripeTokenResponse;
 import com.api.nextspring.dto.optionals.OptionalGameDto;
 import com.api.nextspring.exceptions.RestApiException;
@@ -85,7 +85,8 @@ public class GameController {
 			@ParameterObject Pageable pageable,
 			HttpServletRequest servletRequest) {
 		if (query.isEmpty() || query.isBlank()) {
-			throw new RestApiException(HttpStatus.BAD_REQUEST, "Query parameter with the game information is required!");
+			throw new RestApiException(HttpStatus.BAD_REQUEST,
+					"Query parameter with the game information is required!");
 		}
 
 		List<GameDto> gameList = gameServices.searchByKeyword(query, pageable);
@@ -256,28 +257,24 @@ public class GameController {
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
-	@PostMapping("/payment/token")
+	@PostMapping("/buy")
 	@ResponseBody
-	@Operation(summary = "Create a stripe card token endpoint")
-	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<Response<String, StripeTokenResponse>> createCardToken(
-			@Valid @RequestBody StripeTokenRequest request) {
-		StripeTokenResponse tokenDto = stripeService.createCardToken(request);
-
-		Response<String, StripeTokenResponse> response = new Response<>("Card token created successfully!", tokenDto);
-
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
-	}
-
-	@PostMapping("/payment/charge")
-	@ResponseBody
-	@Operation(summary = "Charge a stripe card token endpoint")
+	@Operation(summary = "Buy a game endpoint", description = "This endpoint will create a token for the credit card and then will charge the user for the game")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<Response<String, StripeChargeResponse>> chargeCard(
-			@Valid @RequestBody StripeChargeRequest request) {
-		StripeChargeResponse chargeDto = stripeService.createCharge(request);
+	public ResponseEntity<Response<String, GameBuyingResponse>> createCardToken(
+			@Valid @RequestBody GameBuyingRequest request) {
+		StripeTokenResponse tokenDto = stripeService.createCardToken(request);
+		StripeChargeRequest chargeRequest = StripeChargeRequest.builder()
+				.token(tokenDto.getToken())
+				.username(request.getUsername())
+				.amount(request.getAmount())
+				.metadata(request.getMetadata())
+				.build();
 
-		Response<String, StripeChargeResponse> response = new Response<>("Card charged successfully!", chargeDto);
+		GameBuyingResponse paymentResponse = stripeService.createCharge(chargeRequest);
+
+		Response<String, GameBuyingResponse> response = new Response<>("The game was bought successfully!",
+				paymentResponse);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
